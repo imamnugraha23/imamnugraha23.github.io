@@ -1,10 +1,10 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 	<head><title>Profil Imam Nugraha</title>
 	</head>
 			<body>
 					<div>
-					<center>Selamat datang di website Saya</center>
+					<center><h1>Selamat datang di website Saya</h1></center>
 					<p>Perkenalkan nama Saya <b>Imam Nugraha</b>. Biasa dipanggil <b>Imam.</b></p>
 					<p>Alasan saya ingin bergabung dengan Hacktiv8, Ingin menjadi web developer, karena selama ini saya bekerja di luar bidang it / developer, pengetahuan yang di dapat di lingkungan kerja saya / pekerjaan tersebut hanya berfokus pada kegiatan pekerjaan biasa saja, jenjang karir yang tidak jelas. Karena itu saya ingin memperdalam ilmu saya di bidang web developer dan memilih karir sebagai web developer.</p>
 					<p>Tokoh idola saya adalah steve jobs karena menurut saya dia sangat inovatif. Kedepannya semoga kita bisa saling membantu di Hacktiv8 ini</p>
