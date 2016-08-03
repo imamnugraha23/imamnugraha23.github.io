@@ -1,6 +1,7 @@
 ﻿<!doctype html>
 <html>
 	<head><title>Profil Imam Nugraha</title>
+	<link rel="stylesheet" href="styles/index.css"
 	</head>
 			<body>
 					<div>
