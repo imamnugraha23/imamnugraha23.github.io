@@ -1,1 +1,16 @@
-
+h1 {
+  font-weight: 800;
+  color: gray;
+}
+p {
+  color: orange;
+}
+#website-title {
+  padding: 10px;
+}
+.menu {
+  margin: 5em;
+}
+button:hover {
+  background-color: #FFECB3;
+}
