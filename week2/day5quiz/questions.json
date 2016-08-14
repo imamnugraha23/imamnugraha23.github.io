@@ -1,0 +1,41 @@
+var questions = [{
+    question: "Bagaimana cara membuat sebuah function di JavaScript?",
+    choices: ["function = myFunction()", "function myFunction()", "function:myFunction()"],
+    correctAnswer: 1
+}, {
+    question: "Bagaimana cara memanggil sebuah function dengan nama myFunction?",
+    choices: ["call myFunction()", "call function myFunction()", "myFunction()"],
+    correctAnswer: 2
+}, {
+    question: "Apakah JavaScript sama dengan Java.",
+    choices: ["Benar", "Salah"],
+    correctAnswer: 1
+}, {
+    question: "Bagaimana cara menulis statement IF di dalam JavaScript?",
+    choices: ["if i == 5 then", "if i = 5 then", "if (i == 5)", "if i = 5"],
+    correctAnswer: 2
+}, {
+    question: "Bagaimana cara menulis statement IF untuk mengeksekusi if i is NOT equal to 5?",
+    choices: ["if (i <> 5)", "if i <> 5", "if (i != 5)", "if i =! 5 then"],
+    correctAnswer: 2
+}, {
+    question: "Apa nilai kembali dari: Boolean(10 > 9)",
+    choices: ["false", "NaN", "true"],
+    correctAnswer: 2
+}, {
+    question: "Pilih operator yang digunakan untuk memasukan nilai ke dalam sebuah variabel?",
+    choices: ["-", "=", "*", "x"],
+    correctAnswer: 1
+}, {
+    question: "Apakah JavaScript itu case-sensitive?",
+    choices: ["Yes", "No"],
+    correctAnswer: 0
+}, {
+    question: "Bagaimana cara memulai loop WHILE?",
+    choices: ["while (i <= 10)", "while i = 1 to 10", "while (i <= 10; i++)"],
+    correctAnswer: 0
+}, {
+    question: "Event apakah yang terjadi ketika pengguna mengklik pada sebuah elemen HTML??",
+    choices: ["onclick", "onmouseover", "onmouseclick", "onchange"],
+    correctAnswer: 0
+}];

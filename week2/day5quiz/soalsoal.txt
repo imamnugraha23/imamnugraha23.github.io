@@ -1,0 +1,273 @@
+1. Inside which HTML element do we put the JavaScript?
+
+ <scripting>
+ <script>
+ <javascript>
+ <js>
+You answered:
+
+<script>
+ Correct Answer!
+
+2. What is the correct JavaScript syntax to change the content of the HTML element below?
+
+
+<p id="demo">This is a demonstration.</p>
+
+ document.getElement("p").innerHTML = "Hello World!";
+ document.getElementById("demo").innerHTML = "Hello World!";
+ document.getElementByName("p").innerHTML = "Hello World!";
+ #demo.innerHTML = "Hello World!";
+
+You answered:
+
+document.getElementById("demo").innerHTML = "Hello World!";
+ Correct Answer!
+
+3. Where is the correct place to insert a JavaScript?
+
+You answered:3. Where is the correct place to insert a JavaScript?
+
+ The <body> section
+ The <head> section
+ Both the <head> section and the <body> section are correct
+
+Both the <head> section and the <body> section are correct
+ Correct Answer!
+
+4. What is the correct syntax for referring to an external script called "xxx.js"?
+
+ <script name="xxx.js">
+ <script src="xxx.js">
+ <script href="xxx.js">
+You answered:
+
+<script src="xxx.js">
+ Correct Answer!
+
+5. The external JavaScript file must contain the <script> tag.
+
+ False
+ True
+You answered:
+
+False
+ Correct Answer!
+
+6. How do you write "Hello World" in an alert box?
+
+ msg("Hello World");
+ msgBox("Hello World");
+ alert("Hello World");
+ alertBox("Hello World");
+You answered:
+
+alert("Hello World");
+ Correct Answer!
+
+-7. How do you create a function in JavaScript?
+
+ function:myFunction()
+ function myFunction()
+ function = myFunction()
+You answered:
+
+function myFunction()
+ Correct Answer!
+
+-8. How do you call a function named "myFunction"?
+
+ call myFunction()
+ call function myFunction()
+ myFunction()
+You answered:
+
+myFunction()
+ Correct Answer!
+
+-9. How to write an IF statement in JavaScript?
+
+ if i == 5 then
+ if i = 5 then
+ if (i == 5)
+ if i = 5
+You answered:
+
+if (i == 5)
+ Correct Answer!
+
+10. How to write an IF statement for executing some code if "i" is NOT equal to 5?
+
+ if (i <> 5)
+ if i <> 5
+ if (i != 5)
+ if i =! 5 then
+You answered:
+
+if (i != 5)
+ Correct Answer!
+
+11. How does a WHILE loop start?
+
+ while (i <= 10)
+ while i = 1 to 10
+ while (i <= 10; i++)
+You answered:
+
+while (i <= 10)
+ Correct Answer!
+
+12. How does a FOR loop start?
+
+ for (i <= 5; i++)
+ for (i = 0; i <= 5; i++)
+ for i = 1 to 5
+ for (i = 0; i <= 5)
+You answered:
+
+for (i = 0; i <= 5; i++)
+ Correct Answer!
+
+13. How can you add a comment in a JavaScript?
+
+ //This is a comment
+ <!--This is a comment-->
+ 'This is a comment
+You answered:
+
+//This is a comment
+ Correct Answer!
+
+14. How to insert a comment that has more than one line?
+
+ /*This comment has
+more than one line*/
+ //This comment has
+more than one line//
+ <!--This comment has
+more than one line-->
+You answered:
+
+/*This comment has
+more than one line*/
+ Correct Answer!
+
+15. What is the correct way to write a JavaScript array?
+
+ var colors = ["red", "green", "blue"]
+ var colors = "red", "green", "blue"
+ var colors = (1:"red", 2:"green", 3:"blue")
+ var colors = 1 = ("red"), 2 = ("green"), 3 = ("blue")
+You answered:
+
+var colors = ["red", "green", "blue"]
+ Correct Answer!
+
+16. How do you round the number 7.25, to the nearest integer?
+
+ Math.round(7.25)
+ Math.rnd(7.25)
+ rnd(7.25)
+ round(7.25)
+You answered:
+
+Math.round(7.25)
+ Correct Answer!
+
+17. How do you find the number with the highest value of x and y?
+
+ Math.ceil(x, y)
+ ceil(x, y)
+ Math.max(x, y)
+ top(x, y)
+You answered:
+
+Math.max(x, y)
+ Correct Answer!
+
+18. What is the correct JavaScript syntax for opening a new window called "w2" ?
+
+ w2 = window.open("http://www.w3schools.com");
+ w2 = window.new("http://www.w3schools.com");
+You answered:
+
+w2 = window.open("http://www.w3schools.com");
+ Correct Answer!
+
+-19. JavaScript is the same as Java.
+
+ True
+ False
+You answered:
+
+False
+ Correct Answer!
+
+20. How can you detect the client's browser name?
+
+ client.navName
+ navigator.appName
+ browser.name
+You answered:
+
+navigator.appName
+ Correct Answer!
+
+-21. Which event occurs when the user clicks on an HTML element?
+
+ onclick
+ onmouseover
+ onmouseclick
+ onchange
+You answered:
+
+onclick
+ Correct Answer!
+
+22. How do you declare a JavaScript variable?
+
+ variable carName;
+ var carName;
+ v carName;
+You answered:
+
+var carName;
+ Correct Answer!
+
+-23. Which operator is used to assign a value to a variable?
+
+ -
+ =
+ *
+ x
+You answered:
+
+=
+ Correct Answer!
+
+
+
+-24. What will the following code return: Boolean(10 > 9)
+
+ false
+ NaN
+ true
+You answered:
+
+true
+ Correct Answer!
+
+-25. Is JavaScript case-sensitive?
+
+ Yes
+ No
+You answered:
+
+Yes
+ Correct Answer!
+ 
+ , {
+    question: "What is 8*8?",
+    choices: [20, 30, 40, 50, 64],
+    correctAnswer: 4
+}

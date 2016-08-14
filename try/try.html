@@ -1,0 +1,31 @@
+
+		<link rel="stylesheet" href="../styles/index.css">
+<div class="dropdown">
+  <ul class="dropbtn"><a href="#" class="dropbtn">Week 1</a></ul>
+  <div class="dropdown-content">
+    <a href="news/first-news.html"> News </a>
+            <li><a href="blog/2016-08-04_first-story.html"> Story </a></li>
+            <li><a href="webdev/web-dev.html"> Web Developer </a></li>
+            <li><a href="wireframe/wireframes.html"> Wireframes </a></li>
+            <li><a href="webevaluation/website-evaluation.html"> Web Evaluation </a></li>
+            <li><a href="webdesign/web-design.html"> Web Design </a></li>
+  </div>
+</div>
+
+var color, comment;
+
+color = prompt("Color name?");
+
+if (!!color) {
+  if ((color === "black") || (color === "white")) {
+    comment = "monochrome!";
+  } else if (color === ("red" || "orange" || "yellow" || "green" || "blue" || "purple")) {
+    comment = "rainbow!";
+  } else {
+    comment = "speechless!"
+  }
+} else {
+  console.log("Please mention your first color");
+}
+
+console.log(comment);
