@@ -1,0 +1,65 @@
+
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../styles/indexweek3.css" />
+    
+  
+  </head>
+  <!-- Header -->
+
+      <header id="header">
+        <h1><a href="indexweek3.html">Imam Nugraha</a></h1>
+        
+        <nav id="nav">
+          <ul>
+            
+			
+			<li class="dropdown">
+			<a href="#" class="dropbtn">Week 3</a>
+			<div class="dropdown-content">
+			<a href="../week3/rainbow-text.html">Rainbow Text</a>
+			<a href="../week3/text-style-event.html">Text Style</a>
+			<a href="../week3/gallery-slide.html">Galeri Gambar</a>
+			<a href="../week3/number-guess.html">Tebak Angka</a>
+			</div>
+			<li><a href="../reflection/reflection.html"> Reflection </a></li>
+			<li><a href="https://imamnugraha23.wordpress.com/2016/08/21/week-3-blockly-games-dom-events-event-listener-and-scope-pada-javascript-number-guessing-game//"> Blog </a></li>
+          </ul>
+        </nav>
+      </header>
+  <body>
+<br><br>
+<br>
+
+<h1 align="center">Change Text Style with Event Listener </h1><br>
+<center>
+<button id="p" style="font-size:30px">TULISAN</button>
+</center>
+<h3><p><center>Click Kiri Untuk membuat tulisan menjadi <i>Italic</i> dan Click Kanan untuk membuat tulisan menjadi <b>bold</b><center></p></h3>
+
+<!-- Script -->
+
+<script type="text/javascript" src="../javascript/text-style.js"></script>
+<script>
+document.addEventListener("click", makeItalic);
+document.addEventListener("contextmenu", makeBold);
+function makeItalic(){
+    document.getElementById("p").style.font = "italic 30px arial,serif";
+};
+  function makeBold(){
+    document.getElementById("p").style.font = "bold 30px arial,serif";
+};
+</script>
+
+
+<br><br><br>
+<br><br><br>
+<br><br><br>
+<br><br><br>
+<center><img src="../images/hacktiv8.png" alt="" height=200" widht="200"></center>
+          <center><p><b>Imam Nugraha</b> &copy;2016. All Right Reserved</p></center>
+  </body>
+</html>
+

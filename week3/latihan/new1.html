@@ -1,0 +1,67 @@
+<html>
+<head>
+<br>
+<br>
+<title>Image Array Demo</title>
+<script>
+
+
+var pictures = [2];
+var counter = 1;
+
+
+function initialize(){
+  // sets up the array with some startin values
+  // Andy Harris
+  pictures[0] = new Image(50, 50);
+  pictures[0].src = "../../images/Fbicon.png";
+  pictures[1] = new Image(50, 50);
+  pictures[1].src = "../../images/hacktiv8.png";
+  pictures[2] = new Image(50, 50);
+  pictures[2].src = "../../images/Email-PNG.png";
+
+} // end initialize 
+
+function upDate(){
+  //increments the counter and shows the next description
+  counter++;
+  if (counter > 2){
+    counter = 2;
+  } // end if
+  document.imgDisplay.src = pictures[counter].src;
+} // end upDate
+function back(){
+  //increments the counter and shows the next description
+  counter--;
+  if (counter < 0){
+    counter = 0;
+  } // end if
+  document.imgDisplay.src = pictures[counter].src;
+} // end upDate
+</script>
+</head>
+
+<body onLoad = "initialize()">
+<center>
+<h1>Image Array Demo<hr></h1>
+<input type = "button"
+       value = "prev"
+       onClick = "back()">
+<img src = "../../images/hacktiv8.png"
+     name = "imgDisplay"
+     height = 100
+     width = 100>
+<input type = "button"
+       value = "next"
+       onClick = "upDate()">
+<br>
+
+<br>
+
+</form>
+</center>
+<hr>
+</body>
+</html>
+
+
