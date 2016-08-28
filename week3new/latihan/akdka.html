@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#wss{
+	opacity:0;
+	-webkit-transition:opacity 1.0s linear 0s;
+	transition:opacity 1.0s linear 0s;
+}
+</style>
+<script>
+var wss_i = 0;
+var wss_array = ["src=../../images/Fbicon.png","Happy","<u>Playful</u>","Smart","Loyal"];
+var wss_elem;
+function wssNext(){
+	wss_i++;
+	wss_elem.style.opacity = 0;
+	if(wss_i > (wss_array.length - 1)){
+		wss_i = 0;
+	}
+	setTimeout('wssSlide()',1000);
+}
+function wssSlide(){
+	wss_elem.innerHTML = wss_array[wss_i];
+	wss_elem.style.opacity = 1;
+}
+  function wssPrev(){
+	wss_i--;
+	wss_elem.style.opacity = 0;
+	if(wss_i > (wss_array.length - 1)){
+		wss_i = 0;
+	}
+	setTimeout('wssSlide()',1000);
+}
+</script>
+</head>
+<body>
+  <align="center"><h1>My dog is <span id="wss"></span></h1></align>
+  <align="left"> <button class="w3-btn" onclick="wssPrev()">? Prev</button></align>
+  <align="right"> <button class="w3-btn" onclick="wssNext()">Next ?</button></align>
+<script>wss_elem = document.getElementById("wss"); wssSlide(); </script>
+</body>
+</html>
+
+
+
+<html>
+<head>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<title>Image Array Demo</title>
+<script>
+
+
+var pictures = new Array(2);
+var counter = 0;
+
+
+function initialize(){
+  // sets up the array with some startin values
+  // Andy Harris
+  pictures[0] = new Image(50, 50);
+  pictures[0].src = "../../images/Fbicon.png";
+  pictures[1] = new Image(50, 50);
+  pictures[1].src = "../../images/hacktiv8.png";
+  pictures[2] = new Image(50, 50);
+  pictures[2].src = "../../images/Email-PNG.png";
+
+} // end initialize 
+
+function upDate(){
+  //increments the counter and shows the next description
+  counter++;
+  if (counter > 2){
+    counter = 0;
+  } // end if
+  document.imgDisplay.src = pictures[counter].src;
+  document.myForm.txtDescription.value = description[counter];
+} // end upDate
+
+
+
+
+
+var slideIndex = 1;
+showDivs(slideIndex);
+
+function plusDivs(n) {
+  showDivs(slideIndex += n);
+}
+
+function currentDiv(n) {
+  showDivs(slideIndex = n);
+}
+
+function showDivs(n) {
+  var i;
+  var x = document.getElementsByClassName("imgDisplay");
+  var dots = document.getElementsByClassName("demo");
+  if (n > x.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";
+  }
+  for (i = 0; i < dots.length; i++) {
+     dots[i].className = dots[i].className.replace(" w3-red", "");
+  }
+  x[slideIndex-1].style.display = "block";
+  dots[slideIndex-1].className += " w3-red";
+}
+</script>
+</head>
+
+<body onLoad = "initialize()">
+<center>
+<h1>Image Array Demo<hr></h1>
+<form name = "myForm">
+<input type = "button"
+       value = "prev"
+       onClick = "upDate()">
+<img src = "../../images/hacktiv8.png"
+     name = "imgDisplay"
+     height = 100
+     width = 100>
+<input type = "button"
+       value = "next"
+       onClick = "upDate()">
+<br>
+<button class="w3-btn">Prev</button>
+    <button class="w3-btn">Next</button>
+<br>
+
+</form>
+</center>
+<hr>
+</body>
+</html>
+
+

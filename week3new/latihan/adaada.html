@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC “-//W3C//DTD XHTML 1.0 Transitional//EN”>
+<html xmlns=”http://www.w3.org/1999/xhtml”>
+<head>
+<script language=”Javascript”>
+MySlides=new Array(‘../../images/Fbicon.png’,’../../images/hacktiv8.png’,’banner3.jpg’,’banner4.jpg’)
+Slide=0
+function ShowSlides(SlideNumber){
+
+{ Slide=Slide+SlideNumber
+if (Slide>MySlides.length-1){
+Slide=0
+}
+if (Slide<0) {
+Slide=MySlides.length-1
+}
+document.DisplaySlide.src=MySlides[Slide]
+}
+}
+</script>
+</head>
+<body>
+<P align=”center”><img src=”../../images/Fbicon.png” name=”DisplaySlide” width=”900? height=”120? /><p>
+<center>
+<table border=0>
+<tr>
+<td align=center>
+<button type=”button” value=”Back” onclick=”ShowSlides(-1)”>adada</button>
+<button type=”button” value=”Forward” onclick=”ShowSlides(1)”>adada</button>
+
+</td>
+</tr>
+</table>
+</center>
+</body>
+</html>
