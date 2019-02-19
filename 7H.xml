@@ -1,0 +1,13 @@
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+<url>
+
+<loc>http://www.example.com/mypage.html</loc>
+
+<xhtml:link rel="alternate" media="only screen and (max-width: 640px)" href="http://mobile.example.com/mypage.html" />
+
+<lastmod>20015-04-01</lastmod>
+<changefreq>weekly</changefreq>
+<priority>0.5</priority>
+
+</url>
