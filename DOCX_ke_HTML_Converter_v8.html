@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOCX ke HTML Converter</title>
+  <script src="https://unpkg.com/mammoth@1.12.0/mammoth.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+  <style>
+    :root{--bg:#f5f7fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--border:#dbe2ea;--primary:#087cf0;--success:#138a4a;--danger:#c0392b}
+    *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+    .container{width:min(1180px,calc(100% - 32px));margin:32px auto}.hero{margin-bottom:20px}.hero h1{margin:0 0 8px;font-size:28px}.hero p{margin:0;color:var(--muted);line-height:1.6}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 24px rgba(31,41,55,.06);padding:20px;margin-bottom:20px}
+    .drop-zone{border:2px dashed var(--border);border-radius:12px;padding:34px 20px;text-align:center;cursor:pointer;background:#fbfcfe;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px}.drop-zone.dragover,.drop-zone:hover{border-color:var(--primary);background:#f0f7ff}.drop-zone strong{display:block;margin-bottom:8px;font-size:18px}.drop-zone span{display:block;width:100%;color:var(--muted);font-size:14px;text-align:center}input[type=file]{display:none}
+    .settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}.field input{width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font:inherit;background:#fff}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button{border:0;border-radius:8px;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.btn-primary{background:var(--primary);color:#fff}.btn-desktop{background:#0f766e}.btn-desktop:hover:not(:disabled){background:#0b5f59}.btn-secondary{background:#eef2f7;color:var(--text)}
+    .status{margin-top:14px;min-height:22px;font-size:14px;color:var(--muted)}.status.success{color:var(--success)}.status.error{color:var(--danger)}
+    .workspace{display:grid;grid-template-columns:1fr 1fr;gap:20px}.workspace h2{font-size:18px;margin:0 0 12px}.CodeMirror{height:620px;border:1px solid var(--border);border-radius:10px;font:13px/1.55 Consolas,Monaco,monospace;background:#fbfcfe}.cm-comment{color:#d63384!important;font-weight:700}.preview{min-height:620px;max-height:760px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:18px;background:#fff}.preview img{max-width:100%;height:auto}.note{margin-top:14px;padding:12px 14px;border-radius:8px;background:#fff8e6;color:#765a00;font-size:13px;line-height:1.55}
+    @media(max-width:900px){.workspace,.settings{grid-template-columns:1fr}.CodeMirror,.preview{min-height:460px;height:460px}}
+  </style>
+</head>
+<body>
+<main class="container">
+  <section class="hero"><h1>DOCX ke HTML Converter</h1><p>Unggah artikel Word, lalu pilih jenis output HTML yang dibutuhkan.</p></section>
+  <section class="panel">
+    <label class="drop-zone" id="dropZone" for="fileInput"><strong id="fileLabel">Klik atau tarik file DOCX ke sini</strong><span>Format yang didukung: .docx</span></label>
+    <input id="fileInput" type="file" accept=".docx">
+    <div class="settings">
+      <div class="field"><label for="headingSize">Ukuran heading</label><input id="headingSize" type="number" min="12" max="40" value="18"></div>
+      <div class="field"><label for="bodySize">Ukuran body</label><input id="bodySize" type="number" min="10" max="32" value="16"></div>
+      <div class="field"><label for="outputName">Nama file output</label><input id="outputName" type="text" value="hasil-convert.html"></div>
+    </div>
+    <div class="actions"><button class="btn-primary" id="convertMobileBtn" disabled>Convert to Mobile</button><button class="btn-primary btn-desktop" id="convertDesktopBtn" disabled>Convert to Desktop</button><button class="btn-secondary" id="copyBtn" disabled>Copy HTML</button><button class="btn-secondary" id="downloadBtn" disabled>Download HTML</button><button class="btn-secondary" id="resetBtn">Reset</button></div>
+    <div class="status" id="status"></div>
+    <div class="note">Link autovm dan SKU dibuat sebagai section tersendiri. Baris “Link image:” akan dikonversi menjadi tag <code>&lt;img&gt;</code>, lalu baris berikutnya menjadi judul produk dengan <code>href="#"</code>. Spacer <code>&lt;p&gt;&lt;span style="font-size: 16px;"&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;</code> otomatis ditambahkan di antara paragraf, tetapi tidak di awal atau akhir section.</div>
+  </section>
+  <section class="workspace">
+    <div class="panel"><h2>HTML Hasil Convert</h2><textarea id="output" spellcheck="false"></textarea></div>
+    <div class="panel"><h2>Preview</h2><div class="preview" id="preview"><p style="color:#6b7280;">Preview artikel akan tampil di sini.</p></div></div>
+  </section>
+</main>
+<script>
+const $=id=>document.getElementById(id);const fileInput=$('fileInput'),dropZone=$('dropZone'),fileLabel=$('fileLabel'),convertMobileBtn=$('convertMobileBtn'),convertDesktopBtn=$('convertDesktopBtn'),copyBtn=$('copyBtn'),downloadBtn=$('downloadBtn'),resetBtn=$('resetBtn'),output=$('output'),preview=$('preview'),status=$('status'),headingSize=$('headingSize'),bodySize=$('bodySize'),outputName=$('outputName');let selectedFile=null;const editor=CodeMirror.fromTextArea(output,{mode:'text/html',lineNumbers:true,lineWrapping:true});editor.on('change',()=>preview.innerHTML=editor.getValue());
+function setStatus(m,t=''){status.textContent=m;status.className=('status '+t).trim()}
+function selectFile(file){if(!file)return;if(!file.name.toLowerCase().endsWith('.docx')){setStatus('File harus berformat .docx.','error');return}selectedFile=file;fileLabel.textContent=file.name;convertMobileBtn.disabled=false;convertDesktopBtn.disabled=false;const clean=file.name.replace(/\.docx$/i,'').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'_');outputName.value=clean+'_Mobile_Sectioned.html';setStatus('File siap dikonversi.')}
+fileInput.addEventListener('change',e=>selectFile(e.target.files[0]));['dragenter','dragover'].forEach(n=>dropZone.addEventListener(n,e=>{e.preventDefault();dropZone.classList.add('dragover')}));['dragleave','drop'].forEach(n=>dropZone.addEventListener(n,e=>{e.preventDefault();dropZone.classList.remove('dragover')}));dropZone.addEventListener('drop',e=>selectFile(e.dataTransfer.files[0]));
+function esc(v){return v.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')}
+function inlineFormat(text){let r=esc(text);['air purifier','heavy-duty','smartphone','remote','smart home','indoor','outdoor','inverter','monoblock','duoblock','one piece toilet','two piece toilet','dual flush','seat cover','smart toilet','touchless','heated seat','auto flush','soft closing','rough-in','siphonic','washdown','dry bathroom'].forEach(term=>{const safe=term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');r=r.replace(new RegExp('\\b('+safe+')\\b','gi'),'<em>$1</em>')});const i=r.indexOf(':');if(i>0&&i<75)r='<strong>'+r.slice(0,i+1)+'</strong>'+r.slice(i+1);return r}
+function isHeading(t){if(!t||/^Link (autovm|image)\s*:/i.test(t)||/^SKU\s*:?/i.test(t)||t.length>115)return false;return /^(Kenapa|Tren|Keunggulan|Pilihan|Era Baru|Daftar|Tips|Kesalahan|FAQ|Tanya Jawab|Temukan|Dapatkan|Rekomendasi|Kapan|Apakah|Faktor|Cara Menghitung|Estimasi)/i.test(t)||/^\d+\.\s+/.test(t)}
+function transform(pars){
+  const hs=Number(headingSize.value)||18,bs=Number(bodySize.value)||16;
+  const spacer='<p><span style="font-size: '+bs+'px;"><br></span></p>';
+  const lines=[];
+  let sec=1,i=0,pending=null,mainStarted=false,lastType='',startNewSectionAfterMetadata=false;
+  const addSection=()=>{if(lines.length&&lines[lines.length-1]===spacer)lines.pop();lines.push('<!-- Section '+sec+++' -->');lastType='section'};
+  const addBlock=(html,type)=>{
+    if(type==='paragraph'&&lastType==='paragraph')lines.push(spacer);
+    if((type==='heading'||type==='section'||type==='metadata')&&lines[lines.length-1]===spacer)lines.pop();
+    lines.push(html);lastType=type;
+  };
+  while(i<pars.length&&!pars[i].trim())i++;
+  if(!pars[i])throw new Error('Dokumen tidak memiliki isi.');
+  addSection();
+  addBlock('<h1 style="text-align: center;"><span style="font-size: '+hs+'px;"><strong>'+esc(pars[i])+'</strong></span></h1>','heading');
+  i++;
+  addSection();
+  for(;i<pars.length;i++){
+    const raw=pars[i].trim();
+    if(!raw)continue;
+
+    if(/^Link autovm\s*:/i.test(raw)){
+      addSection();
+      addBlock(raw,'metadata');
+      if(i+1<pars.length&&/^SKU\s*:?/i.test(pars[i+1].trim())){
+        addBlock(pars[++i].trim(),'metadata');
+      }
+      mainStarted=true;
+      startNewSectionAfterMetadata=true;
+      continue;
+    }
+
+    if(/^SKU\s*:?/i.test(raw)){
+      addBlock(raw,'metadata');
+      startNewSectionAfterMetadata=true;
+      continue;
+    }
+
+    if(startNewSectionAfterMetadata){
+      addSection();
+      startNewSectionAfterMetadata=false;
+    }
+
+    if(/^Link image\s*:/i.test(raw)){
+      pending=raw.split(':').slice(1).join(':').trim();
+      continue;
+    }
+
+    if(pending){
+      addBlock('<p>\n  <img src="'+esc(pending)+'"\n       alt="'+esc(raw)+'"\n       style="display: block; margin-left: auto; margin-right: auto;">\n  <br>\n</p>\n\n<p style="text-align: center;">\n  <a href="#">\n    <strong style="color: rgb(0, 167, 245);">\n      <u>'+esc(raw)+'</u>\n    </strong>\n  </a>\n</p>','image');
+      pending=null;
+      continue;
+    }
+
+    if(!mainStarted&&isHeading(raw)){addSection();mainStarted=true}
+
+    if(/^\d+\.\s+/.test(raw)&&raw.endsWith('?')){
+      addBlock('<h3><span style="font-size: '+bs+'px;"><strong>'+esc(raw)+'</strong></span></h3>','heading');
+    }else if(isHeading(raw)){
+      addBlock('<h2><span style="font-size: '+hs+'px;"><strong>'+esc(raw)+'</strong></span></h2>','heading');
+    }else{
+      addBlock('<p><span style="font-size: '+bs+'px;">'+inlineFormat(raw)+'</span></p>','paragraph');
+    }
+  }
+  if(lines[lines.length-1]===spacer)lines.pop();
+  return lines.join('\n\n');
+}
+async function convert(mode){if(!selectedFile)return;convertMobileBtn.disabled=true;convertDesktopBtn.disabled=true;if(mode==='desktop'){headingSize.value=24;bodySize.value=18;}else{headingSize.value=18;bodySize.value=16;}const base=selectedFile.name.replace(/\.docx$/i,'').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'_');outputName.value=base+'_'+(mode==='desktop'?'Desktop':'Mobile')+'_Sectioned.html';setStatus('Sedang membaca dan mengonversi dokumen...');try{const arrayBuffer=await selectedFile.arrayBuffer();const result=await mammoth.extractRawText({arrayBuffer});const pars=result.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const converted=transform(pars);editor.setValue(converted);preview.innerHTML=converted;copyBtn.disabled=false;downloadBtn.disabled=false;setStatus('Konversi selesai. Silakan cek hasil dan preview.','success')}catch(e){console.error(e);setStatus('Konversi gagal: '+e.message,'error')}finally{convertMobileBtn.disabled=false;convertDesktopBtn.disabled=false}}
+convertMobileBtn.addEventListener('click',()=>convert('mobile'));convertDesktopBtn.addEventListener('click',()=>convert('desktop'));copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.getValue())}catch{navigator.clipboard.writeText(editor.getValue())}setStatus('HTML berhasil disalin ke clipboard.','success')});downloadBtn.addEventListener('click',()=>{const name=(outputName.value.trim()||'hasil-convert-mobile.html');const blob=new Blob([editor.getValue()],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name.endsWith('.html')?name:name+'.html';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);setStatus('File HTML berhasil diunduh.','success')});resetBtn.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileLabel.textContent='Klik atau tarik file DOCX ke sini';editor.setValue('');preview.innerHTML='<p style="color:#6b7280;">Preview artikel akan tampil di sini.</p>';convertMobileBtn.disabled=true;convertDesktopBtn.disabled=true;copyBtn.disabled=true;downloadBtn.disabled=true;headingSize.value=18;bodySize.value=16;outputName.value='hasil-convert.html';setStatus('')});
+</script>
+</body>
+</html>
