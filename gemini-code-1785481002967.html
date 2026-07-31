@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to HTML Converter with Color Highlight</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        h1 {
+            color: #1a252f;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+        textarea {
+            width: 100%;
+            height: 520px;
+            padding: 12px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            resize: vertical;
+            background-color: #fff;
+        }
+        /* Custom Highlight Output Box */
+        .output-highlight {
+            width: 100%;
+            height: 520px;
+            padding: 12px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        /* Style Warna Khusus Komentar Section */
+        .comment-section {
+            color: #6A9955; /* Warna Hijau Komentar VS Code */
+            font-weight: bold;
+            background-color: #2d3728;
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+            margin: 4px 0;
+        }
+        .btn-container {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button.btn-copy {
+            background-color: #28a745;
+        }
+        button.btn-copy:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Auto Text to HTML Converter (Section as Comment)</h1>
+    
+    <div class="container">
+        <div class="box">
+            <label for="inputText">Masukkan Teks Mentah / Artikel:</label>
+            <textarea id="inputText" placeholder="Tempelkan teks artikel mentah di sini..."></textarea>
+            <div class="btn-container">
+                <button onclick="processConversion()">Konversi Sekarang</button>
+            </div>
+        </div>
+        <div class="box">
+            <label>Hasil Output HTML (Highlighted):</label>
+            <div id="outputDisplay" class="output-highlight"><i>Hasil HTML dengan warna komentar akan muncul di sini...</i></div>
+            <div class="btn-container">
+                <button class="btn-copy" onclick="copyToClipboard()">Salin Output HTML</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let rawGeneratedHTML = "";
+
+        function processConversion() {
+            const rawText = document.getElementById('inputText').value;
+            const outputDisplay = document.getElementById('outputDisplay');
+
+            if (!rawText.trim()) {
+                outputDisplay.innerHTML = "<i>Hasil HTML akan muncul di sini...</i>";
+                rawGeneratedHTML = "";
+                return;
+            }
+
+            const paragraphs = rawText.split(/\n\s*\n/);
+            let resultHTML = "";
+            let currentSection = 1;
+
+            paragraphs.forEach((block, idx) => {
+                let text = block.trim();
+                if (!text) return;
+
+                // 1. Deteksi Khusus Section Link autovm & SKU
+                if (text.startsWith("Link autovm:") || text.startsWith("Link autovm :")) {
+                    resultHTML += `<!-- Section ${currentSection} -->\n${text}\n\n`;
+                    currentSection++;
+                    return;
+                }
+
+                // Komentar Section di awal artikel
+                if (idx === 0) {
+                    resultHTML += `<!-- Section ${currentSection} -->\n`;
+                }
+
+                let lines = text.split('\n').map(l => l.trim()).filter(l => l !== "");
+
+                // 2. Deteksi Judul Utama H1
+                if (idx === 0 && lines.length === 1) {
+                    let formattedLine = applyFormatters(lines[0]);
+                    resultHTML += `<h1 style="text-align: center;"><span style="font-size: 18px;"><strong>${formattedLine}</strong></span></h1>\n\n`;
+                    currentSection++;
+                    return;
+                }
+
+                // Memproses baris per baris
+                lines.forEach((line) => {
+                    // Deteksi H2
+                    if (isH2Header(line)) {
+                        let formatted = applyFormatters(line);
+                        resultHTML += `<h2><span style="font-size: 18px;"><strong>${formatted}</strong></span></h2>\n<p><br></p>\n`;
+                    }
+                    // Deteksi H3 (Point Rekomendasi 1-10)
+                    else if (/^\d+\.\s+/.test(line) && line.length < 100) {
+                        let formatted = applyFormatters(line);
+                        resultHTML += `<h3><span style="font-size: 16px;"><strong>${formatted}</strong></span></h3>\n<p><br></p>\n`;
+                    }
+                    // Deteksi Tag Gambar
+                    else if (/^Link image\s*:\s*/i.test(line)) {
+                        let imageName = line.replace(/^Link image\s*:\s*/i, "").trim();
+                        let imageUrl = `https://cdn.ruparupa.io/media/tahu-asset/IMAGE_TAHU_${imageName.replace(/\s+/g, '-')}_1785139120.jpeg`;
+                        let altText = imageName.replace(/\.[^/.]+$/, "");
+                        
+                        resultHTML += `<p><img src="${imageUrl}" alt="${altText}" width="300px" style="width: 300px; height: 300px; display: block; margin-left: auto; margin-right: auto;"><br></p>\n`;
+                    }
+                    // Deteksi Link Produk
+                    else if ((line.startsWith("Jual ") || line.startsWith("Sharp ") || line.startsWith("Panasonic ") || line.startsWith("Modena ")) && line.length < 120 && !line.endsWith(".")) {
+                        let formatted = applyFormatters(line);
+                        resultHTML += `<p style="text-align: center;"><a href="https://www.ruparupa.com/p/example-product.html" style="font-size: 16px;"><strong style="color: rgb(0, 167, 245);"><u>${formatted}</u></strong></a></p>\n<p style="text-align: center;"><br></p>\n`;
+                    }
+                    // Paragraf & List
+                    else {
+                        let formatted = applyFormatters(line);
+
+                        if (line.startsWith("- ") || /^([A-Z][a-z]+(\s[a-z]+)?\s*(utama|unggulan|penggunaan)):/i.test(line)) {
+                            formatted = formatted.replace(/^-\s*([^:]+):/, "<strong>- $1:</strong>");
+                            formatted = formatted.replace(/^([^:]+):/, "<strong>$1:</strong>");
+                        }
+
+                        resultHTML += `<p><span style="font-size: 16px;">${formatted}</span></p>\n<p><span style="font-size: 16px;"><br></span></p>\n`;
+                    }
+                });
+            });
+
+            // Menyimpan teks murni untuk fungsi Salin/Copy
+            rawGeneratedHTML = resultHTML.trim();
+
+            // Membuat tampilan visual berwarna untuk elemen <!-- Section X -->
+            let highlightedHTML = escapeHTML(rawGeneratedHTML).replace(
+                /&lt;!-- (Section \d+) --&gt;/g, 
+                '<span class="comment-section">&lt;!-- $1 --&gt;</span>'
+            );
+
+            outputDisplay.innerHTML = highlightedHTML;
+        }
+
+        // Helper memiringkan kata asing
+        function applyFormatters(str) {
+            const italicWords = [
+                "side by side", "french door", "chiller", "freezer", 
+                "no frost", "smart control", "deodorizer", "crisper", 
+                "counter-depth", "seamless", "smart home", "tempered glass",
+                "black glass", "matte", "supermarket", "watt"
+            ];
+
+            let result = str;
+            italicWords.forEach(word => {
+                let regex = new RegExp(`\\b(${word})\\b`, 'gi');
+                result = result.replace(regex, "<em>$1</em>");
+            });
+
+            return result;
+        }
+
+        // Helper deteksi H2
+        function isH2Header(str) {
+            if (str.endsWith('?') && str.length < 90) return true;
+            if (str.startsWith("Tips Memilih") || str.startsWith("Kesalahan yang Sering") || str.startsWith("FAQ Seputar") || str.startsWith("Pilih Kulkas") || str.startsWith("Perbedaan Kulkas")) return true;
+            if (str.startsWith("Kenapa Kulkas") || str.startsWith("Berapa Kapasitas") || str.startsWith("Berapa Konsumsi")) return true;
+            return false;
+        }
+
+        // Escape tag HTML agar ditampilkan sebagai teks biasa di UI
+        function escapeHTML(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
+        // Fungsi Salin ke Clipboard
+        function copyToClipboard() {
+            if (!rawGeneratedHTML) return;
+            
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = rawGeneratedHTML;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            alert('Kode HTML (termasuk comment Section) berhasil disalin!');
+        }
+    </script>
+
+</body>
+</html>
