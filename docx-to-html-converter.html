@@ -1409,8 +1409,87 @@ body.dark-mode .floating-progress-card{
 }
 .floating-status{font-weight:700;font-size:13px}
 .floating-percent{font-weight:800;color:var(--primary)}
-.floating-track{height:8px;background:#e5e5ea;border-radius:999px;margin:12px 0;overflow:hidden}
-.floating-track span{display:block;height:100%;width:0;background:var(--primary);border-radius:999px;transition:.2s}
+.floating-segments{
+  position:relative;
+  display:flex;
+  gap:6px;
+  min-height:12px;
+  margin:13px 0;
+  overflow:hidden;
+  border-radius:999px;
+}
+
+.floating-segment{
+  position:relative;
+  flex:1;
+  min-width:14px;
+  height:12px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(142,142,147,.18);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);
+  transition:transform .25s ease,opacity .25s ease,filter .25s ease;
+}
+
+.floating-segment.completed{
+  background:var(--segment-color);
+  animation:segmentPulse 1.8s ease-in-out infinite;
+}
+
+.floating-segment.pending{
+  background:
+    linear-gradient(
+      110deg,
+      rgba(142,142,147,.18) 20%,
+      rgba(255,255,255,.72) 45%,
+      rgba(142,142,147,.18) 70%
+    );
+  background-size:220% 100%;
+  animation:segmentShimmer 1.6s linear infinite;
+}
+
+.floating-segment::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.48) 48%,transparent 76%);
+  transform:translateX(-130%);
+  animation:segmentSweep 2.2s linear infinite;
+}
+
+.floating-segment:nth-child(2n)::after{animation-delay:.18s}
+.floating-segment:nth-child(3n)::after{animation-delay:.36s}
+.floating-segment:nth-child(4n)::after{animation-delay:.54s}
+
+@keyframes segmentPulse{
+  0%,100%{transform:translateY(0) scaleY(1);filter:saturate(1)}
+  50%{transform:translateY(-1px) scaleY(1.12);filter:saturate(1.2)}
+}
+
+@keyframes segmentShimmer{
+  from{background-position:220% 0}
+  to{background-position:-20% 0}
+}
+
+@keyframes segmentSweep{
+  0%{transform:translateX(-130%)}
+  58%,100%{transform:translateX(150%)}
+}
+
+body.dark-mode .floating-segment{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+body.dark-mode .floating-segment.pending{
+  background:
+    linear-gradient(
+      110deg,
+      rgba(99,99,102,.28) 20%,
+      rgba(255,255,255,.20) 45%,
+      rgba(99,99,102,.28) 70%
+    );
+  background-size:220% 100%;
+}
 .floating-bottom span{font-size:11px;color:var(--muted)}
 .floating-bottom strong{flex:1;margin-left:8px;font-size:13px}
 #copyNextBtn{padding:6px 12px;border-radius:999px;background:var(--primary);color:#fff;font-weight:700}
@@ -1457,6 +1536,43 @@ body.dark-mode .copy-filter{background:#2c2c2e}body.dark-mode .copy-filter-btn.a
 body.dark-mode .section-preview-dialog{background:#1c1c1e}body.dark-mode .section-preview-body{background:#111113;color:#f5f5f7}
 @media(max-width:760px){.quick-copy-header{flex-direction:column;align-items:flex-start}.quick-copy-tools,.copy-filter{width:100%}.copy-filter-btn{flex:1}}
 
+
+.floating-progress-card{
+  position:relative;
+  isolation:isolate;
+}
+
+.floating-progress-card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  z-index:-1;
+  border-radius:21px;
+  padding:1px;
+  background:linear-gradient(110deg,#0071e3,#34c759,#ff9f0a,#af52de,#5ac8fa,#ff375f,#0071e3);
+  background-size:300% 100%;
+  animation:islandBorderFlow 5s linear infinite;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+}
+
+@keyframes islandBorderFlow{
+  from{background-position:0% 50%}
+  to{background-position:300% 50%}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .floating-progress-card::before,
+  .floating-segment,
+  .floating-segment::after{
+    animation-duration:4s!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1478,7 +1594,7 @@ body.dark-mode .section-preview-dialog{background:#1c1c1e}body.dark-mode .sectio
 <div class="top-nav-actions">
 <button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
 <button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
-<span class="version-pill">v77</span>
+<span class="version-pill">v78</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -1492,9 +1608,7 @@ body.dark-mode .section-preview-dialog{background:#1c1c1e}body.dark-mode .sectio
       <span class="floating-status">✓ <span id="miniProgressLabel">0/0 selesai</span></span>
       <span class="floating-percent" id="progressPercentMini">0%</span>
     </div>
-    <div class="floating-track">
-      <span id="miniProgressFill"></span>
-    </div>
+    <div class="floating-segments" id="miniProgressFill" aria-label="Progress per section"></div>
     <div class="floating-bottom">
       <span>Next</span>
       <strong id="nextSectionLabel">-</strong>
@@ -2304,7 +2418,32 @@ function updateQuickCopyProgress(){
   progressRing.style.setProperty('--progress',pct);
   progressPercent.textContent=pct+'%';
   miniProgressLabel.textContent=copiedEligible+'/'+total+' section selesai';
-  miniProgressFill.style.width=pct+'%';document.getElementById('progressPercentMini').textContent=pct+'%';
+  const progressColors=[
+    '#0071e3',
+    '#34c759',
+    '#ff9f0a',
+    '#af52de',
+    '#5ac8fa',
+    '#ff375f',
+    '#30b0c7',
+    '#ffd60a'
+  ];
+
+  miniProgressFill.innerHTML='';
+  eligibleTitles.forEach((title,index)=>{
+    const segment=document.createElement('span');
+    const completed=copiedSections.has(title);
+    segment.className='floating-segment '+(completed?'completed':'pending');
+    segment.style.setProperty('--segment-color',progressColors[index%progressColors.length]);
+    segment.title=title+(completed?' — selesai':' — belum selesai');
+    segment.setAttribute('aria-label',title+' '+(completed?'selesai':'belum selesai'));
+    miniProgressFill.appendChild(segment);
+  });
+
+  const miniPercent=document.getElementById('progressPercentMini');
+  miniPercent.textContent=pct+'%';
+  const activeColor=progressColors[Math.min(copiedEligible,Math.max(total-1,0))%progressColors.length];
+  miniPercent.style.color=activeColor;
   miniProgressBar.classList.toggle('active',total>0);
 
 document.querySelectorAll('.quick-copy-item').forEach(i=>i.classList.remove('next-item'));
