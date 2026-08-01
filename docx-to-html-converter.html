@@ -1043,6 +1043,286 @@
       }
     }
 
+
+    .mini-control{
+      padding:7px 11px;
+      border-radius:999px;
+      background:#e8e8ed;
+      color:#515154;
+      font-size:11px;
+      font-weight:700;
+    }
+    .mini-control.active{
+      background:#1d1d1f;
+      color:#fff;
+    }
+    body.dark-mode .mini-control{
+      background:#2c2c2e;
+      color:#d1d1d6;
+    }
+    body.dark-mode .mini-control.active{
+      background:#f5f5f7;
+      color:#1d1d1f;
+    }
+
+    .empty-state-icon{
+      width:44px;
+      height:44px;
+      margin-bottom:12px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background:#eaf3ff;
+      color:#0071e3;
+    }
+    .empty-state-icon svg{
+      width:24px;
+      height:24px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.7;
+    }
+    .empty-state-steps{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:14px;
+    }
+    .empty-state-steps span{
+      padding:6px 9px;
+      border-radius:999px;
+      background:#f2f2f7;
+      color:#6e6e73;
+      font-size:11px;
+      font-weight:650;
+    }
+    body.dark-mode .empty-state-icon{
+      background:#0a2947;
+      color:#64d2ff;
+    }
+    body.dark-mode .empty-state-steps span{
+      background:#2c2c2e;
+      color:#c7c7cc;
+    }
+
+    .mini-progress-bar{
+      position:sticky;
+      top:52px;
+      z-index:90;
+      display:none;
+      background:rgba(251,251,253,.84);
+      border-bottom:1px solid rgba(0,0,0,.08);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+    .mini-progress-bar.active{display:block}
+    .mini-progress-inner{
+      width:min(1260px,calc(100% - 40px));
+      height:32px;
+      margin:auto;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .mini-progress-inner>span{
+      min-width:120px;
+      color:var(--muted);
+      font-size:11px;
+      font-weight:700;
+    }
+    .mini-progress-track{
+      flex:1;
+      height:4px;
+      border-radius:999px;
+      overflow:hidden;
+      background:#e8e8ed;
+    }
+    .mini-progress-track span{
+      display:block;
+      width:0;
+      height:100%;
+      border-radius:inherit;
+      background:var(--primary);
+      transition:width .22s ease;
+    }
+    body.dark-mode .mini-progress-bar{
+      background:rgba(0,0,0,.78);
+      border-color:rgba(255,255,255,.10);
+    }
+    body.dark-mode .mini-progress-track{background:#2c2c2e}
+
+    .quick-copy-item[data-status="ready"]{
+      border-color:#b8d8ff;
+      background:#f7fbff;
+    }
+    .quick-copy-item[data-status="copied"]{
+      border-color:#9de2ae;
+      background:#f3fbf5;
+    }
+    .quick-copy-item[data-status="error"]{
+      border-color:#ffb3ae;
+      background:#fff6f5;
+    }
+    body.dark-mode .quick-copy-item[data-status="ready"]{
+      border-color:#1d6aa8;
+      background:#0a1d2f;
+    }
+    body.dark-mode .quick-copy-item[data-status="copied"]{
+      border-color:#2ea043;
+      background:#102718;
+    }
+    body.dark-mode .quick-copy-item[data-status="error"]{
+      border-color:#8b2d2d;
+      background:#2a1212;
+    }
+
+    body.compact-mode .hero{
+      padding-top:6px!important;
+      padding-bottom:4px!important;
+    }
+    body.compact-mode .hero h1{
+      font-size:clamp(30px,3.8vw,50px)!important;
+    }
+    body.compact-mode .panel{
+      padding:14px!important;
+      margin-bottom:8px!important;
+      border-radius:16px!important;
+    }
+    body.compact-mode .drop-zone{
+      min-height:92px!important;
+      padding:14px 12px!important;
+    }
+    body.compact-mode .settings{
+      margin-top:8px!important;
+      gap:8px!important;
+    }
+    body.compact-mode .convert-controls{
+      margin-top:8px!important;
+      gap:6px!important;
+    }
+    body.compact-mode .quick-copy-group{
+      padding:8px!important;
+      border-radius:12px!important;
+    }
+    body.compact-mode .quick-copy-item{
+      min-height:40px!important;
+      padding:6px 8px!important;
+    }
+    body.compact-mode .workspace{
+      gap:10px!important;
+    }
+
+    body.focus-mode .hero,
+    body.focus-mode #convertPanel,
+    body.focus-mode #workspace,
+    body.focus-mode #insights,
+    body.focus-mode .section-copy-panel,
+    body.focus-mode .app-footer{
+      display:none!important;
+    }
+    body.focus-mode #quickCopyPanel{
+      display:block!important;
+      margin-top:14px!important;
+    }
+    body.focus-mode .mini-progress-bar{
+      display:block!important;
+      position:relative!important;
+    }
+
+
+    .accordion-title-wrap{flex:1;display:flex;align-items:center;justify-content:space-between;gap:18px;min-width:0}
+    .insight-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .insight-chip{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:999px;background:#f2f2f7;color:#6e6e73;font-size:11px;font-weight:700;white-space:nowrap}
+    .insight-chip strong{color:#1d1d1f;font-size:12px}
+    .quality-chip{background:#eaf8ef;color:#27833f}
+    .quality-chip strong{color:#1f7a36}
+    .accordion-content .stats-panel,.accordion-content .quality-panel{padding:18px;border:1px solid var(--border);border-radius:20px;background:rgba(245,245,247,.72)}
+    .stats-grid{gap:12px}
+    .stat-card{position:relative;overflow:hidden;min-height:116px;padding:16px;border-radius:18px;background:#fff}
+    .stat-card::after{content:"";position:absolute;right:-18px;bottom:-24px;width:84px;height:84px;border-radius:50%;background:currentColor;opacity:.07}
+    .stat-icon{width:30px;height:30px;margin-bottom:14px;border-radius:10px;display:grid;place-items:center;background:currentColor;color:#fff;font-size:11px;font-weight:800}
+    .stat-card span,.stat-card strong{position:relative;z-index:1}
+    .stat-blue{color:#0071e3}.stat-purple{color:#7c3aed}.stat-orange{color:#f97316}.stat-green{color:#22a447}.stat-cyan{color:#0891b2}.stat-pink{color:#db2777}
+    .stat-card span{color:var(--muted)}.stat-card strong{color:var(--text);font-size:32px}
+    .quality-panel{display:flex;flex-direction:column}
+    .quality-score{min-width:72px;width:72px;height:72px;font-size:14px}
+    .quality-list{grid-template-columns:1fr;gap:10px}
+    .quality-item{min-height:44px;border:1px solid transparent;background:#fff}
+    .quality-item.pass{border-color:#c9ecd3;background:#f4fbf6}
+    .quality-item.fail{border-color:#ffd1ce;background:#fff7f6}
+    .quality-item.pass .quality-dot{box-shadow:0 0 0 4px rgba(48,209,88,.12)}
+    .quality-item.fail .quality-dot{box-shadow:0 0 0 4px rgba(255,69,58,.12)}
+    body.dark-mode .insight-chip{background:#2c2c2e;color:#a1a1a6}
+    body.dark-mode .insight-chip strong{color:#f5f5f7}
+    body.dark-mode .quality-chip{background:#12351d;color:#7ee787}
+    body.dark-mode .accordion-content .stats-panel,body.dark-mode .accordion-content .quality-panel{background:#111113;border-color:var(--border)}
+    body.dark-mode .stat-card,body.dark-mode .quality-item{background:#1c1c1e}
+    body.dark-mode .quality-item.pass{background:#102718;border-color:#2ea043}
+    body.dark-mode .quality-item.fail{background:#2a1212;border-color:#8b2d2d}
+    body.compact-mode .accordion-toggle{padding:14px 16px!important}
+    body.compact-mode .accordion-content.open{padding:0 16px 16px!important}
+    body.compact-mode .accordion-content .stats-panel,body.compact-mode .accordion-content .quality-panel{padding:12px!important}
+    body.compact-mode .stat-card{min-height:88px!important;padding:12px!important}
+    body.compact-mode .stat-icon{width:24px;height:24px;margin-bottom:8px}
+    @media(max-width:700px){.accordion-title-wrap{align-items:flex-start;flex-direction:column}.insight-chips{justify-content:flex-start}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+    .mini-progress-bar{
+      position:relative !important;
+      top:auto !important;
+      bottom:auto !important;
+      z-index:auto !important;
+      display:none;
+      margin-top:16px;
+      margin-bottom:10px;
+      background:transparent;
+      border:0;
+      backdrop-filter:none;
+      -webkit-backdrop-filter:none;
+    }
+
+    .mini-progress-bar.active{
+      display:block;
+    }
+
+    .mini-progress-inner{
+      width:min(1260px,calc(100% - 40px));
+      min-height:46px;
+      margin:auto;
+      padding:12px 16px;
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:var(--card);
+      box-shadow:var(--shadow);
+    }
+
+    body.dark-mode .mini-progress-bar{
+      background:transparent;
+      border:0;
+    }
+
+    @media(max-width:640px){
+      .mini-progress-inner{
+        width:min(100% - 20px,1260px);
+      }
+    }
+
+
+    #insights{
+      width:min(1260px,calc(100% - 40px));
+      margin-left:auto !important;
+      margin-right:auto !important;
+      margin-top:20px !important;
+      margin-bottom:12px !important;
+    }
+
+    @media(max-width:640px){
+      #insights{
+        width:min(100% - 20px,1260px);
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -1062,7 +1342,9 @@
 <a href="#workspace">Preview</a>
 </nav>
 <div class="top-nav-actions">
-<span class="version-pill">v69</span>
+<button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
+<button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
+<span class="version-pill">v73</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -1070,6 +1352,12 @@
 </div>
 </div>
 </header>
+<div class="mini-progress-bar" id="miniProgressBar">
+  <div class="mini-progress-inner">
+    <span id="miniProgressLabel">0/0 section selesai</span>
+    <div class="mini-progress-track"><span id="miniProgressFill"></span></div>
+  </div>
+</div>
 <section class="hero" id="top">
 <div class="hero-copy">
 <span class="eyebrow">Content Operations Tool</span>
@@ -1077,7 +1365,18 @@
 </div>
 </section>
 <section class="panel convert-panel" id="convertPanel">
-<label class="drop-zone" for="fileInput" id="dropZone"><strong id="fileLabel">Klik atau tarik file DOCX ke sini</strong><span>Format yang didukung: .docx</span></label>
+<label class="drop-zone" for="fileInput" id="dropZone">
+  <div class="empty-state-icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v6h5"/><path d="M12 17v-6M9.5 13.5 12 11l2.5 2.5"/></svg>
+  </div>
+  <strong id="fileLabel">Klik atau tarik file DOCX ke sini</strong>
+  <span>Format yang didukung: .docx</span>
+  <div class="empty-state-steps">
+    <span>1. Upload DOCX</span>
+    <span>2. Convert</span>
+    <span>3. Copy per Section</span>
+  </div>
+</label>
 <input accept=".docx" id="fileInput" type="file"/>
 <div class="settings">
 <div class="field"><label for="headingSize">Ukuran heading (H1 &amp; H2)</label><input id="headingSize" max="40" min="12" type="number" value="18"/></div>
@@ -1165,24 +1464,30 @@
 </main>
 <section class="panel insights-accordion" id="insights">
 <button aria-controls="insightsContent" aria-expanded="false" class="accordion-toggle" id="insightsToggle" type="button">
-<div>
-<span class="eyebrow">Insights</span>
-<h2>Live Summary &amp; Validation</h2>
-</div>
-<span aria-hidden="true" class="accordion-icon">
-<svg viewbox="0 0 24 24"><path d="m8 10 4 4 4-4"></path></svg>
-</span>
+  <div class="accordion-title-wrap">
+    <div>
+      <span class="eyebrow">Insights</span>
+      <h2>Live Summary &amp; Validation</h2>
+    </div>
+    <div class="insight-chips">
+      <span class="insight-chip"><strong id="insightSectionCount">0</strong> Sections</span>
+      <span class="insight-chip quality-chip"><strong id="insightQualityScore">—</strong> Quality</span>
+    </div>
+  </div>
+  <span aria-hidden="true" class="accordion-icon">
+    <svg viewbox="0 0 24 24"><path d="m8 10 4 4 4-4"></path></svg>
+  </span>
 </button>
 <div class="accordion-content" id="insightsContent">
 <section class="stats-panel" id="statsPanel">
 <div class="panel-heading-row"><div><span class="eyebrow">Live Summary</span><h2>Conversion Statistics</h2></div></div>
 <div class="stats-grid" id="statsGrid">
-<div class="stat-card"><span>Sections</span><strong id="statSections">0</strong></div>
-<div class="stat-card"><span>Images</span><strong id="statImages">0</strong></div>
-<div class="stat-card"><span>Headings</span><strong id="statHeadings">0</strong></div>
-<div class="stat-card"><span>Paragraphs</span><strong id="statParagraphs">0</strong></div>
-<div class="stat-card"><span>Anchors</span><strong id="statAnchors">0</strong></div>
-<div class="stat-card"><span>Auto VM</span><strong id="statAutoVm">0</strong></div>
+<div class="stat-card stat-blue"><div class="stat-icon">S</div><span>Sections</span><strong id="statSections">0</strong></div>
+<div class="stat-card stat-purple"><div class="stat-icon">I</div><span>Images</span><strong id="statImages">0</strong></div>
+<div class="stat-card stat-orange"><div class="stat-icon">H</div><span>Headings</span><strong id="statHeadings">0</strong></div>
+<div class="stat-card stat-green"><div class="stat-icon">P</div><span>Paragraphs</span><strong id="statParagraphs">0</strong></div>
+<div class="stat-card stat-cyan"><div class="stat-icon">A</div><span>Anchors</span><strong id="statAnchors">0</strong></div>
+<div class="stat-card stat-pink"><div class="stat-icon">VM</div><span>Auto VM</span><strong id="statAutoVm">0</strong></div>
 </div>
 </section>
 <section class="quality-panel" id="qualityPanel">
@@ -1190,7 +1495,13 @@
 <div class="quality-list" id="qualityList"><div class="quality-empty">Convert dokumen untuk menjalankan quality check.</div></div>
 </section>
 </div>
-</section><footer class="app-footer">
+</section><div class="mini-progress-bar" id="miniProgressBar">
+<div class="mini-progress-inner">
+<span id="miniProgressLabel">0/0 section selesai</span>
+<div class="mini-progress-track"><span id="miniProgressFill"></span></div>
+</div>
+</div>
+<footer class="app-footer">
 <div class="footer-inner">
 <p>Link autovm dan SKU dibuat sebagai section tersendiri dengan label Auto vm. Numbering angka dipertahankan tanpa spacer. Bullet point diubah menjadi tanda minus (-). Bullet tanpa bold tidak diberi spacer, sedangkan bullet dengan bold tetap diberi spacer antaritem. Anchor text, href, bold, italic, dan underline dari dokumen akan dipertahankan. Anchor ditampilkan sebagai teks klik berwarna biru dan bold, tanpa menampilkan kode link. Baris “Link image:” akan dikonversi menjadi tag <code>&lt;img&gt;</code>, lalu baris berikutnya menjadi judul produk dengan <code>href="#"</code>. Spacer <code>&lt;p&gt;&lt;span style="font-size: 16px"&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;</code> otomatis ditambahkan di antara paragraf, tetapi tidak di awal atau akhir section.</p>
 </div>
@@ -1211,7 +1522,10 @@ downloadMenuBtn=$('downloadMenuBtn'),downloadMenu=$('downloadMenu'),toastStack=$
 conversionOverlay=$('conversionOverlay'),conversionProgressBar=$('conversionProgressBar'),
 previewShell=$('previewShell'),progressRing=$('progressRing'),progressPercent=$('progressPercent'),
 qualityScore=$('qualityScore'),qualityList=$('qualityList');
+const compactModeBtn=$('compactModeBtn'),focusModeBtn=$('focusModeBtn'),
+miniProgressBar=$('miniProgressBar'),miniProgressLabel=$('miniProgressLabel'),miniProgressFill=$('miniProgressFill');
 const insightsToggle=$('insightsToggle'),insightsContent=$('insightsContent');
+const insightSectionCount=$('insightSectionCount'),insightQualityScore=$('insightQualityScore');
 const statSections=$('statSections'),statImages=$('statImages'),statHeadings=$('statHeadings'),
 statParagraphs=$('statParagraphs'),statAnchors=$('statAnchors'),statAutoVm=$('statAutoVm');
 let selectedFile=null;const editor=CodeMirror.fromTextArea(output,{mode:'text/html',lineNumbers:true,lineWrapping:true});editor.on('change',()=>preview.innerHTML=editor.getValue());
@@ -1735,7 +2049,7 @@ async function convert(mode){
     quickCopyProgress.textContent='Progress: 0/0 section tersalin';
     sectionCopyPanel.classList.remove('active');
     sectionCopyList.innerHTML='';
-    sectionCopyProgress.textContent='Progress: 0/0 section tersalin';
+    sectionCopyProgress.textContent='Progress: 0/0 section tersalin';miniProgressLabel.textContent='0/0 section selesai';miniProgressFill.style.width='0%';miniProgressBar.classList.remove('active');
 
     editor.setValue(converted);
     preview.innerHTML=converted;
@@ -1821,11 +2135,15 @@ function updateQuickCopyProgress(){
   const pct=total?Math.round((copiedEligible/total)*100):0;
   progressRing.style.setProperty('--progress',pct);
   progressPercent.textContent=pct+'%';
+  miniProgressLabel.textContent=copiedEligible+'/'+total+' section selesai';
+  miniProgressFill.style.width=pct+'%';
+  miniProgressBar.classList.toggle('active',total>0);
 }
 
 function createQuickCopyItem(section){
   const item=document.createElement('div');
   item.className='quick-copy-item';
+  item.dataset.status=copiedSections.has(section.title)?'copied':'ready';
 
   const label=document.createElement('span');
   label.className='quick-copy-label';
@@ -1847,7 +2165,7 @@ function createQuickCopyItem(section){
   badge.textContent='✓';
 
   if(copiedSections.has(section.title)){
-    badge.classList.add('active');
+    badge.classList.add('active');item.dataset.status='copied';
   }
 
   button.addEventListener('click',async()=>{
@@ -2010,6 +2328,32 @@ resetSectionStatusBtn.addEventListener('click',()=>{
 closeSectionPanelBtn.addEventListener('click',()=>sectionCopyPanel.classList.remove('active'));
 
 
+
+function applyCompactMode(enabled){
+  document.body.classList.toggle('compact-mode',enabled);
+  compactModeBtn.classList.toggle('active',enabled);
+  compactModeBtn.setAttribute('aria-pressed',String(enabled));
+  localStorage.setItem('docxConverterCompact',enabled?'1':'0');
+}
+
+function applyFocusMode(enabled){
+  document.body.classList.toggle('focus-mode',enabled);
+  focusModeBtn.classList.toggle('active',enabled);
+  focusModeBtn.setAttribute('aria-pressed',String(enabled));
+  localStorage.setItem('docxConverterFocus',enabled?'1':'0');
+}
+
+compactModeBtn.addEventListener('click',()=>{
+  applyCompactMode(!document.body.classList.contains('compact-mode'));
+});
+
+focusModeBtn.addEventListener('click',()=>{
+  applyFocusMode(!document.body.classList.contains('focus-mode'));
+});
+
+applyCompactMode(localStorage.getItem('docxConverterCompact')==='1');
+applyFocusMode(localStorage.getItem('docxConverterFocus')==='1');
+
 function applyTheme(theme){
   const isDark=theme==='dark';
   document.body.classList.toggle('dark-mode',isDark);
@@ -2072,6 +2416,7 @@ function updateStatistics(html){
   statParagraphs.textContent=holder.querySelectorAll('p').length;
   statAnchors.textContent=holder.querySelectorAll('a').length;
   statAutoVm.textContent=(html.match(/<!-- Section \d+ Auto vm -->/gi)||[]).length;
+  insightSectionCount.textContent=statSections.textContent;
 }
 
 function runQualityCheck(html){
@@ -2091,6 +2436,7 @@ function runQualityCheck(html){
   const score=Math.round((passed/checks.length)*100);
   qualityScore.textContent=score+'%';
   qualityScore.style.setProperty('--quality',score+'%');
+  insightQualityScore.textContent=score+'%';
   qualityList.innerHTML='';
   checks.forEach(check=>{
     const item=document.createElement('div');
