@@ -1433,19 +1433,27 @@ body.dark-mode .floating-progress-card{
 
 .floating-segment.completed{
   background:var(--segment-color);
-  animation:segmentPulse 1.8s ease-in-out infinite;
+  opacity:1;
 }
 
 .floating-segment.pending{
+  background:var(--segment-pending);
+  opacity:.55;
+}
+
+.floating-segment.active-segment{
+  opacity:1;
   background:
     linear-gradient(
-      110deg,
-      rgba(142,142,147,.18) 20%,
-      rgba(255,255,255,.72) 45%,
-      rgba(142,142,147,.18) 70%
+      120deg,
+      var(--segment-color) 0%,
+      var(--segment-color-light) 45%,
+      var(--segment-color) 100%
     );
   background-size:220% 100%;
-  animation:segmentShimmer 1.6s linear infinite;
+  animation:
+    segmentColorFlow 3.8s linear infinite,
+    segmentPulse 2.4s ease-in-out infinite;
 }
 
 .floating-segment::after{
@@ -1454,7 +1462,12 @@ body.dark-mode .floating-progress-card{
   inset:0;
   background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.48) 48%,transparent 76%);
   transform:translateX(-130%);
-  animation:segmentSweep 2.2s linear infinite;
+  opacity:0;
+}
+
+.floating-segment.active-segment::after{
+  opacity:1;
+  animation:segmentSweep 4.5s linear infinite;
 }
 
 .floating-segment:nth-child(2n)::after{animation-delay:.18s}
@@ -1466,9 +1479,14 @@ body.dark-mode .floating-progress-card{
   50%{transform:translateY(-1px) scaleY(1.12);filter:saturate(1.2)}
 }
 
-@keyframes segmentShimmer{
+@keyframes segmentColorFlow{
   from{background-position:220% 0}
   to{background-position:-20% 0}
+}
+
+@keyframes segmentPendingPulse{
+  0%,100%{opacity:.58;transform:scaleY(1)}
+  50%{opacity:1;transform:scaleY(1.1)}
 }
 
 @keyframes segmentSweep{
@@ -1483,10 +1501,10 @@ body.dark-mode .floating-segment{
 body.dark-mode .floating-segment.pending{
   background:
     linear-gradient(
-      110deg,
-      rgba(99,99,102,.28) 20%,
+      120deg,
+      var(--segment-pending-dark) 0%,
       rgba(255,255,255,.20) 45%,
-      rgba(99,99,102,.28) 70%
+      var(--segment-pending-dark) 100%
     );
   background-size:220% 100%;
 }
@@ -1542,35 +1560,148 @@ body.dark-mode .section-preview-dialog{background:#1c1c1e}body.dark-mode .sectio
   isolation:isolate;
 }
 
-.floating-progress-card::before{
-  content:"";
-  position:absolute;
-  inset:-1px;
-  z-index:-1;
-  border-radius:21px;
-  padding:1px;
-  background:linear-gradient(110deg,#0071e3,#34c759,#ff9f0a,#af52de,#5ac8fa,#ff375f,#0071e3);
-  background-size:300% 100%;
-  animation:islandBorderFlow 5s linear infinite;
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;
-  mask-composite:exclude;
-  pointer-events:none;
-}
-
-@keyframes islandBorderFlow{
-  from{background-position:0% 50%}
-  to{background-position:300% 50%}
-}
-
 @media (prefers-reduced-motion: reduce){
-  .floating-progress-card::before,
   .floating-segment,
   .floating-segment::after{
     animation-duration:4s!important;
   }
+}
+
+
+.floating-linear-track{
+  position:relative;
+  height:7px;
+  margin:12px 0 9px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#d9d9de;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);
+}
+
+.floating-linear-track span{
+  position:relative;
+  display:block;
+  width:0;
+  height:100%;
+  overflow:hidden;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#0071e3,#5ac8fa,#34c759,#ff9f0a,#af52de,#ff375f,#0071e3);
+  background-size:260% 100%;
+  animation:linearProgressFlow 8s linear infinite;
+  transition:width .28s ease;
+}
+
+.floating-linear-track span::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.72) 48%,transparent 76%);
+  transform:translateX(-130%);
+  animation:linearProgressSweep 7s linear infinite;
+}
+
+@keyframes linearProgressFlow{
+  from{background-position:0% 50%}
+  to{background-position:260% 50%}
+}
+
+@keyframes linearProgressSweep{
+  from{transform:translateX(-130%)}
+  to{transform:translateX(150%)}
+}
+
+body.dark-mode .floating-linear-track{
+  background:#3a3a3c;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.floating-progress-card.minimized .floating-linear-track{
+  display:none!important;
+}
+
+
+.floating-segment{
+  cursor:pointer;
+}
+
+.floating-segment:hover{
+  transform:translateY(-2px);
+  filter:saturate(1.15);
+}
+
+.floating-top-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.floating-toggle-btn{
+  width:26px;
+  height:26px;
+  padding:0;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#e8e8ed;
+  color:#515154;
+  font-size:14px;
+  transition:transform .2s ease,background .2s ease;
+}
+
+body.dark-mode .floating-toggle-btn{
+  background:#2c2c2e;
+  color:#f5f5f7;
+}
+
+.floating-progress-card.minimized{
+  width:auto;
+  min-width:180px;
+  padding:10px 12px;
+}
+
+.floating-progress-card.minimized .floating-linear-track,
+.floating-progress-card.minimized .floating-segments,
+.floating-progress-card.minimized .floating-bottom,
+.floating-progress-card.minimized .floating-complete{
+  display:none!important;
+}
+
+
+50%{transform:scale(1.03)}
+  100%{transform:scale(1)}
+}
+
+
+.floating-toggle-btn{
+  width:30px;
+  height:26px;
+  padding:0;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:#e8e8ed;
+  color:#515154;
+}
+
+.pill-icon{
+  position:relative;
+  display:block;
+  width:14px;
+  height:7px;
+  border:1.8px solid currentColor;
+  border-radius:999px;
+  transition:width .2s ease,height .2s ease,transform .2s ease;
+}
+
+.floating-progress-card.minimized .pill-icon{
+  width:10px;
+  height:12px;
+  border-radius:4px;
+}
+
+body.dark-mode .floating-toggle-btn{
+  background:#2c2c2e;
+  color:#f5f5f7;
 }
 
 </style>
@@ -1594,7 +1725,7 @@ body.dark-mode .section-preview-dialog{background:#1c1c1e}body.dark-mode .sectio
 <div class="top-nav-actions">
 <button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
 <button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
-<span class="version-pill">v78</span>
+<span class="version-pill">v85</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -1606,7 +1737,15 @@ body.dark-mode .section-preview-dialog{background:#1c1c1e}body.dark-mode .sectio
   <div class="floating-progress-card">
     <div class="floating-top">
       <span class="floating-status">✓ <span id="miniProgressLabel">0/0 selesai</span></span>
-      <span class="floating-percent" id="progressPercentMini">0%</span>
+      <div class="floating-top-actions">
+        <span class="floating-percent" id="progressPercentMini">0%</span>
+        <button class="floating-toggle-btn" id="floatingToggleBtn" type="button" aria-label="Minimize progress" aria-expanded="true">
+  <span class="pill-icon pill-collapse-icon" aria-hidden="true"></span>
+</button>
+      </div>
+    </div>
+    <div class="floating-linear-track" aria-hidden="true">
+      <span id="miniLinearProgressFill"></span>
     </div>
     <div class="floating-segments" id="miniProgressFill" aria-label="Progress per section"></div>
     <div class="floating-bottom">
@@ -1804,8 +1943,9 @@ conversionOverlay=$('conversionOverlay'),conversionProgressBar=$('conversionProg
 previewShell=$('previewShell'),progressRing=$('progressRing'),progressPercent=$('progressPercent'),
 qualityScore=$('qualityScore'),qualityList=$('qualityList');
 const sectionPreviewModal=$('sectionPreviewModal'),sectionPreviewTitle=$('sectionPreviewTitle'),sectionPreviewBody=$('sectionPreviewBody'),closeSectionPreviewBtn=$('closeSectionPreviewBtn');
+const floatingToggleBtn=$('floatingToggleBtn');
 const compactModeBtn=$('compactModeBtn'),focusModeBtn=$('focusModeBtn'),
-miniProgressBar=$('miniProgressBar'),miniProgressLabel=$('miniProgressLabel'),miniProgressFill=$('miniProgressFill');
+miniProgressBar=$('miniProgressBar'),miniProgressLabel=$('miniProgressLabel'),miniProgressFill=$('miniProgressFill'),miniLinearProgressFill=$('miniLinearProgressFill');
 const insightsToggle=$('insightsToggle'),insightsContent=$('insightsContent');
 const insightSectionCount=$('insightSectionCount'),insightQualityScore=$('insightQualityScore');
 const statSections=$('statSections'),statImages=$('statImages'),statHeadings=$('statHeadings'),
@@ -2331,7 +2471,7 @@ async function convert(mode){
     quickCopyProgress.textContent='Progress: 0/0 section tersalin';
     sectionCopyPanel.classList.remove('active');
     sectionCopyList.innerHTML='';
-    sectionCopyProgress.textContent='Progress: 0/0 section tersalin';miniProgressLabel.textContent='0/0 section selesai';miniProgressFill.style.width='0%';miniProgressBar.classList.remove('active');
+    sectionCopyProgress.textContent='Progress: 0/0 section tersalin';miniProgressLabel.textContent='0/0 section selesai';miniProgressFill.style.width='0%';miniLinearProgressFill.style.width='0%';miniProgressBar.classList.remove('active');
 
     editor.setValue(converted);
     preview.innerHTML=converted;
@@ -2419,30 +2559,54 @@ function updateQuickCopyProgress(){
   progressPercent.textContent=pct+'%';
   miniProgressLabel.textContent=copiedEligible+'/'+total+' section selesai';
   const progressColors=[
-    '#0071e3',
-    '#34c759',
-    '#ff9f0a',
-    '#af52de',
-    '#5ac8fa',
-    '#ff375f',
-    '#30b0c7',
-    '#ffd60a'
+    {base:'#0071e3',light:'#5ac8fa',pending:'rgba(0,113,227,.22)',pendingDark:'rgba(41,151,255,.28)'},
+    {base:'#34c759',light:'#8ee89f',pending:'rgba(52,199,89,.22)',pendingDark:'rgba(48,209,88,.28)'},
+    {base:'#ff9f0a',light:'#ffd36a',pending:'rgba(255,159,10,.22)',pendingDark:'rgba(255,159,10,.28)'},
+    {base:'#af52de',light:'#d9a2f2',pending:'rgba(175,82,222,.22)',pendingDark:'rgba(191,90,242,.28)'},
+    {base:'#5ac8fa',light:'#a8e7ff',pending:'rgba(90,200,250,.22)',pendingDark:'rgba(100,210,255,.28)'},
+    {base:'#ff375f',light:'#ff9bb0',pending:'rgba(255,55,95,.22)',pendingDark:'rgba(255,55,95,.28)'},
+    {base:'#30b0c7',light:'#8de5f0',pending:'rgba(48,176,199,.22)',pendingDark:'rgba(64,200,224,.28)'},
+    {base:'#ffd60a',light:'#fff08a',pending:'rgba(255,214,10,.22)',pendingDark:'rgba(255,214,10,.28)'}
   ];
 
   miniProgressFill.innerHTML='';
+  const nextEligibleTitle=eligibleTitles.find(title=>!copiedSections.has(title));
+
   eligibleTitles.forEach((title,index)=>{
-    const segment=document.createElement('span');
+    const segment=document.createElement('button');
+    segment.type='button';
+
     const completed=copiedSections.has(title);
-    segment.className='floating-segment '+(completed?'completed':'pending');
-    segment.style.setProperty('--segment-color',progressColors[index%progressColors.length]);
-    segment.title=title+(completed?' — selesai':' — belum selesai');
-    segment.setAttribute('aria-label',title+' '+(completed?'selesai':'belum selesai'));
+    const isActive=title===nextEligibleTitle;
+
+    segment.className=
+      'floating-segment '+
+      (completed?'completed':'pending')+
+      (isActive?' active-segment':'');
+
+    const palette=progressColors[index%progressColors.length];
+    segment.style.setProperty('--segment-color',palette.base);
+    segment.style.setProperty('--segment-color-light',palette.light);
+    segment.style.setProperty('--segment-pending',palette.pending);
+    segment.style.setProperty('--segment-pending-dark',palette.pendingDark);
+
+    segment.title=title+(completed?' — sudah dicopy':' — klik untuk copy');
+    segment.setAttribute('aria-label',title+' '+(completed?'sudah dicopy':'belum dicopy, klik untuk copy'));
+
+    segment.addEventListener('click',()=>{
+      const matchingItem=[...quickCopyList.querySelectorAll('.quick-copy-item')]
+        .find(item=>item.querySelector('.quick-copy-label')?.textContent.trim()===title);
+
+      matchingItem?.querySelector('.quick-copy-btn')?.click();
+    });
+
     miniProgressFill.appendChild(segment);
   });
 
   const miniPercent=document.getElementById('progressPercentMini');
   miniPercent.textContent=pct+'%';
-  const activeColor=progressColors[Math.min(copiedEligible,Math.max(total-1,0))%progressColors.length];
+  miniLinearProgressFill.style.width=pct+'%';
+  const activeColor=progressColors[Math.min(copiedEligible,Math.max(total-1,0))%progressColors.length].base;
   miniPercent.style.color=activeColor;
   miniProgressBar.classList.toggle('active',total>0);
 
@@ -2461,11 +2625,15 @@ const floatingCard=document.querySelector('.floating-progress-card');
 if(next){
   nextLabel.textContent=next.querySelector('.quick-copy-label')?.textContent.trim()||'-';
   if(floatingBottom)floatingBottom.style.display='flex';
+
   floatingCard?.classList.remove('complete');
+
 }else{
   nextLabel.textContent='';
   if(floatingBottom)floatingBottom.style.display='none';
+
   floatingCard?.classList.add('complete');
+
 }
 
 }
@@ -2781,6 +2949,17 @@ document.querySelectorAll('.copy-filter-btn').forEach(btn=>btn.addEventListener(
 function closeSectionPreview(){sectionPreviewModal.classList.remove('open');sectionPreviewModal.setAttribute('aria-hidden','true')}
 closeSectionPreviewBtn.addEventListener('click',closeSectionPreview);
 sectionPreviewModal.addEventListener('click',e=>{if(e.target===sectionPreviewModal)closeSectionPreview()});
+
+floatingToggleBtn.addEventListener('click',()=>{
+  const floatingCard=document.querySelector('.floating-progress-card');
+  const minimized=floatingCard.classList.toggle('minimized');
+
+  
+  floatingToggleBtn.setAttribute('aria-expanded',String(!minimized));
+  floatingToggleBtn.setAttribute('aria-label',minimized?'Expand progress':'Minimize progress');
+
+});
+
 document.querySelectorAll('.preview-mode').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.preview-mode').forEach(b=>b.classList.remove('active'));
