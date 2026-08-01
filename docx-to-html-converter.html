@@ -2194,7 +2194,7 @@ body.dark-mode .quick-preview-btn:hover{
 <div class="top-nav-actions">
 <button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
 <button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
-<span class="version-pill">v103</span>
+<span class="version-pill">v104</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -2621,17 +2621,42 @@ window.buildConvertedHtml=function(pars){
 
     if(/autovm/i.test(rawPlain)){
       addSection('Auto vm');
-      addBlock('<p><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','metadata');
-      if(/^Link autovm\s*:/i.test(rawPlain)&&i+1<pars.length&&/^SKU\s*:?/i.test(pars[i+1].trim())){
-        addBlock(pars[++i].trim(),'metadata');
+      addBlock(
+        '<p><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>',
+        'metadata'
+      );
+
+      // Gabungkan baris SKU setelah Auto VM ke section yang sama.
+      // Pemeriksaan menggunakan plain text agar tetap terbaca meski SKU dibungkus
+      // dengan <strong>, <span>, atau format inline lain dari DOCX.
+      if(i+1<pars.length){
+        const nextRaw=pars[i+1].trim();
+        const nextPlain=nextRaw
+          .replace(/^\[\[(?:H2|H3|NUMBERED_LIST|BULLET_LIST_BOLD|BULLET_LIST_PLAIN)\]\]/,'')
+          .replace(/<[^>]+>/g,'')
+          .trim();
+
+        if(/^SKU\s*:?/i.test(nextPlain)){
+          i++;
+          addBlock(
+            '<p><span style="font-size: '+bs+'px">'+inlineFormat(
+              nextRaw.replace(/^\[\[(?:H2|H3|NUMBERED_LIST|BULLET_LIST_BOLD|BULLET_LIST_PLAIN)\]\]/,'')
+            )+'</span></p>',
+            'metadata'
+          );
+        }
       }
+
       mainStarted=true;
       startNewSectionAfterMetadata=true;
       continue;
     }
 
-    if(/^SKU\s*:?/i.test(raw)){
-      addBlock(raw,'metadata');
+    if(/^SKU\s*:?/i.test(rawPlain)){
+      addBlock(
+        '<p><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>',
+        'metadata'
+      );
       startNewSectionAfterMetadata=true;
       continue;
     }
