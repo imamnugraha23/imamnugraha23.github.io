@@ -1541,11 +1541,73 @@ body.dark-mode .floating-complete{
 .copy-filter-btn.active{background:#fff;color:#1d1d1f;box-shadow:0 1px 6px rgba(0,0,0,.1)}
 body.dark-mode .copy-filter{background:#2c2c2e}body.dark-mode .copy-filter-btn.active{background:#f5f5f7;color:#1d1d1f}
 .quick-copy-group-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-.group-collapse-btn{width:28px;height:28px;padding:0;border-radius:50%;background:#e8e8ed;color:#515154}
+.group-collapse-btn{
+  width:34px;
+  height:28px;
+  padding:0;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:#e8e8ed;
+  color:#515154;
+}
 .quick-copy-group.collapsed .quick-copy-group-content{display:none}
 .quick-copy-item.next-item{border-color:#0071e3!important;box-shadow:0 0 0 4px rgba(0,113,227,.14)}
 .quick-item-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.quick-preview-btn{width:30px;height:30px;padding:0;border-radius:50%;background:#e8e8ed;color:#515154}
+.quick-preview-btn{
+  width:32px;
+  height:32px;
+  padding:0;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#1d1d1f;
+  color:#fff;
+  border:0;
+  box-shadow:none;
+}
+
+.quick-preview-btn:hover{
+  background:#000;
+  transform:scale(1.04);
+}
+
+.preview-plus-icon{
+  position:relative;
+  display:block;
+  width:14px;
+  height:14px;
+}
+
+.preview-plus-icon::before,
+.preview-plus-icon::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  border-radius:999px;
+  background:currentColor;
+  transform:translate(-50%,-50%);
+}
+
+.preview-plus-icon::before{
+  width:14px;
+  height:2.4px;
+}
+
+.preview-plus-icon::after{
+  width:2.4px;
+  height:14px;
+}
+
+body.dark-mode .quick-preview-btn{
+  background:#f5f5f7;
+  color:#1d1d1f;
+}
+
+body.dark-mode .quick-preview-btn:hover{
+  background:#fff;
+}
 .section-preview-modal{position:fixed;inset:0;z-index:500;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.3);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:.2s}
 .section-preview-modal.open{opacity:1;pointer-events:auto}
 .section-preview-dialog{width:min(780px,100%);max-height:90vh;overflow:hidden;border-radius:24px;background:rgba(255,255,255,.97);border:1px solid var(--border);box-shadow:0 30px 80px rgba(0,0,0,.25)}
@@ -1704,6 +1766,413 @@ body.dark-mode .floating-toggle-btn{
   color:#f5f5f7;
 }
 
+
+.direct-convert-group{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  width:min(100%,680px);
+}
+
+.convert-action{
+  min-height:58px;
+  padding:10px 14px;
+  border-radius:16px;
+  display:grid;
+  grid-template-columns:20px 1fr;
+  grid-template-rows:auto auto;
+  column-gap:9px;
+  align-items:center;
+  text-align:left;
+  color:#fff;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.convert-action svg{
+  grid-row:1 / 3;
+  width:19px!important;
+  height:19px!important;
+  margin:0!important;
+}
+
+.convert-action span{
+  font-size:13px;
+  font-weight:800;
+  line-height:1.1;
+}
+
+.convert-action small{
+  margin-top:3px;
+  font-size:10px;
+  font-weight:650;
+  opacity:.78;
+}
+
+.convert-custom,
+.convert-mobile,
+.convert-desktop{
+  background:transparent;
+  color:#0071e3;
+  border:1.5px solid #0071e3;
+  box-shadow:none;
+}
+
+.convert-custom:hover:not(:disabled),
+.convert-mobile:hover:not(:disabled),
+.convert-desktop:hover:not(:disabled){
+  background:rgba(0,113,227,.08);
+  color:#0066cc;
+  border-color:#0066cc;
+}
+
+.convert-action.selected{
+  background:#0071e3;
+  color:#fff;
+  border-color:#0071e3;
+}
+
+.convert-action.selected:hover:not(:disabled){
+  background:#0077ed;
+  color:#fff;
+  border-color:#0077ed;
+}
+
+.convert-action.loading{
+  pointer-events:none;
+  opacity:.78;
+}
+
+.convert-action.success{
+  background:#34c759;
+  color:#fff;
+}
+
+body.dark-mode .convert-custom,
+body.dark-mode .convert-mobile,
+body.dark-mode .convert-desktop{
+  background:transparent;
+  color:#0a84ff;
+  border-color:#0a84ff;
+  box-shadow:none;
+}
+
+body.dark-mode .convert-custom:hover:not(:disabled),
+body.dark-mode .convert-mobile:hover:not(:disabled),
+body.dark-mode .convert-desktop:hover:not(:disabled){
+  background:rgba(10,132,255,.12);
+  color:#0a84ff;
+  border-color:#0a84ff;
+  box-shadow:0 0 0 3px rgba(10,132,255,.10);
+}
+
+body.dark-mode .convert-action.selected{
+  background:#0a84ff;
+  color:#fff;
+  border-color:#0a84ff;
+  box-shadow:0 8px 20px rgba(10,132,255,.28);
+}
+
+body.dark-mode .convert-action.selected:hover:not(:disabled){
+  background:#0a84ff;
+  color:#fff;
+  border-color:#0a84ff;
+  box-shadow:0 10px 24px rgba(10,132,255,.34);
+}
+
+body.dark-mode .convert-action.success{
+  background:#0a84ff;
+  border-color:#0a84ff;
+  color:#fff;
+}
+
+@media(max-width:760px){
+  .direct-convert-group{
+    grid-template-columns:1fr;
+    width:100%;
+  }
+
+  .convert-action{
+    width:100%;
+  }
+}
+
+
+.pill-collapse-symbol{
+  display:block;
+  width:15px;
+  height:7px;
+  border:1.8px solid currentColor;
+  border-radius:999px;
+  transition:width .2s ease,height .2s ease,border-radius .2s ease,transform .2s ease;
+}
+
+.quick-copy-group.collapsed .pill-collapse-symbol{
+  width:10px;
+  height:13px;
+  border-radius:4px;
+}
+
+.accordion-icon{
+  width:38px!important;
+  height:30px!important;
+  border-radius:999px!important;
+}
+
+.accordion-icon svg{
+  display:none!important;
+}
+
+.accordion-toggle[aria-expanded="false"] .accordion-icon .pill-collapse-symbol{
+  width:10px;
+  height:13px;
+  border-radius:4px;
+}
+
+.accordion-toggle[aria-expanded="true"] .accordion-icon .pill-collapse-symbol{
+  width:15px;
+  height:7px;
+  border-radius:999px;
+  transform:none;
+}
+
+body.dark-mode .group-collapse-btn{
+  background:#2c2c2e;
+  color:#f5f5f7;
+}
+
+
+.direct-convert-group{
+  gap:12px;
+}
+
+.convert-action{
+  min-height:50px;
+  border-radius:999px;
+  padding:10px 18px;
+  box-shadow:none;
+}
+
+.convert-action span{
+  font-size:14px;
+}
+
+.convert-action small{
+  font-size:10px;
+}
+
+.convert-action.success{
+  background:#0071e3;
+  border-color:#0071e3;
+  color:#fff;
+}
+
+
+.direct-convert-group{
+  width:min(100%,620px)!important;
+  gap:10px!important;
+}
+
+.convert-action{
+  min-height:44px!important;
+  padding:8px 14px!important;
+}
+
+.convert-action span{
+  font-size:13px!important;
+}
+
+.convert-action small{
+  font-size:9px!important;
+  margin-top:1px!important;
+}
+
+.convert-action svg{
+  width:16px!important;
+  height:16px!important;
+}
+
+.convert-controls{
+  gap:8px!important;
+  flex-wrap:wrap;
+}
+
+.convert-controls > .btn-secondary{
+  padding:10px 14px!important;
+}
+
+.convert-controls > .download-menu-wrap > .btn-secondary{
+  padding:10px 14px!important;
+}
+
+
+body.dark-mode .convert-action:not(.selected) svg{
+  stroke:#0a84ff;
+}
+
+body.dark-mode .convert-action:not(.selected) small{
+  color:#0a84ff;
+  opacity:.9;
+}
+
+
+.circle-plus-toggle,
+.group-collapse-btn.circle-plus-toggle,
+.accordion-icon.circle-plus-toggle,
+.floating-toggle-btn.circle-plus-toggle{
+  width:34px!important;
+  height:34px!important;
+  padding:0!important;
+  border-radius:50%!important;
+  display:grid!important;
+  place-items:center!important;
+  background:#1d1d1f!important;
+  color:#fff!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+.circle-plus-toggle:hover{
+  background:#000!important;
+  transform:scale(1.04);
+}
+
+.circle-plus-icon{
+  position:relative;
+  display:block;
+  width:14px;
+  height:14px;
+}
+
+.circle-plus-icon::before,
+.circle-plus-icon::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  border-radius:999px;
+  background:currentColor;
+  transform:translate(-50%,-50%);
+}
+
+.circle-plus-icon::before{
+  width:14px;
+  height:2px;
+}
+
+.circle-plus-icon::after{
+  width:2px;
+  height:14px;
+}
+
+body.dark-mode .circle-plus-toggle,
+body.dark-mode .group-collapse-btn.circle-plus-toggle,
+body.dark-mode .accordion-icon.circle-plus-toggle,
+body.dark-mode .floating-toggle-btn.circle-plus-toggle{
+  background:#f5f5f7!important;
+  color:#1d1d1f!important;
+}
+
+.quick-preview-btn{
+  width:32px!important;
+  height:32px!important;
+  padding:0!important;
+  border-radius:50%!important;
+  display:grid!important;
+  place-items:center!important;
+  background:transparent!important;
+  color:#515154!important;
+  border:1px solid rgba(0,0,0,.14)!important;
+  box-shadow:none!important;
+}
+
+.quick-preview-btn:hover{
+  background:rgba(0,113,227,.08)!important;
+  color:#0071e3!important;
+  border-color:#0071e3!important;
+  transform:scale(1.04);
+}
+
+.preview-eye-icon{
+  width:18px;
+  height:18px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+body.dark-mode .quick-preview-btn{
+  background:transparent!important;
+  color:#d1d1d6!important;
+  border-color:rgba(255,255,255,.20)!important;
+}
+
+body.dark-mode .quick-preview-btn:hover{
+  background:rgba(10,132,255,.12)!important;
+  color:#64d2ff!important;
+  border-color:#64d2ff!important;
+}
+
+/* Neutralize old pill transformations */
+.quick-copy-group.collapsed .pill-collapse-symbol,
+.accordion-toggle[aria-expanded="false"] .accordion-icon .pill-collapse-symbol,
+.accordion-toggle[aria-expanded="true"] .accordion-icon .pill-collapse-symbol,
+.floating-progress-card.minimized .pill-icon{
+  width:auto!important;
+  height:auto!important;
+  border:0!important;
+  transform:none!important;
+}
+
+
+.circle-plus-toggle,
+.group-collapse-btn.circle-plus-toggle,
+.accordion-icon.circle-plus-toggle,
+.floating-toggle-btn.circle-plus-toggle{
+  width:28px!important;
+  height:28px!important;
+}
+
+.circle-plus-icon{
+  width:11px!important;
+  height:11px!important;
+}
+
+.circle-plus-icon::before{
+  width:11px!important;
+  height:1.8px!important;
+}
+
+.circle-plus-icon::after{
+  width:1.8px!important;
+  height:11px!important;
+}
+
+
+.circle-plus-toggle,
+.group-collapse-btn.circle-plus-toggle,
+.accordion-icon.circle-plus-toggle,
+.floating-toggle-btn.circle-plus-toggle{
+  width:24px!important;
+  height:24px!important;
+}
+
+.circle-plus-icon{
+  width:9px!important;
+  height:9px!important;
+}
+
+.circle-plus-icon::before{
+  width:9px!important;
+  height:1.6px!important;
+}
+
+.circle-plus-icon::after{
+  width:1.6px!important;
+  height:9px!important;
+}
+
 </style>
 </head>
 <body>
@@ -1725,7 +2194,7 @@ body.dark-mode .floating-toggle-btn{
 <div class="top-nav-actions">
 <button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
 <button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
-<span class="version-pill">v85</span>
+<span class="version-pill">v101</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -1739,8 +2208,8 @@ body.dark-mode .floating-toggle-btn{
       <span class="floating-status">✓ <span id="miniProgressLabel">0/0 selesai</span></span>
       <div class="floating-top-actions">
         <span class="floating-percent" id="progressPercentMini">0%</span>
-        <button class="floating-toggle-btn" id="floatingToggleBtn" type="button" aria-label="Minimize progress" aria-expanded="true">
-  <span class="pill-icon pill-collapse-icon" aria-hidden="true"></span>
+        <button class="floating-toggle-btn circle-plus-toggle" id="floatingToggleBtn" type="button" aria-label="Minimize progress" aria-expanded="true">
+  <span class="circle-plus-icon" aria-hidden="true"></span>
 </button>
       </div>
     </div>
@@ -1783,14 +2252,23 @@ body.dark-mode .floating-toggle-btn{
 <div class="field"><label for="outputName">Nama file output</label><input id="outputName" type="text" value="hasil-convert.html"/></div>
 </div>
 <div class="convert-controls">
-<div aria-label="Pilih mode konversi" class="segmented-control" role="group">
-<button class="segment active" data-mode="mobile" id="mobileSegment" type="button">Mobile</button>
-<button class="segment" data-mode="desktop" id="desktopSegment" type="button">Desktop</button>
+<div class="direct-convert-group" role="group" aria-label="Pilihan konversi">
+  <button class="convert-action convert-custom" disabled="" id="convertCustomBtn" type="button">
+    <svg viewbox="0 0 24 24"><path d="M12 3v18M3 12h18"></path></svg>
+    <span>Convert</span>
+    <small>Sesuai setting</small>
+  </button>
+  <button class="convert-action convert-mobile" disabled="" id="convertMobileBtn" type="button">
+    <svg viewbox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path></svg>
+    <span>Mobile Convert</span>
+    <small>18px / 16px</small>
+  </button>
+  <button class="convert-action convert-desktop" disabled="" id="convertDesktopBtn" type="button">
+    <svg viewbox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+    <span>Desktop Convert</span>
+    <small>24px / 18px</small>
+  </button>
 </div>
-<button class="btn-primary convert-main-btn" disabled="" id="convertSelectedBtn">
-<svg viewbox="0 0 24 24"><path d="M13 2 3 14h8l-1 8 10-12h-8z"></path></svg>
-<span>Convert</span>
-</button>
 <button class="btn-secondary" disabled="" id="copyBtn">
 <svg viewbox="0 0 24 24"><rect height="11" rx="2" width="11" x="9" y="9"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
     Copy HTML
@@ -1878,8 +2356,8 @@ body.dark-mode .floating-toggle-btn{
       <span class="insight-chip quality-chip"><strong id="insightQualityScore">—</strong> Quality</span>
     </div>
   </div>
-  <span aria-hidden="true" class="accordion-icon">
-    <svg viewbox="0 0 24 24"><path d="m8 10 4 4 4-4"></path></svg>
+  <span aria-hidden="true" class="accordion-icon circle-plus-toggle">
+    <span class="circle-plus-icon"></span>
   </span>
 </button>
 <div class="accordion-content" id="insightsContent">
@@ -1936,8 +2414,8 @@ body.dark-mode .floating-toggle-btn{
 </div>
 </div>
 <script>
-const $=id=>document.getElementById(id);const fileInput=$('fileInput'),dropZone=$('dropZone'),fileLabel=$('fileLabel'),copyBtn=$('copyBtn'),copySectionsBtn=$('copySectionsBtn'),themeToggleBtn=$('themeToggleBtn'),resetBtn=$('resetBtn'),output=$('output'),preview=$('preview'),status=$('status'),headingSize=$('headingSize'),bodySize=$('bodySize'),outputName=$('outputName'),quickCopyPanel=$('quickCopyPanel'),quickCopyTitle=$('quickCopyTitle'),quickCopyProgress=$('quickCopyProgress'),quickCopyList=$('quickCopyList'),resetQuickCopyBtn=$('resetQuickCopyBtn'),sectionCopyPanel=$('sectionCopyPanel'),sectionCopyList=$('sectionCopyList'),sectionCopyPanelTitle=$('sectionCopyPanelTitle'),sectionCopyProgress=$('sectionCopyProgress'),resetSectionStatusBtn=$('resetSectionStatusBtn'),closeSectionPanelBtn=$('closeSectionPanelBtn');let selectedMode='mobile',lastConvertedHtml='',lastMobileHtml='',lastDesktopHtml='';
-const mobileSegment=$('mobileSegment'),desktopSegment=$('desktopSegment'),convertSelectedBtn=$('convertSelectedBtn'),
+const $=id=>document.getElementById(id);const fileInput=$('fileInput'),dropZone=$('dropZone'),fileLabel=$('fileLabel'),copyBtn=$('copyBtn'),copySectionsBtn=$('copySectionsBtn'),themeToggleBtn=$('themeToggleBtn'),resetBtn=$('resetBtn'),output=$('output'),preview=$('preview'),status=$('status'),headingSize=$('headingSize'),bodySize=$('bodySize'),outputName=$('outputName'),quickCopyPanel=$('quickCopyPanel'),quickCopyTitle=$('quickCopyTitle'),quickCopyProgress=$('quickCopyProgress'),quickCopyList=$('quickCopyList'),resetQuickCopyBtn=$('resetQuickCopyBtn'),sectionCopyPanel=$('sectionCopyPanel'),sectionCopyList=$('sectionCopyList'),sectionCopyPanelTitle=$('sectionCopyPanelTitle'),sectionCopyProgress=$('sectionCopyProgress'),resetSectionStatusBtn=$('resetSectionStatusBtn'),closeSectionPanelBtn=$('closeSectionPanelBtn');let lastConvertedHtml='',lastMobileHtml='',lastDesktopHtml='';
+const convertCustomBtn=$('convertCustomBtn'),convertMobileBtn=$('convertMobileBtn'),convertDesktopBtn=$('convertDesktopBtn'),
 downloadMenuBtn=$('downloadMenuBtn'),downloadMenu=$('downloadMenu'),toastStack=$('toastStack'),
 conversionOverlay=$('conversionOverlay'),conversionProgressBar=$('conversionProgressBar'),
 previewShell=$('previewShell'),progressRing=$('progressRing'),progressPercent=$('progressPercent'),
@@ -1952,7 +2430,7 @@ const statSections=$('statSections'),statImages=$('statImages'),statHeadings=$('
 statParagraphs=$('statParagraphs'),statAnchors=$('statAnchors'),statAutoVm=$('statAutoVm');
 let selectedFile=null;const editor=CodeMirror.fromTextArea(output,{mode:'text/html',lineNumbers:true,lineWrapping:true});editor.on('change',()=>preview.innerHTML=editor.getValue());
 function setStatus(m,t=''){status.textContent=m;status.className=('status '+t).trim()}
-function selectFile(file){if(!file)return;if(!file.name.toLowerCase().endsWith('.docx')){setStatus('File harus berformat .docx.','error');return}selectedFile=file;fileLabel.textContent=file.name;convertSelectedBtn.disabled=false;const clean=file.name.replace(/\.docx$/i,'').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'_');outputName.value=clean+'_Mobile_Sectioned.html';setStatus('File siap dikonversi.')}
+function selectFile(file){if(!file)return;if(!file.name.toLowerCase().endsWith('.docx')){setStatus('File harus berformat .docx.','error');return}selectedFile=file;fileLabel.textContent=file.name;setConvertButtonsDisabled(false);const clean=file.name.replace(/\.docx$/i,'').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'_');outputName.value=clean+'_Mobile_Sectioned.html';setStatus('File siap dikonversi.')}
 fileInput.addEventListener('change',e=>selectFile(e.target.files[0]));['dragenter','dragover'].forEach(n=>dropZone.addEventListener(n,e=>{e.preventDefault();dropZone.classList.add('dragover')}));['dragleave','drop'].forEach(n=>dropZone.addEventListener(n,e=>{e.preventDefault();dropZone.classList.remove('dragover')}));dropZone.addEventListener('drop',e=>selectFile(e.dataTransfer.files[0]));
 function esc(v){return v.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')}
 function isHeading(text){
@@ -2367,6 +2845,41 @@ function sanitizeInlineHtml(html){
   return holder.innerHTML.trim();
 }
 
+const convertButtons=[convertCustomBtn,convertMobileBtn,convertDesktopBtn];
+
+function setConvertButtonsDisabled(disabled){
+  convertButtons.forEach(button=>button.disabled=disabled);
+}
+
+function setConvertButtonState(activeButton,state){
+  convertButtons.forEach(button=>{
+    button.classList.remove('loading','success');
+    const label=button.querySelector('span');
+    if(button===convertCustomBtn)label.textContent='Convert';
+    if(button===convertMobileBtn)label.textContent='Mobile Convert';
+    if(button===convertDesktopBtn)label.textContent='Desktop Convert';
+  });
+
+  if(activeButton){
+    convertButtons.forEach(button=>button.classList.toggle('selected',button===activeButton));
+  }
+
+  if(!activeButton)return;
+
+  if(state==='loading'){
+    activeButton.classList.add('loading');
+    activeButton.querySelector('span').textContent='Converting...';
+  }else if(state==='success'){
+    activeButton.querySelector('span').textContent='✓ Converted';
+    setTimeout(()=>{
+      const label=activeButton.querySelector('span');
+      if(activeButton===convertCustomBtn)label.textContent='Convert';
+      if(activeButton===convertMobileBtn)label.textContent='Mobile Convert';
+      if(activeButton===convertDesktopBtn)label.textContent='Desktop Convert';
+    },1800);
+  }
+}
+
 async function convert(mode){
   if(!selectedFile)return;
 
@@ -2376,19 +2889,27 @@ async function convert(mode){
     return;
   }
 
-  convertSelectedBtn.disabled=true;
-  convertSelectedBtn.classList.add('loading');
+  const activeButton=
+    mode==='desktop'?convertDesktopBtn:
+    mode==='mobile'?convertMobileBtn:
+    convertCustomBtn;
+
+  setConvertButtonsDisabled(true);
+  setConvertButtonState(activeButton,'loading');
 
   if(mode==='desktop'){
     headingSize.value=24;
     bodySize.value=18;
     sectionCopyPanelTitle.textContent='Copy HTML Desktop per Section';
     quickCopyTitle.textContent='Quick Copy Desktop per Section';
-  }else{
+  }else if(mode==='mobile'){
     headingSize.value=18;
     bodySize.value=16;
     sectionCopyPanelTitle.textContent='Copy HTML Mobile per Section';
     quickCopyTitle.textContent='Quick Copy Mobile per Section';
+  }else{
+    sectionCopyPanelTitle.textContent='Copy HTML Custom per Section';
+    quickCopyTitle.textContent='Quick Copy Custom per Section';
   }
 
   const base=selectedFile.name
@@ -2397,7 +2918,8 @@ async function convert(mode){
     .trim()
     .replace(/\s+/g,'_');
 
-  outputName.value=base+'_'+(mode==='desktop'?'Desktop':'Mobile')+'_Sectioned.html';
+  const modeLabel=mode==='desktop'?'Desktop':mode==='mobile'?'Mobile':'Custom';
+  outputName.value=base+'_'+modeLabel+'_Sectioned.html';
   setStatus('Sedang membaca dan mengonversi dokumen...');
   showConversionOverlay();
 
@@ -2484,7 +3006,7 @@ async function convert(mode){
     downloadMenuBtn.disabled=false;
 
     setStatus('Konversi selesai. Silakan cek hasil dan preview.','success');
-    showToast('HTML berhasil dikonversi.','success');
+    showToast('HTML berhasil dikonversi.','success');setConvertButtonState(activeButton,'success');
   }catch(error){
     console.error(error);
     const message=error?.message||'Terjadi kesalahan saat konversi.';
@@ -2492,8 +3014,10 @@ async function convert(mode){
     showToast('Konversi gagal: '+message,'error');
   }finally{
     hideConversionOverlay();
-    convertSelectedBtn.disabled=false;
-    convertSelectedBtn.classList.remove('loading');
+    setConvertButtonsDisabled(false);
+    if(!activeButton.classList.contains('success')){
+      setConvertButtonState(null,'idle');
+    }
   }
 }
 
@@ -2648,7 +3172,11 @@ function createQuickCopyItem(section){
   label.textContent=section.title;
 
   const actions=document.createElement('div');actions.className='quick-item-actions';
-  const previewButton=document.createElement('button');previewButton.type='button';previewButton.className='quick-preview-btn';previewButton.textContent='◉';
+  const previewButton=document.createElement('button');
+  previewButton.type='button';
+  previewButton.className='quick-preview-btn';
+  previewButton.innerHTML='<svg class="preview-eye-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>';
+  previewButton.setAttribute('aria-label','Preview '+section.title);
   previewButton.addEventListener('click',()=>{sectionPreviewTitle.textContent=section.title;sectionPreviewBody.innerHTML=section.html;sectionPreviewModal.classList.add('open');sectionPreviewModal.setAttribute('aria-hidden','false')});
 
   const button=document.createElement('button');
@@ -2692,8 +3220,16 @@ function createQuickCopyGroup(title,className=''){
   group.className='quick-copy-group '+className;
   const header=document.createElement('div');header.className='quick-copy-group-header';
   const heading=document.createElement('div');heading.className='quick-copy-group-title';heading.textContent=title;
-  const collapse=document.createElement('button');collapse.type='button';collapse.className='group-collapse-btn';collapse.textContent='⌄';
-  collapse.addEventListener('click',()=>group.classList.toggle('collapsed'));
+  const collapse=document.createElement('button');
+  collapse.type='button';
+  collapse.className='group-collapse-btn';
+  collapse.setAttribute('aria-label','Minimize '+title);
+  collapse.classList.add('circle-plus-toggle');
+  collapse.innerHTML='<span class="circle-plus-icon" aria-hidden="true"></span>';
+  collapse.addEventListener('click',()=>{
+    const collapsed=group.classList.toggle('collapsed');
+    collapse.setAttribute('aria-label',(collapsed?'Expand ':'Minimize ')+title);
+  });
   const content=document.createElement('div');content.className='quick-copy-group-content';
   header.append(heading,collapse);group.append(header,content);return {group,content};
 }
@@ -2862,14 +3398,9 @@ themeToggleBtn.addEventListener('click',()=>{
 applyTheme(localStorage.getItem('docxConverterTheme')||'light');
 
 
-function setSelectedMode(mode){
-  selectedMode=mode;
-  mobileSegment.classList.toggle('active',mode==='mobile');
-  desktopSegment.classList.toggle('active',mode==='desktop');
-}
-mobileSegment.addEventListener('click',()=>setSelectedMode('mobile'));
-desktopSegment.addEventListener('click',()=>setSelectedMode('desktop'));
-convertSelectedBtn.addEventListener('click',()=>convert(selectedMode));
+convertCustomBtn.addEventListener('click',()=>convert('custom'));
+convertMobileBtn.addEventListener('click',()=>convert('mobile'));
+convertDesktopBtn.addEventListener('click',()=>convert('desktop'));
 
 function showToast(message,type='success'){
   if(!toastStack)return;
@@ -3002,7 +3533,7 @@ function downloadHtml(content,name){
   showToast('HTML berhasil diunduh.','success');
 }
 
-copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.getValue())}catch{navigator.clipboard.writeText(editor.getValue())}setStatus('HTML berhasil disalin ke clipboard.','success');showToast('HTML copied.','success')});resetBtn.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileLabel.textContent='Klik atau tarik file DOCX ke sini';editor.setValue('');preview.innerHTML='<p style="color:#6b7280">Preview artikel akan tampil di sini.</p>';convertSelectedBtn.disabled=true;copyBtn.disabled=true;copySectionsBtn.disabled=true;downloadMenuBtn.disabled=true;headingSize.value=18;bodySize.value=16;outputName.value='hasil-convert.html';copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyTitle.textContent='Quick Copy per Section';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyPanelTitle.textContent='Copy HTML per Section';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';setStatus('')});
+copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.getValue())}catch{navigator.clipboard.writeText(editor.getValue())}setStatus('HTML berhasil disalin ke clipboard.','success');showToast('HTML copied.','success')});resetBtn.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileLabel.textContent='Klik atau tarik file DOCX ke sini';editor.setValue('');preview.innerHTML='<p style="color:#6b7280">Preview artikel akan tampil di sini.</p>';setConvertButtonsDisabled(true);convertButtons.forEach(button=>button.classList.remove('selected','loading','success'));copyBtn.disabled=true;copySectionsBtn.disabled=true;downloadMenuBtn.disabled=true;headingSize.value=18;bodySize.value=16;outputName.value='hasil-convert.html';copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyTitle.textContent='Quick Copy per Section';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyPanelTitle.textContent='Copy HTML per Section';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';setStatus('')});
 </script>
 </body>
 </html>
