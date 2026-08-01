@@ -5,7 +5,19 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>DOCX ke HTML Converter</title>
-<script src="https://unpkg.com/mammoth@1.12.0/mammoth.browser.min.js"></script>
+<script src="https://unpkg.com/mammoth@1.12.0/mammoth.browser.min.js">
+document.addEventListener('click',e=>{
+  if(e.target&&e.target.id==='copyNextBtn'){
+    const nextItem=[...document.querySelectorAll('.quick-copy-item')]
+      .filter(item=>!item.closest('.quick-copy-group-autovm'))
+      .find(item=>!item.querySelector('.quick-copy-badge.active'));
+
+    const nextButton=nextItem?.querySelector('.quick-copy-btn');
+    if(nextButton)nextButton.click();
+  }
+});
+
+</script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
@@ -1371,6 +1383,80 @@
       }
     }
 
+
+.floating-progress{
+ position:fixed!important;
+ right:24px;
+ bottom:24px;
+ z-index:999;
+ display:none;
+}
+.floating-progress.active{display:block}
+.floating-progress-card{
+ width:320px;
+ padding:14px;
+ border-radius:20px;
+ background:rgba(255,255,255,.88);
+ backdrop-filter:blur(18px);
+ border:1px solid var(--border);
+ box-shadow:0 18px 40px rgba(0,0,0,.18);
+}
+body.dark-mode .floating-progress-card{
+ background:rgba(28,28,30,.92);
+}
+.floating-top,.floating-bottom{
+ display:flex;justify-content:space-between;align-items:center;
+}
+.floating-status{font-weight:700;font-size:13px}
+.floating-percent{font-weight:800;color:var(--primary)}
+.floating-track{height:8px;background:#e5e5ea;border-radius:999px;margin:12px 0;overflow:hidden}
+.floating-track span{display:block;height:100%;width:0;background:var(--primary);border-radius:999px;transition:.2s}
+.floating-bottom span{font-size:11px;color:var(--muted)}
+.floating-bottom strong{flex:1;margin-left:8px;font-size:13px}
+#copyNextBtn{padding:6px 12px;border-radius:999px;background:var(--primary);color:#fff;font-weight:700}
+@media(max-width:768px){
+ .floating-progress{left:12px;right:12px;bottom:12px}
+ .floating-progress-card{width:auto}
+}
+
+
+.floating-complete{
+  display:none;
+  margin-top:10px;
+  padding:8px 10px;
+  border-radius:12px;
+  background:#eaf8ef;
+  color:#1f7a36;
+  font-size:12px;
+  font-weight:800;
+  text-align:center;
+}
+.floating-progress-card.complete .floating-complete{display:block}
+body.dark-mode .floating-complete{
+  background:#12351d;
+  color:#7ee787;
+}
+
+
+.quick-copy-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.copy-filter{display:inline-flex;padding:3px;border-radius:999px;background:#e8e8ed;gap:2px}
+.copy-filter-btn{padding:7px 11px;border-radius:999px;background:transparent;color:#6e6e73;font-size:11px}
+.copy-filter-btn.active{background:#fff;color:#1d1d1f;box-shadow:0 1px 6px rgba(0,0,0,.1)}
+body.dark-mode .copy-filter{background:#2c2c2e}body.dark-mode .copy-filter-btn.active{background:#f5f5f7;color:#1d1d1f}
+.quick-copy-group-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.group-collapse-btn{width:28px;height:28px;padding:0;border-radius:50%;background:#e8e8ed;color:#515154}
+.quick-copy-group.collapsed .quick-copy-group-content{display:none}
+.quick-copy-item.next-item{border-color:#0071e3!important;box-shadow:0 0 0 4px rgba(0,113,227,.14)}
+.quick-item-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.quick-preview-btn{width:30px;height:30px;padding:0;border-radius:50%;background:#e8e8ed;color:#515154}
+.section-preview-modal{position:fixed;inset:0;z-index:500;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.3);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:.2s}
+.section-preview-modal.open{opacity:1;pointer-events:auto}
+.section-preview-dialog{width:min(780px,100%);max-height:90vh;overflow:hidden;border-radius:24px;background:rgba(255,255,255,.97);border:1px solid var(--border);box-shadow:0 30px 80px rgba(0,0,0,.25)}
+.section-preview-header{display:flex;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--border)}
+.section-preview-header h2{margin:0}.section-preview-body{max-height:calc(90vh - 100px);overflow:auto;padding:22px;background:#fff}
+body.dark-mode .section-preview-dialog{background:#1c1c1e}body.dark-mode .section-preview-body{background:#111113;color:#f5f5f7}
+@media(max-width:760px){.quick-copy-header{flex-direction:column;align-items:flex-start}.quick-copy-tools,.copy-filter{width:100%}.copy-filter-btn{flex:1}}
+
 </style>
 </head>
 <body>
@@ -1392,7 +1478,7 @@
 <div class="top-nav-actions">
 <button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
 <button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
-<span class="version-pill">v74</span>
+<span class="version-pill">v77</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -1400,11 +1486,23 @@
 </div>
 </div>
 </header>
-<div class="mini-progress-bar" id="miniProgressBar">
-  <div class="mini-progress-inner">
-    <span id="miniProgressLabel">0/0 section selesai</span>
-    <div class="mini-progress-track"><span id="miniProgressFill"></span></div>
+<div class="floating-progress" id="miniProgressBar">
+  <div class="floating-progress-card">
+    <div class="floating-top">
+      <span class="floating-status">✓ <span id="miniProgressLabel">0/0 selesai</span></span>
+      <span class="floating-percent" id="progressPercentMini">0%</span>
+    </div>
+    <div class="floating-track">
+      <span id="miniProgressFill"></span>
+    </div>
+    <div class="floating-bottom">
+      <span>Next</span>
+      <strong id="nextSectionLabel">-</strong>
+      <button id="copyNextBtn" type="button">Copy</button>
+    </div>
+    <div class="floating-complete">✓ Semua section Judul &amp; Konten selesai</div>
   </div>
+</div>
 </div>
 <section class="hero" id="top">
 <div class="hero-copy">
@@ -1473,13 +1571,18 @@
 <div>
 <h2 id="quickCopyTitle">Quick Copy per Section</h2>
 <div class="quick-progress-wrap">
-<div class="progress-ring" id="progressRing" style="--progress:0">
-<span id="progressPercent">0%</span>
+<div class="progress-ring" id="progressRing" style="--progress:0"><span id="progressPercent">0%</span></div>
+<div class="quick-copy-progress" id="quickCopyProgress">Progress Judul &amp; Konten: 0/0 section tersalin</div>
 </div>
-<div class="quick-copy-progress" id="quickCopyProgress">Progress Judul & Konten: 0/0 section tersalin</div>
 </div>
+<div class="quick-copy-tools">
+<div class="copy-filter">
+<button class="copy-filter-btn active" data-filter="all" type="button">All</button>
+<button class="copy-filter-btn" data-filter="pending" type="button">Belum Dicopy</button>
+<button class="copy-filter-btn" data-filter="copied" type="button">Sudah Dicopy</button>
 </div>
 <button class="btn-secondary" id="resetQuickCopyBtn">Reset Status Copy</button>
+</div>
 </div>
 <div class="quick-copy-list" id="quickCopyList"></div>
 </section>
@@ -1543,10 +1646,21 @@
 <div class="quality-list" id="qualityList"><div class="quality-empty">Convert dokumen untuk menjalankan quality check.</div></div>
 </section>
 </div>
-</section><div class="mini-progress-bar" id="miniProgressBar">
-<div class="mini-progress-inner">
-<span id="miniProgressLabel">0/0 section selesai</span>
-<div class="mini-progress-track"><span id="miniProgressFill"></span></div>
+</section><div class="floating-progress" id="miniProgressBar">
+  <div class="floating-progress-card">
+    <div class="floating-top">
+      <span class="floating-status">✓ <span id="miniProgressLabel">0/0 selesai</span></span>
+      <span class="floating-percent" id="progressPercentMini">0%</span>
+    </div>
+    <div class="floating-track">
+      <span id="miniProgressFill"></span>
+    </div>
+    <div class="floating-bottom">
+      <span>Next</span>
+      <strong id="nextSectionLabel">-</strong>
+      <button id="copyNextBtn" type="button">Copy</button>
+    </div>
+  </div>
 </div>
 </div>
 <footer class="app-footer">
@@ -1554,6 +1668,11 @@
 <p>Link autovm dan SKU dibuat sebagai section tersendiri dengan label Auto vm. Numbering angka dipertahankan tanpa spacer. Bullet point diubah menjadi tanda minus (-). Bullet tanpa bold tidak diberi spacer, sedangkan bullet dengan bold tetap diberi spacer antaritem. Anchor text, href, bold, italic, dan underline dari dokumen akan dipertahankan. Anchor ditampilkan sebagai teks klik berwarna biru dan bold, tanpa menampilkan kode link. Baris “Link image:” akan dikonversi menjadi tag <code>&lt;img&gt;</code>, lalu baris berikutnya menjadi judul produk dengan <code>href="#"</code>. Spacer <code>&lt;p&gt;&lt;span style="font-size: 16px"&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;</code> otomatis ditambahkan di antara paragraf, tetapi tidak di awal atau akhir section.</p>
 </div>
 </footer>
+<div class="section-preview-modal" id="sectionPreviewModal" aria-hidden="true">
+<div class="section-preview-dialog">
+<div class="section-preview-header"><div><span class="eyebrow">Section Preview</span><h2 id="sectionPreviewTitle">Preview Section</h2></div><button class="icon-button" id="closeSectionPreviewBtn" type="button">×</button></div>
+<div class="section-preview-body" id="sectionPreviewBody"></div>
+</div></div>
 <div class="toast-stack" id="toastStack"></div>
 <div aria-hidden="true" class="conversion-overlay" id="conversionOverlay">
 <div class="conversion-card">
@@ -1570,6 +1689,7 @@ downloadMenuBtn=$('downloadMenuBtn'),downloadMenu=$('downloadMenu'),toastStack=$
 conversionOverlay=$('conversionOverlay'),conversionProgressBar=$('conversionProgressBar'),
 previewShell=$('previewShell'),progressRing=$('progressRing'),progressPercent=$('progressPercent'),
 qualityScore=$('qualityScore'),qualityList=$('qualityList');
+const sectionPreviewModal=$('sectionPreviewModal'),sectionPreviewTitle=$('sectionPreviewTitle'),sectionPreviewBody=$('sectionPreviewBody'),closeSectionPreviewBtn=$('closeSectionPreviewBtn');
 const compactModeBtn=$('compactModeBtn'),focusModeBtn=$('focusModeBtn'),
 miniProgressBar=$('miniProgressBar'),miniProgressLabel=$('miniProgressLabel'),miniProgressFill=$('miniProgressFill');
 const insightsToggle=$('insightsToggle'),insightsContent=$('insightsContent');
@@ -2184,8 +2304,31 @@ function updateQuickCopyProgress(){
   progressRing.style.setProperty('--progress',pct);
   progressPercent.textContent=pct+'%';
   miniProgressLabel.textContent=copiedEligible+'/'+total+' section selesai';
-  miniProgressFill.style.width=pct+'%';
+  miniProgressFill.style.width=pct+'%';document.getElementById('progressPercentMini').textContent=pct+'%';
   miniProgressBar.classList.toggle('active',total>0);
+
+document.querySelectorAll('.quick-copy-item').forEach(i=>i.classList.remove('next-item'));
+const next=[...document.querySelectorAll('.quick-copy-item')]
+  .filter(item=>!item.closest('.quick-copy-group-autovm'))
+  .find(item=>!item.querySelector('.quick-copy-badge.active'));
+
+if(next)next.classList.add('next-item');
+const nextLabel=document.getElementById('nextSectionLabel');
+const copyNextBtn=document.getElementById('copyNextBtn');
+const floatingBottom=copyNextBtn?.closest('.floating-bottom');
+
+const floatingCard=document.querySelector('.floating-progress-card');
+
+if(next){
+  nextLabel.textContent=next.querySelector('.quick-copy-label')?.textContent.trim()||'-';
+  if(floatingBottom)floatingBottom.style.display='flex';
+  floatingCard?.classList.remove('complete');
+}else{
+  nextLabel.textContent='';
+  if(floatingBottom)floatingBottom.style.display='none';
+  floatingCard?.classList.add('complete');
+}
+
 }
 
 function createQuickCopyItem(section){
@@ -2197,11 +2340,9 @@ function createQuickCopyItem(section){
   label.className='quick-copy-label';
   label.textContent=section.title;
 
-  const actions=document.createElement('div');
-  actions.style.display='flex';
-  actions.style.alignItems='center';
-  actions.style.gap='8px';
-  actions.style.flexShrink='0';
+  const actions=document.createElement('div');actions.className='quick-item-actions';
+  const previewButton=document.createElement('button');previewButton.type='button';previewButton.className='quick-preview-btn';previewButton.textContent='◉';
+  previewButton.addEventListener('click',()=>{sectionPreviewTitle.textContent=section.title;sectionPreviewBody.innerHTML=section.html;sectionPreviewModal.classList.add('open');sectionPreviewModal.setAttribute('aria-hidden','false')});
 
   const button=document.createElement('button');
   button.type='button';
@@ -2213,7 +2354,7 @@ function createQuickCopyItem(section){
   badge.textContent='✓';
 
   if(copiedSections.has(section.title)){
-    badge.classList.add('active');item.dataset.status='copied';
+    badge.classList.add('active');item.dataset.status='copied';if(document.querySelector('.copy-filter-btn.active')?.dataset.filter==='pending')item.style.display='none';
   }
 
   button.addEventListener('click',async()=>{
@@ -2234,7 +2375,7 @@ function createQuickCopyItem(section){
     setStatus(section.title+' berhasil disalin.','success');
   });
 
-  actions.append(button,badge);
+  actions.append(previewButton,button,badge);
   item.append(label,actions);
   return item;
 }
@@ -2242,16 +2383,12 @@ function createQuickCopyItem(section){
 function createQuickCopyGroup(title,className=''){
   const group=document.createElement('div');
   group.className='quick-copy-group '+className;
-
-  const heading=document.createElement('div');
-  heading.className='quick-copy-group-title';
-  heading.textContent=title;
-
-  const content=document.createElement('div');
-  content.className='quick-copy-group-content';
-
-  group.append(heading,content);
-  return {group,content};
+  const header=document.createElement('div');header.className='quick-copy-group-header';
+  const heading=document.createElement('div');heading.className='quick-copy-group-title';heading.textContent=title;
+  const collapse=document.createElement('button');collapse.type='button';collapse.className='group-collapse-btn';collapse.textContent='⌄';
+  collapse.addEventListener('click',()=>group.classList.toggle('collapsed'));
+  const content=document.createElement('div');content.className='quick-copy-group-content';
+  header.append(heading,collapse);group.append(header,content);return {group,content};
 }
 
 function renderQuickCopy(){
@@ -2496,6 +2633,15 @@ function runQualityCheck(html){
 
 insightsToggle.addEventListener('click',()=>{const open=insightsToggle.getAttribute('aria-expanded')==='true';insightsToggle.setAttribute('aria-expanded',String(!open));insightsContent.classList.toggle('open',!open);});
 
+
+document.querySelectorAll('.copy-filter-btn').forEach(btn=>btn.addEventListener('click',()=>{
+ document.querySelectorAll('.copy-filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+ const f=btn.dataset.filter;
+ document.querySelectorAll('.quick-copy-item').forEach(item=>{const c=item.dataset.status==='copied';item.style.display=(f==='all'||(f==='pending'&&!c)||(f==='copied'&&c))?'flex':'none'});
+}));
+function closeSectionPreview(){sectionPreviewModal.classList.remove('open');sectionPreviewModal.setAttribute('aria-hidden','true')}
+closeSectionPreviewBtn.addEventListener('click',closeSectionPreview);
+sectionPreviewModal.addEventListener('click',e=>{if(e.target===sectionPreviewModal)closeSectionPreview()});
 document.querySelectorAll('.preview-mode').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.preview-mode').forEach(b=>b.classList.remove('active'));
