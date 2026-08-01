@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOCX ke HTML Converter</title>
+  <script src="https://unpkg.com/mammoth@1.12.0/mammoth.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+  <style>
+    :root{--bg:#f5f7fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--border:#dbe2ea;--primary:#087cf0;--success:#138a4a;--danger:#c0392b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}
+    .container{width:min(1180px,calc(100% - 32px));margin:32px auto}
+    .hero{margin-bottom:20px}
+    .hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+    .hero h1{margin:0 0 8px;font-size:28px}
+    .hero p{margin:0;color:var(--muted);line-height:1.6}
+    .theme-toggle-top{flex-shrink:0;min-width:112px}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 24px rgba(31,41,55,.06);padding:20px;margin-bottom:20px}
+    .drop-zone{border:2px dashed var(--border);border-radius:12px;padding:34px 20px;text-align:center;cursor:pointer;background:#fbfcfe;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px}.drop-zone.dragover,.drop-zone:hover{border-color:var(--primary);background:#f0f7ff}.drop-zone strong{display:block;margin-bottom:8px;font-size:18px}.drop-zone span{display:block;width:100%;color:var(--muted);font-size:14px;text-align:center}input[type=file]{display:none}
+    .settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}.field input{width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font:inherit;background:#fff}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button{border:0;border-radius:8px;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.btn-primary{background:var(--primary);color:#fff}.btn-desktop{background:#0f766e}.btn-desktop:hover:not(:disabled){background:#0b5f59}.btn-secondary{background:#eef2f7;color:var(--text)}
+    .status{margin-top:14px;min-height:22px;font-size:14px;color:var(--muted)}.status.success{color:var(--success)}.status.error{color:var(--danger)}
+    .workspace{display:grid;grid-template-columns:1fr 1fr;gap:20px}.workspace h2{font-size:18px;margin:0 0 12px}.CodeMirror{height:620px;border:1px solid var(--border);border-radius:10px;font:14px/1.65 Consolas,Monaco,monospace;background:#fbfcfe}.cm-comment{
+      color:#7c3aed!important;
+      font-weight:800!important;
+      font-size:16px!important;
+      line-height:1.9!important;
+      background:#f3e8ff!important;
+      border:1px solid #d8b4fe!important;
+      border-radius:6px!important;
+      padding:2px 8px!important;
+      display:inline-block!important;
+      margin:4px 0!important;
+    }.preview{min-height:620px;max-height:760px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:18px;background:#fff;}.preview img{max-width:100%;height:auto}
+    .preview h1,.preview h2,.preview h3,.preview p,.preview span,.preview a,.preview strong,.preview em,.preview u{
+      
+    }.note{margin-top:14px;padding:12px 14px;border-radius:8px;background:#fff8e6;color:#765a00;font-size:13px;line-height:1.55}
+    @media(max-width:900px){
+      .workspace,.settings{grid-template-columns:1fr}
+      .CodeMirror,.preview{min-height:460px;height:460px}
+      .quick-copy-list{grid-template-columns:1fr}
+      .quick-copy-group-content{grid-template-columns:1fr}
+    }
+      .preview h3{font-weight:700;}
+  
+    .preview h1,
+    .preview h2,
+    .preview h3,
+    .preview p,
+    .preview span,
+    .preview a,
+    .preview strong,
+    .preview em,
+    .preview u {
+      font-family: inherit !important;
+    }
+
+  
+    .section-copy-panel{display:none;margin-top:20px}
+    .section-copy-panel.active{display:block}
+    .section-copy-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .section-copy-header h2{margin:0;font-size:18px}
+    .section-copy-progress{margin-top:6px;font-size:13px;color:var(--muted)}
+    .section-copy-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .section-copy-button-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .copy-status-badge{
+      display:none;
+      padding:7px 10px;
+      border-radius:999px;
+      background:#dcfce7;
+      color:#166534;
+      border:1px solid #86efac;
+      font-size:12px;
+      font-weight:700;
+    }
+    .copy-status-badge.active{display:inline-flex;align-items:center}
+
+    .section-copy-list{display:grid;gap:12px}
+    .section-copy-item{border:1px solid var(--border);border-radius:12px;background:#fbfdff;overflow:hidden}
+    .section-copy-title{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:#f3f7fc;border-bottom:1px solid var(--border)}
+    .section-copy-title strong{
+      display:inline-block;
+      padding:6px 10px;
+      border:1px solid #c4b5fd;
+      border-radius:8px;
+      background:#f3e8ff;
+      color:#7c3aed;
+      font-size:16px;
+      font-weight:800;
+      line-height:1.2;
+      letter-spacing:.1px;
+    }
+    .section-copy-code{margin:0;padding:14px;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-word;font:12px/1.55 Consolas,Monaco,monospace;background:#fff;color:#1f2937}
+    .btn-copy-section{padding:8px 12px;font-size:13px;background:var(--primary);color:#fff}
+    .btn-copy-section:hover{background:var(--primary-dark)}
+    .btn-copy-section{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+
+    .quick-copy-panel{
+      position:sticky;
+      top:12px;
+      z-index:20;
+      display:none;
+      border:1px solid #cbd5e1;
+      box-shadow:0 10px 28px rgba(15,23,42,.12);
+    }
+    .quick-copy-panel.active{display:block}
+    .quick-copy-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .quick-copy-header h2{margin:0;font-size:18px}
+    .quick-copy-progress{margin-top:6px;font-size:13px;color:var(--muted)}
+    .quick-copy-list{
+      display:grid;
+      grid-template-columns:minmax(180px,1fr) minmax(0,3fr) minmax(180px,1fr);
+      gap:12px;
+      align-items:start;
+      max-height:260px;
+      overflow:auto;
+      padding-right:4px;
+    }
+
+    .quick-copy-group{
+      min-width:0;
+      padding:10px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#f8fafc;
+    }
+
+    .quick-copy-group-title{
+      margin:0 0 8px;
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.4px;
+    }
+
+    .quick-copy-group-content{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:8px;
+    }
+
+    .quick-copy-group-title-column .quick-copy-group-content,
+    .quick-copy-group-autovm .quick-copy-group-content{
+      grid-template-columns:1fr;
+    }
+
+    .quick-copy-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      min-height:46px;
+      min-width:0;
+      padding:8px 10px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:#fff;
+    }
+    .quick-copy-empty{
+      display:block;
+      padding:10px;
+      color:var(--muted);
+      font-size:12px;
+      font-style:italic;
+    }
+
+    .quick-copy-label{
+      color:#2563eb;
+      font-weight:800;
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .quick-copy-btn{
+      padding:7px 10px;
+      font-size:12px;
+      background:var(--primary);
+      color:#fff;
+    }
+    .quick-copy-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;
+      min-width:28px;
+      height:28px;
+      padding:0;
+      border-radius:999px;
+      background:transparent;
+      color:transparent;
+      border:1px solid transparent;
+      font-size:11px;
+      font-weight:700;
+      visibility:hidden;
+      opacity:0;
+    }
+    .quick-copy-badge.active{
+      visibility:visible;
+      opacity:1;
+      background:#dcfce7;
+      color:#166534;
+      border-color:#86efac;
+    }
+
+
+    body.dark-mode{
+      --bg:#0f172a;
+      --card:#111827;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --border:#334155;
+      --primary:#3b82f6;
+      --success:#22c55e;
+      --danger:#f87171;
+      background:#0f172a;
+      color:var(--text);
+    }
+
+    body.dark-mode .panel,
+    body.dark-mode .section-copy-item,
+    body.dark-mode .quick-copy-item{
+      background:#111827;
+      border-color:#334155;
+      color:#e5e7eb;
+    }
+
+    body.dark-mode .quick-copy-group{
+      background:#0f172a;
+      border-color:#334155;
+    }
+
+    body.dark-mode .drop-zone,
+    body.dark-mode .field input,
+    body.dark-mode .section-copy-code,
+    body.dark-mode .preview{
+      background:#0b1220;
+      color:#e5e7eb;
+      border-color:#334155;
+    }
+
+    body.dark-mode .drop-zone:hover,
+    body.dark-mode .drop-zone.dragover{
+      background:#172554;
+      border-color:#60a5fa;
+    }
+
+    body.dark-mode .btn-secondary{
+      background:#1e293b;
+      color:#e5e7eb;
+      border:1px solid #334155;
+    }
+
+    body.dark-mode .btn-secondary:hover:not(:disabled){
+      background:#334155;
+    }
+
+    body.dark-mode .section-copy-title{
+      background:#172033;
+      border-color:#334155;
+    }
+
+    body.dark-mode .section-copy-title strong{
+      background:#083344;
+      color:#67e8f9;
+      border-color:#0e7490;
+    }
+
+    body.dark-mode .note{
+      background:#422006;
+      color:#fde68a;
+      border-color:#854d0e;
+    }
+
+    body.dark-mode .CodeMirror{
+      background:#0b1220;
+      color:#e5e7eb;
+      border-color:#334155;
+    }
+
+    body.dark-mode .CodeMirror-gutters{
+      background:#111827;
+      border-right-color:#334155;
+    }
+
+    body.dark-mode .CodeMirror-linenumber{
+      color:#64748b;
+    }
+
+    body.dark-mode .CodeMirror-cursor{
+      border-left-color:#f8fafc;
+    }
+
+    body.dark-mode .cm-tag,
+    body.dark-mode .cm-bracket{
+      color:#93c5fd;
+    }
+
+    body.dark-mode .cm-attribute{
+      color:#fca5a5;
+    }
+
+    body.dark-mode .cm-string{
+      color:#86efac;
+    }
+
+    body.dark-mode .cm-comment{
+      color:#cffafe!important;
+      background:#083344!important;
+      border-color:#0e7490!important;
+    }
+
+    body.dark-mode .preview a{
+      color:rgb(56,189,248)!important;
+    }
+
+    body.dark-mode .copy-status-badge{
+      background:#14532d;
+      color:#bbf7d0;
+      border-color:#22c55e;
+    }
+
+    body.dark-mode .quick-copy-badge{
+      background:transparent;
+      color:transparent;
+      border-color:transparent;
+    }
+
+    body.dark-mode .quick-copy-badge.active{
+      background:#14532d;
+      color:#bbf7d0;
+      border-color:#22c55e;
+    }
+
+    body.dark-mode .quick-copy-panel{
+      box-shadow:0 10px 28px rgba(0,0,0,.35);
+    }
+
+
+    body.dark-mode .quick-copy-label{
+      color:#22d3ee;
+    }
+
+    body.dark-mode .quick-copy-group-title{
+      color:#94a3b8;
+    }
+
+    body.dark-mode .quick-copy-btn{
+      background:#0ea5e9;
+      color:#fff;
+    }
+
+    body.dark-mode .quick-copy-btn:hover{
+      background:#0284c7;
+    }
+
+    @media(max-width:640px){
+      .hero-top{flex-direction:column}
+      .theme-toggle-top{align-self:flex-end}
+    }
+
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="hero">
+  <div class="hero-top">
+    <div>
+      <h1>DOCX ke HTML Converter <span style="font-size:12px;color:#64748b;font-weight:600">v48</span></h1>
+      <p>Unggah artikel Word, lalu pilih jenis output HTML yang dibutuhkan.</p>
+    </div>
+    <button class="btn-secondary theme-toggle-top" id="themeToggleBtn" type="button" aria-pressed="false">Dark Mode</button>
+  </div>
+</section>
+  <section class="panel">
+    <label class="drop-zone" id="dropZone" for="fileInput"><strong id="fileLabel">Klik atau tarik file DOCX ke sini</strong><span>Format yang didukung: .docx</span></label>
+    <input id="fileInput" type="file" accept=".docx">
+    <div class="settings">
+      <div class="field"><label for="headingSize">Ukuran heading (H1 &amp; H2)</label><input id="headingSize" type="number" min="12" max="40" value="18"></div>
+      <div class="field"><label for="bodySize">Ukuran body (H3 &amp; body)</label><input id="bodySize" type="number" min="10" max="32" value="16"></div>
+      <div class="field"><label for="outputName">Nama file output</label><input id="outputName" type="text" value="hasil-convert.html"></div>
+    </div>
+    <div class="actions"><button class="btn-primary" id="convertMobileBtn" disabled>Convert to Mobile</button><button class="btn-primary btn-desktop" id="convertDesktopBtn" disabled>Convert to Desktop</button><button class="btn-secondary" id="copyBtn" disabled>Copy HTML</button><button class="btn-secondary" id="copySectionsBtn" disabled>Copy per Section</button><button class="btn-secondary" id="downloadBtn" disabled>Download HTML</button><button class="btn-secondary" id="resetBtn">Reset</button></div>
+    <div class="status" id="status"></div>
+    <div class="note">Link autovm dan SKU dibuat sebagai section tersendiri dengan label Auto vm. Numbering angka dipertahankan tanpa spacer. Bullet point diubah menjadi tanda minus (-) dan diberi spacer antaritem. Anchor text, href, bold, italic, dan underline dari dokumen akan dipertahankan. Anchor ditampilkan sebagai teks klik berwarna biru dan bold, tanpa menampilkan kode link. Baris “Link image:” akan dikonversi menjadi tag <code>&lt;img&gt;</code>, lalu baris berikutnya menjadi judul produk dengan <code>href="#"</code>. Spacer <code>&lt;p&gt;&lt;span style="font-size: 16px"&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;</code> otomatis ditambahkan di antara paragraf, tetapi tidak di awal atau akhir section.</div>
+  </section>
+  
+
+<section class="panel quick-copy-panel" id="quickCopyPanel">
+  <div class="quick-copy-header">
+    <div>
+      <h2 id="quickCopyTitle">Quick Copy per Section</h2>
+      <div class="quick-copy-progress" id="quickCopyProgress">Progress: 0/0 section tersalin</div>
+    </div>
+    <button class="btn-secondary" id="resetQuickCopyBtn">Reset Status Copy</button>
+  </div>
+  <div class="quick-copy-list" id="quickCopyList"></div>
+</section>
+<section class="panel section-copy-panel" id="sectionCopyPanel">
+  <div class="section-copy-header">
+    <div>
+      <h2 id="sectionCopyPanelTitle">Copy HTML per Section</h2>
+      <div class="section-copy-progress" id="sectionCopyProgress">Progress: 0/0 section tersalin</div>
+    </div>
+    <div class="section-copy-actions">
+      <button class="btn-secondary" id="resetSectionStatusBtn">Reset Status Copy</button>
+      <button class="btn-secondary" id="closeSectionPanelBtn">Tutup</button>
+    </div>
+  </div>
+  <div class="section-copy-list" id="sectionCopyList"></div>
+</section>
+<section class="workspace">
+    <div class="panel"><h2>HTML Hasil Convert</h2><textarea id="output" spellcheck="false"></textarea></div>
+    <div class="panel"><h2>Preview</h2><div class="preview" id="preview"><p style="color:#6b7280">Preview artikel akan tampil di sini.</p></div></div>
+  </section>
+</main>
+<script>
+const $=id=>document.getElementById(id);const fileInput=$('fileInput'),dropZone=$('dropZone'),fileLabel=$('fileLabel'),convertMobileBtn=$('convertMobileBtn'),convertDesktopBtn=$('convertDesktopBtn'),copyBtn=$('copyBtn'),copySectionsBtn=$('copySectionsBtn'),downloadBtn=$('downloadBtn'),themeToggleBtn=$('themeToggleBtn'),resetBtn=$('resetBtn'),output=$('output'),preview=$('preview'),status=$('status'),headingSize=$('headingSize'),bodySize=$('bodySize'),outputName=$('outputName'),quickCopyPanel=$('quickCopyPanel'),quickCopyTitle=$('quickCopyTitle'),quickCopyProgress=$('quickCopyProgress'),quickCopyList=$('quickCopyList'),resetQuickCopyBtn=$('resetQuickCopyBtn'),sectionCopyPanel=$('sectionCopyPanel'),sectionCopyList=$('sectionCopyList'),sectionCopyPanelTitle=$('sectionCopyPanelTitle'),sectionCopyProgress=$('sectionCopyProgress'),resetSectionStatusBtn=$('resetSectionStatusBtn'),closeSectionPanelBtn=$('closeSectionPanelBtn');let selectedFile=null;const editor=CodeMirror.fromTextArea(output,{mode:'text/html',lineNumbers:true,lineWrapping:true});editor.on('change',()=>preview.innerHTML=editor.getValue());
+function setStatus(m,t=''){status.textContent=m;status.className=('status '+t).trim()}
+function selectFile(file){if(!file)return;if(!file.name.toLowerCase().endsWith('.docx')){setStatus('File harus berformat .docx.','error');return}selectedFile=file;fileLabel.textContent=file.name;convertMobileBtn.disabled=false;convertDesktopBtn.disabled=false;const clean=file.name.replace(/\.docx$/i,'').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'_');outputName.value=clean+'_Mobile_Sectioned.html';setStatus('File siap dikonversi.')}
+fileInput.addEventListener('change',e=>selectFile(e.target.files[0]));['dragenter','dragover'].forEach(n=>dropZone.addEventListener(n,e=>{e.preventDefault();dropZone.classList.add('dragover')}));['dragleave','drop'].forEach(n=>dropZone.addEventListener(n,e=>{e.preventDefault();dropZone.classList.remove('dragover')}));dropZone.addEventListener('drop',e=>selectFile(e.dataTransfer.files[0]));
+function esc(v){return v.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')}
+function isHeading(text){
+  if(!text)return false;
+  const value=text.trim();
+  if(!value||value.length>140)return false;
+  if(/^Link (?:autovm|image)\s*:/i.test(value)||/^SKU\s*:?/i.test(value))return false;
+
+  // Heading bernomor selalu menjadi H3.
+  if(/^\d+\.\s+/.test(value))return true;
+
+  // Kalimat lengkap tidak boleh otomatis dianggap heading.
+  // Ini mencegah paragraf seperti “Pilihan di pasaran kini sangat beragam...” menjadi H2.
+  if(/[.!;,]$/.test(value))return false;
+  if(value.split(/\s+/).length>16)return false;
+
+  return /^(Kenapa|Tren|Keunggulan|Pilihan|Era Baru|Daftar|Tips|Kesalahan|FAQ|Tanya Jawab|Temukan|Dapatkan|Rekomendasi|Kapan|Apakah|Faktor|Cara Menghitung|Estimasi|Manfaat|Jenis|Panduan|Perbedaan|Hal yang Perlu|Cara Memilih|Kesimpulan)\b/i.test(value);
+}
+function extractAnchorData(value){
+  let normalized=value||'';
+
+  // Decode HTML entities repeatedly because DOCX content can be encoded more than once.
+  for(let i=0;i<3;i++){
+    const decoder=document.createElement('textarea');
+    decoder.innerHTML=normalized;
+    const decoded=decoder.value;
+    if(decoded===normalized)break;
+    normalized=decoded;
+  }
+
+  const holder=document.createElement('div');
+  holder.innerHTML=normalized;
+
+  const anchor=holder.querySelector('a[href]');
+  if(anchor){
+    return {
+      href:anchor.getAttribute('href')||'#',
+      text:(anchor.textContent||'').trim()
+    };
+  }
+
+  // Fallback for malformed literal anchor text.
+  const match=normalized.match(/<a\s+[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/i);
+  if(match){
+    const label=document.createElement('div');
+    label.innerHTML=match[2];
+    return {
+      href:match[1],
+      text:(label.textContent||'').trim()
+    };
+  }
+
+  return {
+    href:'#',
+    text:holder.textContent.trim()||normalized.replace(/<[^>]+>/g,'').trim()
+  };
+}
+
+function normalizeAnchorMarkup(value){
+  if(!value)return '';
+
+  let normalized=value;
+
+  // Handle anchor HTML that arrived as encoded text, e.g. &lt;a href="..."&gt;Text&lt;/a&gt;.
+  if(/&lt;a\b/i.test(normalized)){
+    const decoder=document.createElement('textarea');
+    decoder.innerHTML=normalized;
+    normalized=decoder.value;
+  }
+
+  // Only convert complete anchor markup; other HTML remains handled by the sanitizer.
+  normalized=normalized.replace(
+    /<a\s+[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi,
+    (_match,href,label)=>'<a href="'+href+'">'+label+'</a>'
+  );
+
+  return normalized;
+}
+
+function inlineFormat(text){
+  const holder=document.createElement('div');
+  holder.innerHTML=normalizeAnchorMarkup(text);
+
+  const allowed=new Set(['A','STRONG','EM','U','BR']);
+  [...holder.querySelectorAll('*')].forEach(el=>{
+    if(!allowed.has(el.tagName)){
+      el.replaceWith(...el.childNodes);
+      return;
+    }
+
+    [...el.attributes].forEach(attr=>{
+      if(el.tagName==='A'&&attr.name.toLowerCase()==='href')return;
+      el.removeAttribute(attr.name);
+    });
+  });
+
+  const terms=['air purifier','heavy-duty','smartphone','remote','smart home','indoor','outdoor','inverter','monoblock','duoblock','one piece toilet','two piece toilet','dual flush','seat cover','smart toilet','touchless','heated seat','auto flush','soft closing','rough-in','siphonic','washdown','dry bathroom'];
+
+  const walk=node=>{
+    [...node.childNodes].forEach(child=>{
+      if(child.nodeType===Node.TEXT_NODE){
+        let value=child.nodeValue;
+        terms.forEach(term=>{
+          const safe=term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+          const regex=new RegExp('\\b('+safe+')\\b','gi');
+          if(regex.test(value)){
+            const span=document.createElement('span');
+            span.innerHTML=value.replace(regex,'<em>$1</em>');
+            child.replaceWith(...span.childNodes);
+            value='';
+          }
+        });
+      }else if(child.nodeType===Node.ELEMENT_NODE&&child.tagName!=='A'){
+        walk(child);
+      }
+    });
+  };
+  walk(holder);
+
+
+  // Anchor text must be bold and use the same blue tone as the product links.
+  holder.querySelectorAll('a').forEach(anchor=>{
+    anchor.setAttribute('style','color: rgb(0, 167, 245);');
+
+    let strong=anchor.querySelector(':scope > strong');
+    if(!strong){
+      strong=document.createElement('strong');
+      while(anchor.firstChild)strong.appendChild(anchor.firstChild);
+      anchor.appendChild(strong);
+    }
+
+    if(!strong.querySelector(':scope > u')){
+      const underline=document.createElement('u');
+      while(strong.firstChild)underline.appendChild(strong.firstChild);
+      strong.appendChild(underline);
+    }
+  });
+
+  return holder.innerHTML.trim();
+}
+
+window.buildConvertedHtml=function(pars){
+  const hs=Number(headingSize.value)||18,bs=Number(bodySize.value)||16;
+  const spacer='<p><span style="font-size: '+bs+'px"><br></span></p>';
+  const lines=[];
+  let sec=1,i=0,pending=null,mainStarted=false,lastType='',startNewSectionAfterMetadata=false;
+  const addSection=(label='')=>{if(lines.length&&lines[lines.length-1]===spacer)lines.pop();lines.push('<!-- Section '+sec+++(label?' '+label:'')+' -->');lastType='section'};
+  const addBlock=(html,type)=>{
+    if(type==='paragraph'&&lastType==='paragraph')lines.push(spacer);
+    if((type==='heading'||type==='section'||type==='metadata')&&lines[lines.length-1]===spacer)lines.pop();
+    lines.push(html);lastType=type;
+  };
+  while(i<pars.length&&!pars[i].trim())i++;
+  if(!pars[i])throw new Error('Dokumen tidak memiliki isi.');
+  addSection();
+  const h1Text=pars[i]
+    .replace(/<\/?strong[^>]*>/gi,'')
+    .replace(/<[^>]+>/g,'')
+    .trim();
+  addBlock('<h1 style="text-align: center"><span style="font-size: '+hs+'px"><strong>'+esc(h1Text)+'</strong></span></h1>','heading');
+  i++;
+  addSection();
+  for(;i<pars.length;i++){
+    let raw=pars[i].trim();
+    if(!raw)continue;
+
+    const isH2Source=raw.startsWith('[[H2]]');
+    const isH3Source=raw.startsWith('[[H3]]');
+    const isNumberedListItem=raw.startsWith('[[NUMBERED_LIST]]');
+    const isBulletListItem=raw.startsWith('[[BULLET_LIST]]');
+    const isListItem=isNumberedListItem||isBulletListItem;
+
+    if(isH2Source){
+      raw=raw.replace(/^\[\[H2\]\]/,'');
+    }else if(isH3Source){
+      raw=raw.replace(/^\[\[H3\]\]/,'');
+    }else if(isNumberedListItem){
+      raw=raw.replace(/^\[\[NUMBERED_LIST\]\]/,'');
+    }else if(isBulletListItem){
+      raw=raw.replace(/^\[\[BULLET_LIST\]\]/,'');
+    }
+
+    const rawPlain=raw.replace(/<[^>]+>/g,'').trim();
+
+    if(/^Link autovm\s*:/i.test(raw)){
+      addSection('Auto vm');
+      addBlock(raw,'metadata');
+      if(i+1<pars.length&&/^SKU\s*:?/i.test(pars[i+1].trim())){
+        addBlock(pars[++i].trim(),'metadata');
+      }
+      mainStarted=true;
+      startNewSectionAfterMetadata=true;
+      continue;
+    }
+
+    if(/^SKU\s*:?/i.test(raw)){
+      addBlock(raw,'metadata');
+      startNewSectionAfterMetadata=true;
+      continue;
+    }
+
+    if(startNewSectionAfterMetadata){
+      addSection();
+      startNewSectionAfterMetadata=false;
+    }
+
+    if(/^Link image\s*:/i.test(raw)){
+      pending=raw.split(':').slice(1).join(':').trim();
+      continue;
+    }
+
+    if(pending){
+      const productLink=extractAnchorData(raw);
+      const productTitle=productLink.text||rawPlain;
+      const productHref=productLink.href||'#';
+
+      addBlock('<p>\n  <img src="'+esc(pending)+'"\n       alt="'+esc(productTitle)+'"\n       style="display: block; margin-left: auto; margin-right: auto">\n  <br>\n</p>\n\n<p style="text-align: center;"><a href="'+esc(productHref)+'" style="font-size: '+bs+'px;"><strong style="color: rgb(0, 167, 245);">'+esc(productTitle)+'</strong></a></p>\n<p style="text-align: center;"><br></p>','image');
+      pending=null;
+      continue;
+    }
+
+    if(!mainStarted&&isHeading(rawPlain)){addSection();mainStarted=true}
+
+    if(isH2Source){
+      addBlock('<h2><span style="font-size: '+hs+'px"><strong>'+inlineFormat(raw)+'</strong></span></h2>','heading');
+    }else if(isH3Source){
+      addBlock('<h3><strong><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></strong></h3>','heading');
+    }else if(isNumberedListItem){
+      addBlock('<p data-list-type="numbered"><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','paragraph');
+    }else if(isBulletListItem){
+      addBlock('<p data-list-type="bullet"><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','paragraph');
+    }else if(/^\d+\.\s+/.test(rawPlain)){
+      addBlock('<h3><strong><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></strong></h3>','heading');
+    }else if(isHeading(rawPlain)){
+      addBlock('<h2><span style="font-size: '+hs+'px"><strong>'+inlineFormat(raw)+'</strong></span></h2>','heading');
+    }else{
+      addBlock('<p><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','paragraph');
+    }
+  }
+  if(lines[lines.length-1]===spacer)lines.pop();
+
+  const applyHeadingSpacers=(blocks)=>{
+    const result=[];
+    let section=[];
+
+    const flushSection=()=>{
+      if(!section.length)return;
+
+      const comment=section[0]&&/^<!-- Section \d+(?: [^>]+)? -->$/.test(section[0])?section.shift():null;
+      if(comment)result.push(comment);
+
+      const content=section.filter(block=>block!==spacer);
+      const firstIndex=0;
+      const lastIndex=content.length-1;
+
+      content.forEach((block,index)=>{
+        const heading=/^<h[1-3]\b/i.test(block);
+        const isH1=/^<h1\b/i.test(block);
+        const paragraph=/^<p\b/i.test(block);
+        const numberedListItem=/^<p\b[^>]*data-list-type="numbered"/i.test(block);
+        const bulletListItem=/^<p\b[^>]*data-list-type="bullet"/i.test(block);
+        const previousBlock=index>0?content[index-1]:'';
+        const previousParagraph=/^<p\b/i.test(previousBlock);
+        const previousNumberedListItem=/^<p\b[^>]*data-list-type="numbered"/i.test(previousBlock);
+        const previousBulletListItem=/^<p\b[^>]*data-list-type="bullet"/i.test(previousBlock);
+
+        // H1 tidak menggunakan spacer sebelum maupun sesudah.
+        if(isH1){
+          if(result[result.length-1]===spacer)result.pop();
+          result.push(block);
+          return;
+        }
+
+        if(heading){
+          const atStart=index===firstIndex;
+          const atEnd=index===lastIndex;
+
+          // Heading di akhir atau menjadi satu-satunya konten: spacer sebelum.
+          if(atEnd&&result[result.length-1]!==spacer)result.push(spacer);
+          // Heading di tengah: spacer sebelum.
+          if(!atStart&&!atEnd&&result[result.length-1]!==spacer)result.push(spacer);
+
+          result.push(block);
+
+          // Heading di awal atau tengah: spacer setelah.
+          if((atStart||(!atStart&&!atEnd))&&result[result.length-1]!==spacer)result.push(spacer);
+          // Jika heading adalah satu-satunya konten, tambahkan juga spacer setelah.
+          if(atStart&&atEnd&&result[result.length-1]!==spacer)result.push(spacer);
+        }else{
+          // Tambahkan spacer di antara dua paragraf dalam section yang sama.
+          const consecutiveNumbered=numberedListItem&&previousNumberedListItem;
+          const consecutiveBullet=bulletListItem&&previousBulletListItem;
+
+          if(paragraph&&previousParagraph&&!consecutiveNumbered&&result[result.length-1]!==spacer){
+            result.push(spacer);
+          }
+
+          if(result[result.length-1]===spacer&&block===spacer)return;
+          result.push(block);
+        }
+      });
+
+      section=[];
+    };
+
+    blocks.forEach(block=>{
+      if(/^<!-- Section \d+(?: [^>]+)? -->$/.test(block)){
+        flushSection();
+        section=[block];
+      }else{
+        section.push(block);
+      }
+    });
+
+    flushSection();
+    return result;
+  };
+
+  const formattedBlocks=applyHeadingSpacers(lines);
+
+  const formatAllAnchors=(html)=>{
+    if(!/<a\b/i.test(html))return html;
+
+    const holder=document.createElement('div');
+    holder.innerHTML=html;
+
+    holder.querySelectorAll('a').forEach(anchor=>{
+      // Pertahankan font-size pada anchor produk, tetapi pastikan warna biru.
+      const existingFontSize=anchor.style.fontSize;
+      anchor.setAttribute(
+        'style',
+        (existingFontSize ? 'font-size: '+existingFontSize+'; ' : '') +
+        'color: rgb(0, 167, 245);'
+      );
+
+      let strong=anchor.querySelector(':scope > strong');
+      if(!strong){
+        strong=document.createElement('strong');
+        while(anchor.firstChild)strong.appendChild(anchor.firstChild);
+        anchor.appendChild(strong);
+      }
+
+      if(!strong.querySelector(':scope > u')){
+        const underline=document.createElement('u');
+        while(strong.firstChild)underline.appendChild(strong.firstChild);
+        strong.appendChild(underline);
+      }
+    });
+
+    return holder.innerHTML;
+  };
+
+  formattedBlocks.forEach((block,index)=>{
+    formattedBlocks[index]=formatAllAnchors(block)
+      .replace(/\sdata-list-type="(?:numbered|bullet)"/gi,'');
+  });
+
+  return formattedBlocks.join('\n\n');
+}
+function sanitizeInlineHtml(html){
+  const holder=document.createElement('div');
+  holder.innerHTML=normalizeAnchorMarkup(html);
+
+  const allowed=new Set(['A','STRONG','EM','U','BR']);
+
+  [...holder.querySelectorAll('*')].forEach(el=>{
+    if(!allowed.has(el.tagName)){
+      el.replaceWith(...el.childNodes);
+      return;
+    }
+
+    [...el.attributes].forEach(attr=>{
+      if(el.tagName==='A'&&attr.name.toLowerCase()==='href')return;
+      el.removeAttribute(attr.name);
+    });
+  });
+
+  return holder.innerHTML.trim();
+}
+
+async function convert(mode){if(!selectedFile)return;convertMobileBtn.disabled=true;convertDesktopBtn.disabled=true;if(mode==='desktop'){headingSize.value=24;bodySize.value=18;sectionCopyPanelTitle.textContent='Copy HTML Desktop per Section';quickCopyTitle.textContent='Quick Copy Desktop per Section';}else{headingSize.value=18;bodySize.value=16;sectionCopyPanelTitle.textContent='Copy HTML Mobile per Section';quickCopyTitle.textContent='Quick Copy Mobile per Section';}const base=selectedFile.name.replace(/\.docx$/i,'').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'_');outputName.value=base+'_'+(mode==='desktop'?'Desktop':'Mobile')+'_Sectioned.html';setStatus('Sedang membaca dan mengonversi dokumen...');try{const arrayBuffer=await selectedFile.arrayBuffer();const result=await mammoth.convertToHtml({arrayBuffer});const temp=document.createElement('div');temp.innerHTML=result.value;const pars=[];temp.querySelectorAll('p,h1,h2,h3,li').forEach(node=>{
+  const tag=node.tagName.toLowerCase();
+  let value=tag==='p'||tag==='li'
+    ? sanitizeInlineHtml(node.innerHTML)
+    : sanitizeInlineHtml(node.innerHTML||node.textContent||'');
+
+  if(!value)return;
+
+  if(tag==='h2'){
+    value='[[H2]]'+value;
+  }else if(tag==='h3'){
+    value='[[H3]]'+value;
+  }else if(tag==='li'){
+    const parent=node.parentElement;
+    const isOrdered=parent&&parent.tagName.toLowerCase()==='ol';
+
+    if(isOrdered){
+      const siblings=[...parent.children].filter(child=>child.tagName.toLowerCase()==='li');
+      const number=siblings.indexOf(node)+1;
+      value='[[NUMBERED_LIST]]'+number+'. '+value.replace(/^\d+\.\s*/,'');
+    }else{
+      value='[[BULLET_LIST]]- '+value.replace(/^[•●▪◦‣⁃\-–—]\s*/,'');
+    }
+  }
+
+  pars.push(value);
+});if(typeof window.buildConvertedHtml!=='function'){
+  throw new Error('Fungsi converter belum termuat. Silakan refresh halaman dengan Ctrl+F5.');
+}
+const converted=window.buildConvertedHtml(pars);copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';editor.setValue(converted);preview.innerHTML=converted;renderQuickCopy();copyBtn.disabled=false;copySectionsBtn.disabled=false;downloadBtn.disabled=false;setStatus('Konversi selesai. Silakan cek hasil dan preview.','success')}catch(e){console.error(e);setStatus('Konversi gagal: '+e.message,'error')}finally{convertMobileBtn.disabled=false;convertDesktopBtn.disabled=false}}
+
+function splitHtmlBySection(html){
+  const matches=[...html.matchAll(/<!-- Section \d+(?: [^>]+)? -->/g)];
+  if(!matches.length)return [{title:'Section 1',html:html.trim()}];
+
+  return matches.map((match,index)=>{
+    const start=match.index;
+    const end=index+1<matches.length?matches[index+1].index:html.length;
+    const sectionHtml=html
+      .slice(start,end)
+      .replace(/^<!-- Section \d+(?: [^>]+)? -->\s*/,'')
+      .trim();
+
+    return {
+      title:match[0].replace('<!--','').replace('-->','').trim(),
+      html:sectionHtml
+    };
+  });
+}
+
+async function copySectionText(value){
+  try{
+    await navigator.clipboard.writeText(value);
+  }catch(error){
+    const temp=document.createElement('textarea');
+    temp.value=value;
+    temp.style.position='fixed';
+    temp.style.opacity='0';
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    temp.remove();
+  }
+}
+
+const copiedSections=new Set();
+
+function updateSectionCopyProgress(){
+  const total=sectionCopyList.querySelectorAll('.section-copy-item').length;
+  sectionCopyProgress.textContent='Progress: '+copiedSections.size+'/'+total+' section tersalin';
+}
+
+
+function updateQuickCopyProgress(){
+  const total=quickCopyList.querySelectorAll('.quick-copy-item').length;
+  quickCopyProgress.textContent='Progress: '+copiedSections.size+'/'+total+' section tersalin';
+}
+
+function createQuickCopyItem(section){
+  const item=document.createElement('div');
+  item.className='quick-copy-item';
+
+  const label=document.createElement('span');
+  label.className='quick-copy-label';
+  label.textContent=section.title;
+
+  const actions=document.createElement('div');
+  actions.style.display='flex';
+  actions.style.alignItems='center';
+  actions.style.gap='8px';
+  actions.style.flexShrink='0';
+
+  const button=document.createElement('button');
+  button.type='button';
+  button.className='quick-copy-btn';
+  button.textContent='Copy';
+
+  const badge=document.createElement('span');
+  badge.className='quick-copy-badge';
+  badge.textContent='✓';
+
+  if(copiedSections.has(section.title)){
+    badge.classList.add('active');
+  }
+
+  button.addEventListener('click',async()=>{
+    await copySectionText(section.html);
+    copiedSections.add(section.title);
+    badge.classList.add('active');
+    updateQuickCopyProgress();
+    updateSectionCopyProgress();
+
+    sectionCopyList.querySelectorAll('.section-copy-item').forEach(sectionItem=>{
+      const title=sectionItem.querySelector('.section-copy-title strong');
+      const detailBadge=sectionItem.querySelector('.copy-status-badge');
+      if(title&&title.textContent.includes(section.title)&&detailBadge){
+        detailBadge.classList.add('active');
+      }
+    });
+
+    setStatus(section.title+' berhasil disalin.','success');
+  });
+
+  actions.append(button,badge);
+  item.append(label,actions);
+  return item;
+}
+
+function createQuickCopyGroup(title,className=''){
+  const group=document.createElement('div');
+  group.className='quick-copy-group '+className;
+
+  const heading=document.createElement('div');
+  heading.className='quick-copy-group-title';
+  heading.textContent=title;
+
+  const content=document.createElement('div');
+  content.className='quick-copy-group-content';
+
+  group.append(heading,content);
+  return {group,content};
+}
+
+function renderQuickCopy(){
+  const sections=splitHtmlBySection(editor.getValue());
+  quickCopyList.innerHTML='';
+
+  const titleGroup=createQuickCopyGroup('Judul','quick-copy-group-title-column');
+  const contentGroup=createQuickCopyGroup('Konten');
+  const autoVmGroup=createQuickCopyGroup('Auto VM','quick-copy-group-autovm');
+
+  sections.forEach(section=>{
+    const isTitle=/^Section 1(?:\s|$)/i.test(section.title);
+    const isAutoVm=/Auto vm/i.test(section.title);
+    const item=createQuickCopyItem(section);
+
+    if(isTitle){
+      titleGroup.content.appendChild(item);
+    }else if(isAutoVm){
+      autoVmGroup.content.appendChild(item);
+    }else{
+      contentGroup.content.appendChild(item);
+    }
+  });
+
+  if(!titleGroup.content.children.length){
+    titleGroup.content.innerHTML='<span class="quick-copy-empty">Tidak ada section judul</span>';
+  }
+
+  if(!contentGroup.content.children.length){
+    contentGroup.content.innerHTML='<span class="quick-copy-empty">Tidak ada section konten</span>';
+  }
+
+  if(!autoVmGroup.content.children.length){
+    autoVmGroup.content.innerHTML='<span class="quick-copy-empty">Tidak ada Auto VM</span>';
+  }
+
+  quickCopyList.append(
+    titleGroup.group,
+    contentGroup.group,
+    autoVmGroup.group
+  );
+
+  updateQuickCopyProgress();
+  quickCopyPanel.classList.add('active');
+}
+
+function renderSectionCopies(){
+  const sections=splitHtmlBySection(editor.getValue());
+  sectionCopyList.innerHTML='';
+
+  sections.forEach(section=>{
+    const item=document.createElement('div');
+    item.className='section-copy-item';
+
+    const header=document.createElement('div');
+    header.className='section-copy-title';
+
+    const title=document.createElement('strong');
+    title.textContent='<!-- '+section.title+' -->';
+
+    const buttonWrap=document.createElement('div');
+    buttonWrap.className='section-copy-button-wrap';
+
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='btn-copy-section';
+    button.textContent='Copy Section';
+
+    const badge=document.createElement('span');
+    badge.className='copy-status-badge';
+    badge.textContent='✓ Tersalin';
+
+    if(copiedSections.has(section.title)){
+      badge.classList.add('active');
+    }
+
+    button.addEventListener('click',async()=>{
+      await copySectionText(section.html);
+      copiedSections.add(section.title);
+      badge.classList.add('active');
+      updateSectionCopyProgress();
+      setStatus(section.title+' berhasil disalin.','success');
+    });
+
+    buttonWrap.append(button,badge);
+
+    const code=document.createElement('pre');
+    code.className='section-copy-code';
+    code.textContent=section.html;
+
+    header.append(title,buttonWrap);
+    item.append(header,code);
+    sectionCopyList.appendChild(item);
+  });
+
+  updateSectionCopyProgress();
+  sectionCopyPanel.classList.add('active');
+  sectionCopyPanel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+copySectionsBtn.addEventListener('click',()=>{renderQuickCopy();renderSectionCopies();});
+
+
+resetQuickCopyBtn.addEventListener('click',()=>{
+  copiedSections.clear();
+  quickCopyList.querySelectorAll('.quick-copy-badge').forEach(badge=>badge.classList.remove('active'));
+  sectionCopyList.querySelectorAll('.copy-status-badge').forEach(badge=>badge.classList.remove('active'));
+  updateQuickCopyProgress();
+  updateSectionCopyProgress();
+  setStatus('Status copy per section berhasil di-reset.','success');
+});
+
+resetSectionStatusBtn.addEventListener('click',()=>{
+  copiedSections.clear();
+  sectionCopyList.querySelectorAll('.copy-status-badge').forEach(badge=>{
+    badge.classList.remove('active');
+  });
+  updateSectionCopyProgress();
+  setStatus('Status copy per section berhasil di-reset.','success');
+});
+
+closeSectionPanelBtn.addEventListener('click',()=>sectionCopyPanel.classList.remove('active'));
+
+
+function applyTheme(theme){
+  const isDark=theme==='dark';
+  document.body.classList.toggle('dark-mode',isDark);
+  themeToggleBtn.textContent=isDark?'Light Mode':'Dark Mode';
+  themeToggleBtn.setAttribute('aria-pressed',String(isDark));
+  localStorage.setItem('docxConverterTheme',theme);
+}
+
+themeToggleBtn.addEventListener('click',()=>{
+  const nextTheme=document.body.classList.contains('dark-mode')?'light':'dark';
+  applyTheme(nextTheme);
+});
+
+applyTheme(localStorage.getItem('docxConverterTheme')||'light');
+
+convertMobileBtn.addEventListener('click',()=>convert('mobile'));convertDesktopBtn.addEventListener('click',()=>convert('desktop'));copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.getValue())}catch{navigator.clipboard.writeText(editor.getValue())}setStatus('HTML berhasil disalin ke clipboard.','success')});downloadBtn.addEventListener('click',()=>{const name=(outputName.value.trim()||'hasil-convert-mobile.html');const blob=new Blob([editor.getValue()],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name.endsWith('.html')?name:name+'.html';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);setStatus('File HTML berhasil diunduh.','success')});resetBtn.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileLabel.textContent='Klik atau tarik file DOCX ke sini';editor.setValue('');preview.innerHTML='<p style="color:#6b7280">Preview artikel akan tampil di sini.</p>';convertMobileBtn.disabled=true;convertDesktopBtn.disabled=true;copyBtn.disabled=true;copySectionsBtn.disabled=true;downloadBtn.disabled=true;headingSize.value=18;bodySize.value=16;outputName.value='hasil-convert.html';copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyTitle.textContent='Quick Copy per Section';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyPanelTitle.textContent='Copy HTML per Section';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';setStatus('')});
+</script>
+</body>
+</html>
