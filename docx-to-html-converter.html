@@ -1,0 +1,2150 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DOCX ke HTML Converter</title>
+<script src="https://unpkg.com/mammoth@1.12.0/mammoth.browser.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<style>
+
+    :root{
+      --bg:#f5f5f7;
+      --card:rgba(255,255,255,.86);
+      --card-solid:#ffffff;
+      --text:#1d1d1f;
+      --muted:#6e6e73;
+      --border:rgba(0,0,0,.10);
+      --primary:#0071e3;
+      --primary-hover:#0077ed;
+      --success:#34c759;
+      --danger:#ff3b30;
+      --shadow:0 14px 40px rgba(0,0,0,.08);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at 10% -10%,rgba(0,113,227,.10),transparent 28%),
+        linear-gradient(180deg,#fbfbfd 0%,var(--bg) 100%);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+
+    .container{
+      width:min(1260px,calc(100% - 40px));
+      margin:28px auto 56px;
+    }
+
+    .hero{
+      margin-bottom:22px;
+      padding:20px 4px 8px;
+    }
+
+    .hero-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:24px;
+    }
+
+    .hero h1{
+      margin:0 0 10px;
+      font-size:clamp(34px,4vw,56px);
+      line-height:1.02;
+      letter-spacing:-1.8px;
+      font-weight:700;
+    }
+
+    .hero p{
+      margin:0;
+      max-width:760px;
+      color:var(--muted);
+      font-size:18px;
+      line-height:1.55;
+      letter-spacing:-.15px;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:24px;
+      margin-bottom:22px;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    .drop-zone{
+      min-height:180px;
+      border:1.5px dashed rgba(0,113,227,.35);
+      border-radius:20px;
+      padding:38px 24px;
+      text-align:center;
+      cursor:pointer;
+      background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(247,250,255,.9));
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      transition:transform .22s ease,border-color .22s ease,background .22s ease,box-shadow .22s ease;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.dragover{
+      transform:translateY(-2px);
+      border-color:var(--primary);
+      background:#f0f7ff;
+      box-shadow:0 10px 30px rgba(0,113,227,.10);
+    }
+
+    .drop-zone strong{
+      display:block;
+      margin-bottom:8px;
+      font-size:20px;
+      font-weight:650;
+      letter-spacing:-.2px;
+    }
+
+    .drop-zone span{
+      display:block;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    input[type=file]{display:none}
+
+    .settings{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .field label{
+      display:block;
+      margin-bottom:8px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:600;
+      letter-spacing:.15px;
+      text-transform:uppercase;
+    }
+
+    .field input{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px 14px;
+      background:rgba(255,255,255,.92);
+      color:var(--text);
+      font:inherit;
+      outline:none;
+      transition:border-color .2s ease,box-shadow .2s ease,background .2s ease;
+    }
+
+    .field input:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 4px rgba(0,113,227,.12);
+      background:#fff;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    button{
+      border:0;
+      border-radius:999px;
+      padding:11px 17px;
+      font:inherit;
+      font-size:14px;
+      font-weight:650;
+      cursor:pointer;
+      transition:transform .16s ease,background .16s ease,opacity .16s ease,box-shadow .16s ease;
+    }
+
+    button:hover:not(:disabled){transform:translateY(-1px)}
+    button:active:not(:disabled){transform:translateY(0)}
+    button:disabled{opacity:.42;cursor:not-allowed}
+
+    .btn-primary{
+      background:var(--primary);
+      color:#fff;
+      box-shadow:0 6px 18px rgba(0,113,227,.22);
+    }
+    .btn-primary:hover:not(:disabled){background:var(--primary-hover)}
+
+    .btn-desktop{
+      background:#1d1d1f;
+      color:#fff;
+      box-shadow:0 6px 18px rgba(0,0,0,.15);
+    }
+    .btn-desktop:hover:not(:disabled){background:#000}
+
+    .btn-secondary{
+      background:#e8e8ed;
+      color:#1d1d1f;
+    }
+    .btn-secondary:hover:not(:disabled){background:#dedee3}
+
+    .theme-toggle-top{
+      flex-shrink:0;
+      min-width:112px;
+      background:#1d1d1f;
+      color:#fff;
+    }
+
+    .status{
+      margin-top:14px;
+      min-height:22px;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .status.success{color:var(--success)}
+    .status.error{color:var(--danger)}
+
+    .note{
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:#f2f2f7;
+      color:#515154;
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .workspace{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+    }
+
+    .workspace h2,
+    .section-copy-header h2,
+    .quick-copy-header h2{
+      margin:0 0 12px;
+      font-size:22px;
+      line-height:1.15;
+      letter-spacing:-.45px;
+      font-weight:700;
+    }
+
+    .CodeMirror{
+      height:650px;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:#fff;
+      color:#1d1d1f;
+      font:14px/1.65 "SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      overflow:hidden;
+    }
+
+    .CodeMirror-gutters{
+      background:#f5f5f7;
+      border-right:1px solid var(--border);
+    }
+
+    .CodeMirror-linenumber{color:#9a9aa0}
+
+    .cm-comment{
+      color:#0071e3!important;
+      font-weight:800!important;
+      font-size:15px!important;
+      line-height:1.9!important;
+      background:#eaf3ff!important;
+      border:1px solid #b8d8ff!important;
+      border-radius:8px!important;
+      padding:2px 8px!important;
+      display:inline-block!important;
+      margin:4px 0!important;
+    }
+
+    .preview{
+      min-height:650px;
+      max-height:780px;
+      overflow:auto;
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:22px;
+      background:#fff;
+    }
+
+    .preview img{
+      max-width:100%;
+      height:auto;
+      border-radius:12px;
+    }
+
+    .preview h3{font-weight:700}
+
+    .quick-copy-panel{
+      position:relative;
+      
+      z-index:20;
+      display:none;
+      border-radius:24px;
+      background:rgba(255,255,255,.9);
+      box-shadow:0 18px 45px rgba(0,0,0,.10);
+    }
+
+    .quick-copy-panel.active{display:block}
+
+    .quick-copy-header,
+    .section-copy-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:14px;
+    }
+
+    .quick-copy-progress,
+    .section-copy-progress{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .quick-copy-list{
+      display:grid;
+      grid-template-columns:minmax(180px,1fr) minmax(0,3fr) minmax(180px,1fr);
+      gap:12px;
+      align-items:start;
+      max-height:300px;
+      overflow:auto;
+      padding-right:4px;
+    }
+
+    .quick-copy-group{
+      min-width:0;
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:#f5f5f7;
+    }
+
+    .quick-copy-group-title{
+      margin:0 0 10px;
+      color:#6e6e73;
+      font-size:11px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.55px;
+    }
+
+    .quick-copy-group-content{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:8px;
+    }
+
+    .quick-copy-group-title-column .quick-copy-group-content,
+    .quick-copy-group-autovm .quick-copy-group-content{
+      grid-template-columns:1fr;
+    }
+
+    .quick-copy-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      min-height:48px;
+      min-width:0;
+      padding:9px 10px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+    }
+
+    .quick-copy-label{
+      color:#0071e3;
+      font-weight:700;
+      font-size:13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .quick-copy-btn,
+    .btn-copy-section{
+      background:var(--primary);
+      color:#fff;
+      padding:8px 12px;
+      font-size:12px;
+      box-shadow:none;
+    }
+
+    .quick-copy-btn:hover,
+    .btn-copy-section:hover{
+      background:var(--primary-hover);
+    }
+
+    .quick-copy-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;
+      min-width:28px;
+      height:28px;
+      padding:0;
+      border-radius:999px;
+      background:transparent;
+      color:transparent;
+      border:1px solid transparent;
+      font-size:12px;
+      font-weight:800;
+      visibility:hidden;
+      opacity:0;
+    }
+
+    .quick-copy-badge.active{
+      visibility:visible;
+      opacity:1;
+      background:#e9f9ee;
+      color:#218838;
+      border-color:#9de2ae;
+    }
+
+    .quick-copy-empty{
+      display:block;
+      padding:10px;
+      color:var(--muted);
+      font-size:12px;
+      font-style:italic;
+    }
+
+    .section-copy-panel{display:none;margin-top:20px}
+    .section-copy-panel.active{display:block}
+    .section-copy-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .section-copy-list{display:grid;gap:12px}
+
+    .section-copy-item{
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:#fff;
+    }
+
+    .section-copy-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      background:#f5f5f7;
+      border-bottom:1px solid var(--border);
+    }
+
+    .section-copy-title strong{
+      display:inline-block;
+      padding:6px 10px;
+      border:1px solid #b8d8ff;
+      border-radius:10px;
+      background:#eaf3ff;
+      color:#0071e3;
+      font-size:15px;
+      font-weight:800;
+      line-height:1.2;
+    }
+
+    .section-copy-code{
+      margin:0;
+      padding:16px;
+      max-height:240px;
+      overflow:auto;
+      white-space:pre-wrap;
+      word-break:break-word;
+      background:#fff;
+      color:#1d1d1f;
+      font:12px/1.6 "SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    }
+
+    .section-copy-button-wrap{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .copy-status-badge{
+      display:none;
+      padding:7px 10px;
+      border-radius:999px;
+      background:#e9f9ee;
+      color:#218838;
+      border:1px solid #9de2ae;
+      font-size:12px;
+      font-weight:700;
+    }
+    .copy-status-badge.active{display:inline-flex;align-items:center}
+
+    body.dark-mode{
+      --bg:#000;
+      --card:rgba(28,28,30,.92);
+      --card-solid:#1c1c1e;
+      --text:#f5f5f7;
+      --muted:#a1a1a6;
+      --border:rgba(255,255,255,.12);
+      --primary:#2997ff;
+      --primary-hover:#40a9ff;
+      --success:#30d158;
+      --danger:#ff453a;
+      background:
+        radial-gradient(circle at 10% -10%,rgba(41,151,255,.18),transparent 30%),
+        linear-gradient(180deg,#090909 0%,#000 100%);
+      color:var(--text);
+    }
+
+    body.dark-mode .panel,
+    body.dark-mode .section-copy-item,
+    body.dark-mode .quick-copy-item{
+      background:rgba(28,28,30,.92);
+      border-color:var(--border);
+      color:var(--text);
+    }
+
+    body.dark-mode .quick-copy-group{
+      background:#111113;
+      border-color:var(--border);
+    }
+
+    body.dark-mode .drop-zone,
+    body.dark-mode .field input,
+    body.dark-mode .section-copy-code,
+    body.dark-mode .preview{
+      background:#111113;
+      color:#f5f5f7;
+      border-color:var(--border);
+    }
+
+    body.dark-mode .drop-zone:hover,
+    body.dark-mode .drop-zone.dragover{
+      background:#0a2440;
+      border-color:#2997ff;
+    }
+
+    body.dark-mode .btn-secondary{
+      background:#2c2c2e;
+      color:#f5f5f7;
+    }
+    body.dark-mode .btn-secondary:hover:not(:disabled){background:#3a3a3c}
+
+    body.dark-mode .theme-toggle-top{
+      background:#f5f5f7;
+      color:#1d1d1f;
+    }
+
+    body.dark-mode .note{
+      background:#1c1c1e;
+      color:#c7c7cc;
+    }
+
+    body.dark-mode .CodeMirror{
+      background:#111113;
+      color:#f5f5f7;
+      border-color:var(--border);
+    }
+
+    body.dark-mode .CodeMirror-gutters{
+      background:#1c1c1e;
+      border-right-color:var(--border);
+    }
+
+    body.dark-mode .CodeMirror-linenumber{color:#636366}
+    body.dark-mode .CodeMirror-cursor{border-left-color:#f5f5f7}
+    body.dark-mode .cm-tag,
+    body.dark-mode .cm-bracket{color:#64d2ff}
+    body.dark-mode .cm-attribute{color:#ff9f0a}
+    body.dark-mode .cm-string{color:#30d158}
+
+    body.dark-mode .cm-comment{
+      color:#d1ecff!important;
+      background:#0a2947!important;
+      border-color:#1d6aa8!important;
+    }
+
+    body.dark-mode .section-copy-title{
+      background:#1c1c1e;
+      border-color:var(--border);
+    }
+
+    body.dark-mode .section-copy-title strong{
+      background:#0a2947;
+      color:#64d2ff;
+      border-color:#1d6aa8;
+    }
+
+    body.dark-mode .quick-copy-label{color:#64d2ff}
+    body.dark-mode .quick-copy-group-title{color:#8e8e93}
+    body.dark-mode .quick-copy-btn{background:#0a84ff}
+    body.dark-mode .quick-copy-btn:hover{background:#2997ff}
+
+    body.dark-mode .quick-copy-badge{
+      background:transparent;
+      color:transparent;
+      border-color:transparent;
+    }
+
+    body.dark-mode .quick-copy-badge.active,
+    body.dark-mode .copy-status-badge{
+      background:#12351d;
+      color:#7ee787;
+      border-color:#2ea043;
+    }
+
+    @media(max-width:900px){
+      .workspace,.settings{grid-template-columns:1fr}
+      .CodeMirror,.preview{min-height:460px;height:460px}
+      .quick-copy-list{grid-template-columns:1fr}
+      .quick-copy-group-content{grid-template-columns:1fr}
+    }
+
+    @media(max-width:640px){
+      .container{width:min(100% - 20px,1260px);margin-top:14px}
+      .hero-top{flex-direction:column}
+      .theme-toggle-top{align-self:flex-end}
+      .panel{padding:16px;border-radius:20px}
+      .hero h1{font-size:38px}
+      .hero p{font-size:16px}
+    }
+
+
+    .top-nav{
+      position:relative;
+      top:0;
+      z-index:100;
+      background:rgba(251,251,253,.78);
+      border-bottom:1px solid rgba(0,0,0,.08);
+      backdrop-filter:saturate(180%) blur(20px);
+      -webkit-backdrop-filter:saturate(180%) blur(20px);
+    }
+    .top-nav-inner{
+      width:min(1260px,calc(100% - 40px));
+      height:52px;
+      margin:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      color:var(--text);
+      text-decoration:none;
+      font-size:14px;
+      font-weight:700;
+    }
+    .brand-mark{
+      width:24px;height:24px;border-radius:7px;background:#1d1d1f;color:#fff;
+      display:grid;place-items:center;
+    }
+    .brand-mark svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8}
+    .top-nav-links{display:flex;gap:22px}
+    .top-nav-links a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:600}
+    .top-nav-links a:hover{color:var(--primary)}
+    .top-nav-actions{display:flex;align-items:center;gap:10px}
+    .version-pill{padding:5px 9px;border-radius:999px;background:#e8e8ed;color:#515154;font-size:11px;font-weight:700}
+    .icon-button{
+      width:34px;height:34px;padding:0;border-radius:50%;display:grid;place-items:center;background:#e8e8ed;color:#1d1d1f
+    }
+    .icon-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8}
+    .sun-icon{display:none}
+    body.dark-mode .moon-icon{display:none}
+    body.dark-mode .sun-icon{display:block}
+    body.dark-mode .top-nav{background:rgba(0,0,0,.72);border-color:rgba(255,255,255,.10)}
+    body.dark-mode .brand-mark{background:#f5f5f7;color:#1d1d1f}
+    body.dark-mode .version-pill,body.dark-mode .icon-button{background:#2c2c2e;color:#f5f5f7}
+
+    .hero{padding:42px 4px 30px}
+    .hero-copy{max-width:900px;margin:auto;text-align:center}
+    .eyebrow{display:inline-block;margin-bottom:12px;color:var(--primary);font-size:12px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
+    .hero h1{font-size:clamp(38px,5vw,68px);line-height:.94;letter-spacing:-3px}
+    .hero-tagline{margin:24px 0 10px!important;color:var(--text)!important;font-size:clamp(26px,3vw,42px)!important;font-weight:700;letter-spacing:-1.2px}
+    .hero-description{margin:auto!important;max-width:680px!important}
+
+    .convert-panel{scroll-margin-top:72px}
+    .convert-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .segmented-control{
+      display:inline-flex;padding:4px;border-radius:999px;background:#e8e8ed;gap:2px
+    }
+    .segment{padding:9px 17px;background:transparent;color:#515154;box-shadow:none}
+    .segment.active{background:#fff;color:#1d1d1f;box-shadow:0 2px 8px rgba(0,0,0,.10)}
+    body.dark-mode .segmented-control{background:#2c2c2e}
+    body.dark-mode .segment{color:#a1a1a6}
+    body.dark-mode .segment.active{background:#f5f5f7;color:#1d1d1f}
+    .convert-controls button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;vertical-align:-3px;margin-right:6px}
+    .convert-main-btn{min-width:128px}
+    .convert-main-btn.loading{pointer-events:none;opacity:.85}
+    .download-menu-wrap{position:relative}
+    .download-menu{
+      position:absolute;top:calc(100% + 8px);right:0;min-width:220px;padding:8px;border-radius:16px;
+      background:rgba(255,255,255,.96);border:1px solid var(--border);box-shadow:0 16px 38px rgba(0,0,0,.14);
+      opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:.18s ease;z-index:40
+    }
+    .download-menu.open{opacity:1;transform:none;pointer-events:auto}
+    .download-menu button{width:100%;text-align:left;background:transparent;border-radius:10px;padding:10px 12px;color:var(--text)}
+    .download-menu button:hover{background:#f2f2f7;transform:none}
+    body.dark-mode .download-menu{background:#1c1c1e}
+    body.dark-mode .download-menu button:hover{background:#2c2c2e}
+    .chevron{width:13px!important;height:13px!important;margin:0 0 0 4px!important}
+
+    .insight-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+    .panel-heading-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+    .stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+    .stat-card{padding:16px;border-radius:18px;background:#f5f5f7;border:1px solid var(--border)}
+    .stat-card span{display:block;color:var(--muted);font-size:12px;font-weight:600}
+    .stat-card strong{display:block;margin-top:8px;font-size:30px;line-height:1;letter-spacing:-1px}
+    body.dark-mode .stat-card{background:#111113}
+
+    .quality-score{
+      min-width:64px;height:64px;border-radius:50%;display:grid;place-items:center;
+      background:conic-gradient(var(--success) var(--quality,0%),#e8e8ed 0);
+      position:relative;font-size:13px;font-weight:800
+    }
+    .quality-score::before{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--card-solid)}
+    .quality-score span,.quality-score{isolation:isolate}
+    .quality-score{color:var(--text)}
+    .quality-list{display:grid;gap:8px;margin-top:14px}
+    .quality-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:14px;background:#f5f5f7}
+    .quality-item .label{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:650}
+    .quality-item .state{font-size:12px;font-weight:700}
+    .quality-item.pass .state{color:var(--success)}
+    .quality-item.warn .state{color:#ff9f0a}
+    .quality-item.fail .state{color:var(--danger)}
+    .quality-dot{width:9px;height:9px;border-radius:50%;background:currentColor}
+    .quality-empty{color:var(--muted);font-size:13px;padding:14px 0}
+    body.dark-mode .quality-item{background:#111113}
+    body.dark-mode .quality-score::before{background:#1c1c1e}
+
+    .quick-progress-wrap{display:flex;align-items:center;gap:12px}
+    .progress-ring{
+      --progress:0;
+      width:54px;height:54px;border-radius:50%;display:grid;place-items:center;position:relative;
+      background:conic-gradient(var(--primary) calc(var(--progress)*1%),#e8e8ed 0)
+    }
+    .progress-ring::before{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--card-solid)}
+    .progress-ring span{position:relative;font-size:11px;font-weight:800}
+    body.dark-mode .progress-ring::before{background:#1c1c1e}
+
+    .preview-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .preview-header h2{margin:0}
+    .preview-toggle{display:inline-flex;padding:3px;border-radius:999px;background:#e8e8ed}
+    .preview-mode{padding:7px 12px;background:transparent;color:#6e6e73;font-size:12px}
+    .preview-mode.active{background:#fff;color:#1d1d1f;box-shadow:0 1px 6px rgba(0,0,0,.10)}
+    body.dark-mode .preview-toggle{background:#2c2c2e}
+    body.dark-mode .preview-mode.active{background:#f5f5f7;color:#1d1d1f}
+    .preview-shell{transition:max-width .25s ease,margin .25s ease,box-shadow .25s ease}
+    .preview-shell.mobile{max-width:390px;margin:auto;box-shadow:0 16px 38px rgba(0,0,0,.14);border-radius:28px;overflow:hidden}
+
+    .toast-stack{position:fixed;right:24px;top:76px;z-index:300;display:grid;gap:10px}
+    .toast{
+      min-width:260px;max-width:360px;padding:13px 15px;border-radius:16px;
+      background:rgba(29,29,31,.94);color:#fff;box-shadow:0 16px 38px rgba(0,0,0,.22);
+      display:flex;align-items:center;gap:10px;animation:toastIn .22s ease
+    }
+    .toast.success::before{content:"✓";width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#30d158;color:#fff;font-size:12px;font-weight:900}
+    .toast.error::before{content:"!";width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#ff453a;color:#fff;font-size:12px;font-weight:900}
+    @keyframes toastIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:none}}
+
+    .conversion-overlay{
+      position:fixed;inset:0;z-index:400;display:grid;place-items:center;
+      background:rgba(0,0,0,.28);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+      opacity:0;pointer-events:none;transition:.2s ease
+    }
+    .conversion-overlay.active{opacity:1;pointer-events:auto}
+    .conversion-card{width:min(420px,calc(100% - 32px));padding:32px;border-radius:28px;background:rgba(255,255,255,.94);text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.22)}
+    body.dark-mode .conversion-card{background:rgba(28,28,30,.96)}
+    .conversion-spinner{width:46px;height:46px;border:4px solid #e8e8ed;border-top-color:var(--primary);border-radius:50%;margin:0 auto 18px;animation:spin .8s linear infinite}
+    .conversion-card h3{margin:0 0 8px;font-size:22px}
+    .conversion-card p{margin:0;color:var(--muted);font-size:14px}
+    .conversion-progress{height:6px;margin-top:20px;border-radius:999px;background:#e8e8ed;overflow:hidden}
+    .conversion-progress span{display:block;height:100%;width:0;background:var(--primary);border-radius:inherit;transition:width .3s ease}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .panel,.quick-copy-item,.section-copy-item,.stat-card,.quality-item{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+    .stat-card:hover,.quality-item:hover,.quick-copy-item:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+
+    @media(max-width:900px){
+      .top-nav-links{display:none}
+      .insight-grid{grid-template-columns:1fr}
+      .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media(max-width:640px){
+      .top-nav-inner{width:min(100% - 20px,1260px)}
+      .hero{padding:30px 4px 22px}
+      .hero h1{font-size:42px;letter-spacing:-2px}
+      .convert-controls{align-items:stretch}
+      .segmented-control{width:100%}
+      .segment{flex:1}
+      .convert-controls>button,.download-menu-wrap,.download-menu-wrap>button{width:100%}
+      .stats-grid{grid-template-columns:1fr 1fr}
+      .toast-stack{left:12px;right:12px;top:66px}
+      .toast{min-width:0;max-width:none}
+    }
+
+
+    .app-footer{
+      margin-top:24px;
+      border-top:1px solid var(--border);
+      background:rgba(245,245,247,.82);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    .footer-inner{
+      width:min(1260px,calc(100% - 40px));
+      margin:auto;
+      padding:22px 0 28px;
+    }
+
+    .footer-inner p{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.65;
+    }
+
+    body.dark-mode .app-footer{
+      background:rgba(17,17,19,.9);
+      border-color:var(--border);
+    }
+
+    .quick-copy-panel{
+      margin-top:0;
+      
+    }
+
+    @media(max-width:640px){
+      .footer-inner{
+        width:min(100% - 20px,1260px);
+      }
+    }
+
+
+    .insights-accordion{padding:0;overflow:hidden}
+    .accordion-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 24px;border-radius:0;background:transparent;color:var(--text);text-align:left}
+    .accordion-toggle:hover{background:rgba(0,113,227,.04);transform:none}
+    .accordion-toggle h2{margin:0;font-size:22px;letter-spacing:-.45px}
+    .accordion-icon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#e8e8ed;transition:transform .22s ease,background .22s ease;flex-shrink:0}
+    .accordion-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;transition:transform .22s ease}
+    .accordion-toggle[aria-expanded="true"] .accordion-icon svg{transform:rotate(180deg)}
+    .accordion-content{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;max-height:0;overflow:hidden;padding:0 24px;opacity:0;transition:max-height .32s ease,opacity .22s ease,padding .32s ease}
+    .accordion-content.open{max-height:1200px;opacity:1;padding:0 24px 24px}
+    body.dark-mode .accordion-icon{background:#2c2c2e;color:#f5f5f7}
+    body.dark-mode .accordion-toggle:hover{background:rgba(41,151,255,.06)}
+    @media(max-width:900px){.accordion-content{grid-template-columns:1fr}}
+
+
+    .convert-panel{
+      margin-bottom:14px;
+    }
+
+    .quick-copy-panel{
+      margin-top:0;
+      margin-bottom:14px;
+      padding-top:20px;
+      padding-bottom:20px;
+    }
+
+    .insights-accordion{
+      margin-top:0;
+      margin-bottom:14px;
+    }
+
+    .hero{
+      padding-bottom:20px;
+    }
+
+    .container{
+      margin-bottom:40px;
+    }
+
+    @media(max-width:640px){
+      .convert-panel,
+      .quick-copy-panel,
+      .insights-accordion{
+        margin-bottom:12px;
+      }
+    }
+
+
+    .quick-copy-panel{
+      margin-top:-8px;
+      margin-bottom:12px;
+      
+    }
+
+    .hero{
+      padding-bottom:12px;
+    }
+
+    .convert-panel{
+      margin-top:0;
+    }
+
+    @media(max-width:640px){
+      .quick-copy-panel{
+        margin-top:-4px;
+      }
+    }
+
+
+    .quick-copy-panel{
+      margin-bottom:10px;
+    }
+
+    .insights-accordion{
+      margin-top:0;
+      margin-bottom:12px;
+    }
+
+
+    .quick-copy-panel{
+      margin-
+      margin-bottom:10px;
+      
+    }
+
+    .insights-accordion{
+      margin-top:0;
+      margin-bottom:10px;
+    }
+
+    .hero{
+      padding-top:28px;
+      padding-bottom:18px;
+    }
+
+    @media(max-width:640px){
+      .quick-copy-panel{
+        margin-top:8px;
+        top:58px;
+      }
+
+      .hero{
+        padding-top:22px;
+      }
+    }
+
+
+    .insights-accordion{
+      margin-top:18px;
+      margin-bottom:12px;
+    }
+
+    .app-footer{
+      margin-top:0;
+    }
+
+
+    .quick-copy-panel{
+      position:relative !important;
+      top:auto !important;
+      z-index:auto !important;
+    }
+
+
+    .insights-accordion{
+      margin-top:20px;
+      margin-bottom:12px;
+    }
+
+    .app-footer{
+      margin-top:0;
+    }
+
+
+    .insights-accordion{
+      margin-top:20px !important;
+      margin-bottom:12px !important;
+    }
+    .app-footer{
+      margin-top:0 !important;
+    }
+    
+    .top-nav-inner{
+      height:44px !important;
+    }
+
+    .hero{
+      padding-top:12px !important;
+      padding-bottom:8px !important;
+      margin-bottom:6px !important;
+    }
+
+    .hero h1{
+      margin-bottom:0 !important;
+      font-size:clamp(34px,4.2vw,58px) !important;
+      line-height:.92 !important;
+    }
+
+    .hero .eyebrow{
+      margin-bottom:6px !important;
+    }
+
+    .container{
+      margin-top:8px !important;
+    }
+
+    .convert-panel{
+      margin-top:0 !important;
+      margin-bottom:10px !important;
+      padding-top:16px !important;
+      padding-bottom:16px !important;
+    }
+
+    .drop-zone{
+      min-height:120px !important;
+      padding:22px 18px !important;
+    }
+
+    .settings{
+      margin-top:12px !important;
+    }
+
+    .convert-controls{
+      margin-top:12px !important;
+    }
+
+    @media(max-width:640px){
+      .top-nav-inner{
+        height:42px !important;
+      }
+
+      .hero{
+        padding-top:10px !important;
+        padding-bottom:6px !important;
+      }
+
+      .hero h1{
+        font-size:36px !important;
+      }
+
+      .drop-zone{
+        min-height:105px !important;
+        padding:18px 14px !important;
+      }
+    }
+
+</style>
+</head>
+<body>
+<main class="container">
+<header class="top-nav">
+<div class="top-nav-inner">
+<a aria-label="DOCX to HTML" class="brand" href="#top">
+<span aria-hidden="true" class="brand-mark">
+<svg viewbox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"></path><path d="M14 3v6h5"></path></svg>
+</span>
+<span>DOCX to HTML</span>
+</a>
+<nav aria-label="Navigasi utama" class="top-nav-links">
+<a href="#convertPanel">Convert</a>
+<a href="#quickCopyPanel">Quick Copy</a>
+<a href="#qualityPanel">Quality Check</a>
+<a href="#workspace">Preview</a>
+</nav>
+<div class="top-nav-actions">
+<span class="version-pill">v69</span>
+<button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
+<svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
+<svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+</button>
+</div>
+</div>
+</header>
+<section class="hero" id="top">
+<div class="hero-copy">
+<span class="eyebrow">Content Operations Tool</span>
+<h1>DOCX to HTML<br/>Converter</h1>
+</div>
+</section>
+<section class="panel convert-panel" id="convertPanel">
+<label class="drop-zone" for="fileInput" id="dropZone"><strong id="fileLabel">Klik atau tarik file DOCX ke sini</strong><span>Format yang didukung: .docx</span></label>
+<input accept=".docx" id="fileInput" type="file"/>
+<div class="settings">
+<div class="field"><label for="headingSize">Ukuran heading (H1 &amp; H2)</label><input id="headingSize" max="40" min="12" type="number" value="18"/></div>
+<div class="field"><label for="bodySize">Ukuran body (H3 &amp; body)</label><input id="bodySize" max="32" min="10" type="number" value="16"/></div>
+<div class="field"><label for="outputName">Nama file output</label><input id="outputName" type="text" value="hasil-convert.html"/></div>
+</div>
+<div class="convert-controls">
+<div aria-label="Pilih mode konversi" class="segmented-control" role="group">
+<button class="segment active" data-mode="mobile" id="mobileSegment" type="button">Mobile</button>
+<button class="segment" data-mode="desktop" id="desktopSegment" type="button">Desktop</button>
+</div>
+<button class="btn-primary convert-main-btn" disabled="" id="convertSelectedBtn">
+<svg viewbox="0 0 24 24"><path d="M13 2 3 14h8l-1 8 10-12h-8z"></path></svg>
+<span>Convert</span>
+</button>
+<button class="btn-secondary" disabled="" id="copyBtn">
+<svg viewbox="0 0 24 24"><rect height="11" rx="2" width="11" x="9" y="9"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+    Copy HTML
+  </button>
+<button class="btn-secondary" disabled="" id="copySectionsBtn">
+<svg viewbox="0 0 24 24"><path d="M4 4h16v4H4zM4 10h16v4H4zM4 16h16v4H4z"></path></svg>
+    Copy per Section
+  </button>
+<div class="download-menu-wrap">
+<button aria-expanded="false" class="btn-secondary" disabled="" id="downloadMenuBtn">
+<svg viewbox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"></path><path d="M5 21h14"></path></svg>
+      Download
+      <svg class="chevron" viewbox="0 0 24 24"><path d="m8 10 4 4 4-4"></path></svg>
+</button>
+<div class="download-menu" id="downloadMenu">
+<button data-download="current" type="button">Download Current HTML</button>
+<button data-download="mobile" type="button">Download Mobile HTML</button>
+<button data-download="desktop" type="button">Download Desktop HTML</button>
+</div>
+</div>
+<button class="btn-secondary" id="resetBtn">
+<svg viewbox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
+    Reset
+  </button>
+</div>
+<div class="status" id="status"></div>
+</section>
+
+<section class="panel quick-copy-panel" id="quickCopyPanel">
+<div class="quick-copy-header">
+<div>
+<h2 id="quickCopyTitle">Quick Copy per Section</h2>
+<div class="quick-progress-wrap">
+<div class="progress-ring" id="progressRing" style="--progress:0">
+<span id="progressPercent">0%</span>
+</div>
+<div class="quick-copy-progress" id="quickCopyProgress">Progress Judul & Konten: 0/0 section tersalin</div>
+</div>
+</div>
+<button class="btn-secondary" id="resetQuickCopyBtn">Reset Status Copy</button>
+</div>
+<div class="quick-copy-list" id="quickCopyList"></div>
+</section>
+<section class="panel section-copy-panel" id="sectionCopyPanel">
+<div class="section-copy-header">
+<div>
+<h2 id="sectionCopyPanelTitle">Copy HTML per Section</h2>
+<div class="section-copy-progress" id="sectionCopyProgress">Progress: 0/0 section tersalin</div>
+</div>
+<div class="section-copy-actions">
+<button class="btn-secondary" id="resetSectionStatusBtn">Reset Status Copy</button>
+<button class="btn-secondary" id="closeSectionPanelBtn">Tutup</button>
+</div>
+</div>
+<div class="section-copy-list" id="sectionCopyList"></div>
+</section>
+<section class="workspace" id="workspace">
+<div class="panel"><h2>HTML Hasil Convert</h2><textarea id="output" spellcheck="false"></textarea></div>
+<div class="panel preview-panel">
+<div class="preview-header">
+<h2>Preview</h2>
+<div aria-label="Preview mode" class="preview-toggle" role="group">
+<button class="preview-mode active" data-preview="desktop">Desktop</button>
+<button class="preview-mode" data-preview="mobile">Mobile</button>
+</div>
+</div>
+<div class="preview-shell desktop" id="previewShell">
+<div class="preview" id="preview"><p style="color:#6b7280">Preview artikel akan tampil di sini.</p></div></div></div>
+</section>
+</main>
+<section class="panel insights-accordion" id="insights">
+<button aria-controls="insightsContent" aria-expanded="false" class="accordion-toggle" id="insightsToggle" type="button">
+<div>
+<span class="eyebrow">Insights</span>
+<h2>Live Summary &amp; Validation</h2>
+</div>
+<span aria-hidden="true" class="accordion-icon">
+<svg viewbox="0 0 24 24"><path d="m8 10 4 4 4-4"></path></svg>
+</span>
+</button>
+<div class="accordion-content" id="insightsContent">
+<section class="stats-panel" id="statsPanel">
+<div class="panel-heading-row"><div><span class="eyebrow">Live Summary</span><h2>Conversion Statistics</h2></div></div>
+<div class="stats-grid" id="statsGrid">
+<div class="stat-card"><span>Sections</span><strong id="statSections">0</strong></div>
+<div class="stat-card"><span>Images</span><strong id="statImages">0</strong></div>
+<div class="stat-card"><span>Headings</span><strong id="statHeadings">0</strong></div>
+<div class="stat-card"><span>Paragraphs</span><strong id="statParagraphs">0</strong></div>
+<div class="stat-card"><span>Anchors</span><strong id="statAnchors">0</strong></div>
+<div class="stat-card"><span>Auto VM</span><strong id="statAutoVm">0</strong></div>
+</div>
+</section>
+<section class="quality-panel" id="qualityPanel">
+<div class="panel-heading-row"><div><span class="eyebrow">Validation</span><h2>Quality Check</h2></div><div class="quality-score" id="qualityScore">—</div></div>
+<div class="quality-list" id="qualityList"><div class="quality-empty">Convert dokumen untuk menjalankan quality check.</div></div>
+</section>
+</div>
+</section><footer class="app-footer">
+<div class="footer-inner">
+<p>Link autovm dan SKU dibuat sebagai section tersendiri dengan label Auto vm. Numbering angka dipertahankan tanpa spacer. Bullet point diubah menjadi tanda minus (-). Bullet tanpa bold tidak diberi spacer, sedangkan bullet dengan bold tetap diberi spacer antaritem. Anchor text, href, bold, italic, dan underline dari dokumen akan dipertahankan. Anchor ditampilkan sebagai teks klik berwarna biru dan bold, tanpa menampilkan kode link. Baris “Link image:” akan dikonversi menjadi tag <code>&lt;img&gt;</code>, lalu baris berikutnya menjadi judul produk dengan <code>href="#"</code>. Spacer <code>&lt;p&gt;&lt;span style="font-size: 16px"&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;</code> otomatis ditambahkan di antara paragraf, tetapi tidak di awal atau akhir section.</p>
+</div>
+</footer>
+<div class="toast-stack" id="toastStack"></div>
+<div aria-hidden="true" class="conversion-overlay" id="conversionOverlay">
+<div class="conversion-card">
+<div class="conversion-spinner"></div>
+<h3>Converting your document</h3>
+<p>Preparing clean HTML for your CMS.</p>
+<div class="conversion-progress"><span id="conversionProgressBar"></span></div>
+</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);const fileInput=$('fileInput'),dropZone=$('dropZone'),fileLabel=$('fileLabel'),copyBtn=$('copyBtn'),copySectionsBtn=$('copySectionsBtn'),themeToggleBtn=$('themeToggleBtn'),resetBtn=$('resetBtn'),output=$('output'),preview=$('preview'),status=$('status'),headingSize=$('headingSize'),bodySize=$('bodySize'),outputName=$('outputName'),quickCopyPanel=$('quickCopyPanel'),quickCopyTitle=$('quickCopyTitle'),quickCopyProgress=$('quickCopyProgress'),quickCopyList=$('quickCopyList'),resetQuickCopyBtn=$('resetQuickCopyBtn'),sectionCopyPanel=$('sectionCopyPanel'),sectionCopyList=$('sectionCopyList'),sectionCopyPanelTitle=$('sectionCopyPanelTitle'),sectionCopyProgress=$('sectionCopyProgress'),resetSectionStatusBtn=$('resetSectionStatusBtn'),closeSectionPanelBtn=$('closeSectionPanelBtn');let selectedMode='mobile',lastConvertedHtml='',lastMobileHtml='',lastDesktopHtml='';
+const mobileSegment=$('mobileSegment'),desktopSegment=$('desktopSegment'),convertSelectedBtn=$('convertSelectedBtn'),
+downloadMenuBtn=$('downloadMenuBtn'),downloadMenu=$('downloadMenu'),toastStack=$('toastStack'),
+conversionOverlay=$('conversionOverlay'),conversionProgressBar=$('conversionProgressBar'),
+previewShell=$('previewShell'),progressRing=$('progressRing'),progressPercent=$('progressPercent'),
+qualityScore=$('qualityScore'),qualityList=$('qualityList');
+const insightsToggle=$('insightsToggle'),insightsContent=$('insightsContent');
+const statSections=$('statSections'),statImages=$('statImages'),statHeadings=$('statHeadings'),
+statParagraphs=$('statParagraphs'),statAnchors=$('statAnchors'),statAutoVm=$('statAutoVm');
+let selectedFile=null;const editor=CodeMirror.fromTextArea(output,{mode:'text/html',lineNumbers:true,lineWrapping:true});editor.on('change',()=>preview.innerHTML=editor.getValue());
+function setStatus(m,t=''){status.textContent=m;status.className=('status '+t).trim()}
+function selectFile(file){if(!file)return;if(!file.name.toLowerCase().endsWith('.docx')){setStatus('File harus berformat .docx.','error');return}selectedFile=file;fileLabel.textContent=file.name;convertSelectedBtn.disabled=false;const clean=file.name.replace(/\.docx$/i,'').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'_');outputName.value=clean+'_Mobile_Sectioned.html';setStatus('File siap dikonversi.')}
+fileInput.addEventListener('change',e=>selectFile(e.target.files[0]));['dragenter','dragover'].forEach(n=>dropZone.addEventListener(n,e=>{e.preventDefault();dropZone.classList.add('dragover')}));['dragleave','drop'].forEach(n=>dropZone.addEventListener(n,e=>{e.preventDefault();dropZone.classList.remove('dragover')}));dropZone.addEventListener('drop',e=>selectFile(e.dataTransfer.files[0]));
+function esc(v){return v.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')}
+function isHeading(text){
+  if(!text)return false;
+  const value=text.trim();
+  if(!value||value.length>140)return false;
+  if(/autovm/i.test(value)||/^Link image\s*:/i.test(value)||/^SKU\s*:?/i.test(value))return false;
+
+  // Heading bernomor selalu menjadi H3.
+  if(/^\d+\.\s+/.test(value))return true;
+
+  // Kalimat lengkap tidak boleh otomatis dianggap heading.
+  // Ini mencegah paragraf seperti “Pilihan di pasaran kini sangat beragam...” menjadi H2.
+  if(/[.!;,]$/.test(value))return false;
+  if(value.split(/\s+/).length>16)return false;
+
+  return /^(Kenapa|Tren|Keunggulan|Pilihan|Era Baru|Daftar|Tips|Kesalahan|FAQ|Tanya Jawab|Temukan|Dapatkan|Rekomendasi|Kapan|Apakah|Faktor|Cara Menghitung|Estimasi|Manfaat|Jenis|Panduan|Perbedaan|Hal yang Perlu|Cara Memilih|Kesimpulan)\b/i.test(value);
+}
+function extractAnchorData(value){
+  let normalized=value||'';
+
+  // Decode HTML entities repeatedly because DOCX content can be encoded more than once.
+  for(let i=0;i<3;i++){
+    const decoder=document.createElement('textarea');
+    decoder.innerHTML=normalized;
+    const decoded=decoder.value;
+    if(decoded===normalized)break;
+    normalized=decoded;
+  }
+
+  const holder=document.createElement('div');
+  holder.innerHTML=normalized;
+
+  const anchor=holder.querySelector('a[href]');
+  if(anchor){
+    return {
+      href:anchor.getAttribute('href')||'#',
+      text:(anchor.textContent||'').trim()
+    };
+  }
+
+  // Fallback for malformed literal anchor text.
+  const match=normalized.match(/<a\s+[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/i);
+  if(match){
+    const label=document.createElement('div');
+    label.innerHTML=match[2];
+    return {
+      href:match[1],
+      text:(label.textContent||'').trim()
+    };
+  }
+
+  return {
+    href:'#',
+    text:holder.textContent.trim()||normalized.replace(/<[^>]+>/g,'').trim()
+  };
+}
+
+function normalizeAnchorMarkup(value){
+  if(!value)return '';
+
+  let normalized=value;
+
+  // Handle anchor HTML that arrived as encoded text, e.g. &lt;a href="..."&gt;Text&lt;/a&gt;.
+  if(/&lt;a\b/i.test(normalized)){
+    const decoder=document.createElement('textarea');
+    decoder.innerHTML=normalized;
+    normalized=decoder.value;
+  }
+
+  // Only convert complete anchor markup; other HTML remains handled by the sanitizer.
+  normalized=normalized.replace(
+    /<a\s+[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi,
+    (_match,href,label)=>'<a href="'+href+'">'+label+'</a>'
+  );
+
+  return normalized;
+}
+
+function inlineFormat(text){
+  const holder=document.createElement('div');
+  holder.innerHTML=normalizeAnchorMarkup(text);
+
+  const allowed=new Set(['A','STRONG','EM','U','BR']);
+  [...holder.querySelectorAll('*')].forEach(el=>{
+    if(!allowed.has(el.tagName)){
+      el.replaceWith(...el.childNodes);
+      return;
+    }
+
+    [...el.attributes].forEach(attr=>{
+      if(el.tagName==='A'&&attr.name.toLowerCase()==='href')return;
+      el.removeAttribute(attr.name);
+    });
+  });
+
+  const terms=['air purifier','heavy-duty','smartphone','remote','smart home','indoor','outdoor','inverter','monoblock','duoblock','one piece toilet','two piece toilet','dual flush','seat cover','smart toilet','touchless','heated seat','auto flush','soft closing','rough-in','siphonic','washdown','dry bathroom'];
+
+  const walk=node=>{
+    [...node.childNodes].forEach(child=>{
+      if(child.nodeType===Node.TEXT_NODE){
+        let value=child.nodeValue;
+        terms.forEach(term=>{
+          const safe=term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+          const regex=new RegExp('\\b('+safe+')\\b','gi');
+          if(regex.test(value)){
+            const span=document.createElement('span');
+            span.innerHTML=value.replace(regex,'<em>$1</em>');
+            child.replaceWith(...span.childNodes);
+            value='';
+          }
+        });
+      }else if(child.nodeType===Node.ELEMENT_NODE&&child.tagName!=='A'){
+        walk(child);
+      }
+    });
+  };
+  walk(holder);
+
+
+  // Anchor text must be bold and use the same blue tone as the product links.
+  holder.querySelectorAll('a').forEach(anchor=>{
+    anchor.setAttribute('style','color: rgb(0, 167, 245);');
+
+    let strong=anchor.querySelector(':scope > strong');
+    if(!strong){
+      strong=document.createElement('strong');
+      while(anchor.firstChild)strong.appendChild(anchor.firstChild);
+      anchor.appendChild(strong);
+    }
+
+    if(!strong.querySelector(':scope > u')){
+      const underline=document.createElement('u');
+      while(strong.firstChild)underline.appendChild(strong.firstChild);
+      strong.appendChild(underline);
+    }
+  });
+
+  return holder.innerHTML.trim();
+}
+
+window.buildConvertedHtml=function(pars){
+  const hs=Number(headingSize.value)||18,bs=Number(bodySize.value)||16;
+  const spacer='<p><span style="font-size: '+bs+'px"><br></span></p>';
+  const lines=[];
+  let sec=1,i=0,pending=null,mainStarted=false,lastType='',startNewSectionAfterMetadata=false,inFaqSection=false;
+  const addSection=(label='')=>{if(lines.length&&lines[lines.length-1]===spacer)lines.pop();lines.push('<!-- Section '+sec+++(label?' '+label:'')+' -->');lastType='section'};
+  const addBlock=(html,type)=>{
+    if(type==='paragraph'&&lastType==='paragraph')lines.push(spacer);
+    if((type==='heading'||type==='section'||type==='metadata')&&lines[lines.length-1]===spacer)lines.pop();
+    lines.push(html);lastType=type;
+  };
+  while(i<pars.length&&!pars[i].trim())i++;
+  if(!pars[i])throw new Error('Dokumen tidak memiliki isi.');
+  addSection();
+  const h1Text=pars[i]
+    .replace(/<\/?strong[^>]*>/gi,'')
+    .replace(/<[^>]+>/g,'')
+    .trim();
+  addBlock('<h1 style="text-align: center"><span style="font-size: '+hs+'px"><strong>'+esc(h1Text)+'</strong></span></h1>','heading');
+  i++;
+  addSection();
+  for(;i<pars.length;i++){
+    let raw=pars[i].trim();
+    if(!raw)continue;
+
+    const isH2Source=raw.startsWith('[[H2]]');
+    const isH3Source=raw.startsWith('[[H3]]');
+    const isNumberedListItem=raw.startsWith('[[NUMBERED_LIST]]');
+    const isBulletListBold=raw.startsWith('[[BULLET_LIST_BOLD]]');
+    const isBulletListPlain=raw.startsWith('[[BULLET_LIST_PLAIN]]');
+    const isBulletListItem=isBulletListBold||isBulletListPlain;
+    const isListItem=isNumberedListItem||isBulletListItem;
+
+    if(isH2Source){
+      raw=raw.replace(/^\[\[H2\]\]/,'');
+    }else if(isH3Source){
+      raw=raw.replace(/^\[\[H3\]\]/,'');
+    }else if(isNumberedListItem){
+      raw=raw.replace(/^\[\[NUMBERED_LIST\]\]/,'');
+    }else if(isBulletListBold){
+      raw=raw.replace(/^\[\[BULLET_LIST_BOLD\]\]/,'');
+    }else if(isBulletListPlain){
+      raw=raw.replace(/^\[\[BULLET_LIST_PLAIN\]\]/,'');
+    }
+
+    const rawPlain=raw.replace(/<[^>]+>/g,'').trim();
+
+    // FAQ dimulai saat menemukan H2 yang mengandung kata FAQ.
+    // FAQ berakhir saat menemukan H2 berikutnya yang bukan FAQ/pertanyaan.
+    const looksLikeFaqHeading=/^FAQ\b|FAQ\s/i.test(rawPlain);
+    const looksLikeQuestion=/\?$/.test(rawPlain);
+
+    if(/autovm/i.test(rawPlain)){
+      addSection('Auto vm');
+      addBlock('<p><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','metadata');
+      if(/^Link autovm\s*:/i.test(rawPlain)&&i+1<pars.length&&/^SKU\s*:?/i.test(pars[i+1].trim())){
+        addBlock(pars[++i].trim(),'metadata');
+      }
+      mainStarted=true;
+      startNewSectionAfterMetadata=true;
+      continue;
+    }
+
+    if(/^SKU\s*:?/i.test(raw)){
+      addBlock(raw,'metadata');
+      startNewSectionAfterMetadata=true;
+      continue;
+    }
+
+    if(startNewSectionAfterMetadata){
+      addSection();
+      startNewSectionAfterMetadata=false;
+    }
+
+    if(/^Link image\s*:/i.test(raw)){
+      pending=raw.split(':').slice(1).join(':').trim();
+      continue;
+    }
+
+    if(pending){
+      const productLink=extractAnchorData(raw);
+      const productTitle=productLink.text||rawPlain;
+      const productHref=productLink.href||'#';
+
+      addBlock('<p>\n  <img src="'+esc(pending)+'"\n       alt="'+esc(productTitle)+'"\n       style="display: block; margin-left: auto; margin-right: auto">\n  <br>\n</p>\n\n<p style="text-align: center;"><a href="'+esc(productHref)+'" style="font-size: '+bs+'px;"><strong style="color: rgb(0, 167, 245);">'+esc(productTitle)+'</strong></a></p>\n<p style="text-align: center;"><br></p>','image');
+      pending=null;
+      continue;
+    }
+
+    if(!mainStarted&&isHeading(rawPlain)){addSection();mainStarted=true}
+
+    if(isH2Source){
+      if(looksLikeFaqHeading){
+        inFaqSection=true;
+        addBlock('<h2><span style="font-size: '+hs+'px"><strong>'+inlineFormat(raw)+'</strong></span></h2>','heading');
+      }else if(inFaqSection&&looksLikeQuestion){
+        addBlock('<h3><strong><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></strong></h3>','heading');
+      }else{
+        inFaqSection=false;
+        addBlock('<h2><span style="font-size: '+hs+'px"><strong>'+inlineFormat(raw)+'</strong></span></h2>','heading');
+      }
+    }else if(isH3Source){
+      addBlock('<h3><strong><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></strong></h3>','heading');
+    }else if(isNumberedListItem){
+      addBlock('<p data-list-type="numbered"><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','paragraph');
+    }else if(isBulletListBold){
+      addBlock('<p data-list-type="bullet-bold"><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','paragraph');
+    }else if(isBulletListPlain){
+      addBlock('<p data-list-type="bullet-plain"><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','paragraph');
+    }else if(inFaqSection&&looksLikeQuestion){
+      addBlock('<h3><strong><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></strong></h3>','heading');
+    }else if(/^\d+\.\s+/.test(rawPlain)){
+      addBlock('<h3><strong><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></strong></h3>','heading');
+    }else if(isHeading(rawPlain)){
+      if(looksLikeFaqHeading){
+        inFaqSection=true;
+      }else if(inFaqSection){
+        inFaqSection=false;
+      }
+      addBlock('<h2><span style="font-size: '+hs+'px"><strong>'+inlineFormat(raw)+'</strong></span></h2>','heading');
+    }else{
+      addBlock('<p><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','paragraph');
+    }
+  }
+  if(lines[lines.length-1]===spacer)lines.pop();
+
+  const applyHeadingSpacers=(blocks)=>{
+    const result=[];
+    let section=[];
+
+    const flushSection=()=>{
+      if(!section.length)return;
+
+      const comment=section[0]&&/^<!-- Section \d+(?: [^>]+)? -->$/.test(section[0])?section.shift():null;
+      if(comment)result.push(comment);
+
+      const content=section.filter(block=>block!==spacer);
+      const firstIndex=0;
+      const lastIndex=content.length-1;
+
+      content.forEach((block,index)=>{
+        const heading=/^<h[1-3]\b/i.test(block);
+        const isH1=/^<h1\b/i.test(block);
+        const paragraph=/^<p\b/i.test(block);
+        const numberedListItem=/^<p\b[^>]*data-list-type="numbered"/i.test(block);
+        const bulletListBold=/^<p\b[^>]*data-list-type="bullet-bold"/i.test(block);
+        const bulletListPlain=/^<p\b[^>]*data-list-type="bullet-plain"/i.test(block);
+        const previousBlock=index>0?content[index-1]:'';
+        const previousParagraph=/^<p\b/i.test(previousBlock);
+        const previousNumberedListItem=/^<p\b[^>]*data-list-type="numbered"/i.test(previousBlock);
+        const previousBulletListBold=/^<p\b[^>]*data-list-type="bullet-bold"/i.test(previousBlock);
+        const previousBulletListPlain=/^<p\b[^>]*data-list-type="bullet-plain"/i.test(previousBlock);
+
+        // H1 tidak menggunakan spacer sebelum maupun sesudah.
+        if(isH1){
+          if(result[result.length-1]===spacer)result.pop();
+          result.push(block);
+          return;
+        }
+
+        if(heading){
+          const atStart=index===firstIndex;
+          const atEnd=index===lastIndex;
+
+          // Heading di akhir atau menjadi satu-satunya konten: spacer sebelum.
+          if(atEnd&&result[result.length-1]!==spacer)result.push(spacer);
+          // Heading di tengah: spacer sebelum.
+          if(!atStart&&!atEnd&&result[result.length-1]!==spacer)result.push(spacer);
+
+          result.push(block);
+
+          // Heading di awal atau tengah: spacer setelah.
+          if((atStart||(!atStart&&!atEnd))&&result[result.length-1]!==spacer)result.push(spacer);
+          // Jika heading adalah satu-satunya konten, tambahkan juga spacer setelah.
+          if(atStart&&atEnd&&result[result.length-1]!==spacer)result.push(spacer);
+        }else{
+          // Tambahkan spacer di antara dua paragraf dalam section yang sama.
+          const consecutiveNumbered=numberedListItem&&previousNumberedListItem;
+          const consecutivePlainBullet=bulletListPlain&&previousBulletListPlain;
+
+          if(
+            paragraph&&
+            previousParagraph&&
+            !consecutiveNumbered&&
+            !consecutivePlainBullet&&
+            result[result.length-1]!==spacer
+          ){
+            result.push(spacer);
+          }
+
+          if(result[result.length-1]===spacer&&block===spacer)return;
+          result.push(block);
+        }
+      });
+
+      section=[];
+    };
+
+    blocks.forEach(block=>{
+      if(/^<!-- Section \d+(?: [^>]+)? -->$/.test(block)){
+        flushSection();
+        section=[block];
+      }else{
+        section.push(block);
+      }
+    });
+
+    flushSection();
+    return result;
+  };
+
+  const formattedBlocks=applyHeadingSpacers(lines);
+
+  const formatAllAnchors=(html)=>{
+    if(!/<a\b/i.test(html))return html;
+
+    const holder=document.createElement('div');
+    holder.innerHTML=html;
+
+    holder.querySelectorAll('a').forEach(anchor=>{
+      // Pertahankan font-size pada anchor produk, tetapi pastikan warna biru.
+      const existingFontSize=anchor.style.fontSize;
+      anchor.setAttribute(
+        'style',
+        (existingFontSize ? 'font-size: '+existingFontSize+'; ' : '') +
+        'color: rgb(0, 167, 245);'
+      );
+
+      let strong=anchor.querySelector(':scope > strong');
+      if(!strong){
+        strong=document.createElement('strong');
+        while(anchor.firstChild)strong.appendChild(anchor.firstChild);
+        anchor.appendChild(strong);
+      }
+
+      if(!strong.querySelector(':scope > u')){
+        const underline=document.createElement('u');
+        while(strong.firstChild)underline.appendChild(strong.firstChild);
+        strong.appendChild(underline);
+      }
+    });
+
+    return holder.innerHTML;
+  };
+
+  formattedBlocks.forEach((block,index)=>{
+    formattedBlocks[index]=formatAllAnchors(block)
+      .replace(/\sdata-list-type="(?:numbered|bullet-bold|bullet-plain)"/gi,'');
+  });
+
+  return formattedBlocks.join('\n\n');
+}
+function sanitizeInlineHtml(html){
+  const holder=document.createElement('div');
+  holder.innerHTML=normalizeAnchorMarkup(html);
+
+  const allowed=new Set(['A','STRONG','EM','U','BR']);
+
+  [...holder.querySelectorAll('*')].forEach(el=>{
+    if(!allowed.has(el.tagName)){
+      el.replaceWith(...el.childNodes);
+      return;
+    }
+
+    [...el.attributes].forEach(attr=>{
+      if(el.tagName==='A'&&attr.name.toLowerCase()==='href')return;
+      el.removeAttribute(attr.name);
+    });
+  });
+
+  return holder.innerHTML.trim();
+}
+
+async function convert(mode){
+  if(!selectedFile)return;
+
+  if(typeof mammoth==='undefined'){
+    setStatus('Konversi gagal: library DOCX belum termuat. Periksa koneksi internet lalu refresh halaman.','error');
+    showToast('Library DOCX belum termuat.','error');
+    return;
+  }
+
+  convertSelectedBtn.disabled=true;
+  convertSelectedBtn.classList.add('loading');
+
+  if(mode==='desktop'){
+    headingSize.value=24;
+    bodySize.value=18;
+    sectionCopyPanelTitle.textContent='Copy HTML Desktop per Section';
+    quickCopyTitle.textContent='Quick Copy Desktop per Section';
+  }else{
+    headingSize.value=18;
+    bodySize.value=16;
+    sectionCopyPanelTitle.textContent='Copy HTML Mobile per Section';
+    quickCopyTitle.textContent='Quick Copy Mobile per Section';
+  }
+
+  const base=selectedFile.name
+    .replace(/\.docx$/i,'')
+    .replace(/[^\w\s-]/g,'')
+    .trim()
+    .replace(/\s+/g,'_');
+
+  outputName.value=base+'_'+(mode==='desktop'?'Desktop':'Mobile')+'_Sectioned.html';
+  setStatus('Sedang membaca dan mengonversi dokumen...');
+  showConversionOverlay();
+
+  try{
+    const arrayBuffer=await selectedFile.arrayBuffer();
+
+    const mammothResult=await Promise.race([
+      mammoth.convertToHtml({arrayBuffer}),
+      new Promise((_,reject)=>{
+        setTimeout(
+          ()=>reject(new Error('Proses membaca DOCX terlalu lama. Pastikan koneksi internet aktif lalu coba kembali.')),
+          20000
+        );
+      })
+    ]);
+
+    const temp=document.createElement('div');
+    temp.innerHTML=mammothResult.value||'';
+
+    const pars=[];
+    temp.querySelectorAll('p,h1,h2,h3,li').forEach(node=>{
+      const tag=node.tagName.toLowerCase();
+      let value=tag==='p'||tag==='li'
+        ? sanitizeInlineHtml(node.innerHTML)
+        : sanitizeInlineHtml(node.innerHTML||node.textContent||'');
+
+      if(!value)return;
+
+      if(tag==='h2'){
+        value='[[H2]]'+value;
+      }else if(tag==='h3'){
+        value='[[H3]]'+value;
+      }else if(tag==='li'){
+        const parent=node.parentElement;
+        const isOrdered=parent&&parent.tagName.toLowerCase()==='ol';
+
+        if(isOrdered){
+          const siblings=[...parent.children].filter(child=>child.tagName.toLowerCase()==='li');
+          const number=siblings.indexOf(node)+1;
+          value='[[NUMBERED_LIST]]'+number+'. '+value.replace(/^\d+\.\s*/,'');
+        }else{
+          const hasStrong=/<strong\b/i.test(value);
+          value=(hasStrong?'[[BULLET_LIST_BOLD]]':'[[BULLET_LIST_PLAIN]]')+
+            '- '+value.replace(/^[•●▪◦‣⁃\-–—]\s*/,'');
+        }
+      }
+
+      pars.push(value);
+    });
+
+    if(!pars.length){
+      throw new Error('Isi dokumen tidak berhasil dibaca.');
+    }
+
+    if(typeof window.buildConvertedHtml!=='function'){
+      throw new Error('Fungsi converter belum termuat. Silakan refresh halaman dengan Ctrl+F5.');
+    }
+
+    const converted=window.buildConvertedHtml(pars);
+
+    lastConvertedHtml=converted;
+    if(mode==='mobile'){
+      lastMobileHtml=converted;
+    }else{
+      lastDesktopHtml=converted;
+    }
+
+    copiedSections.clear();
+    quickCopyPanel.classList.remove('active');
+    quickCopyList.innerHTML='';
+    quickCopyProgress.textContent='Progress: 0/0 section tersalin';
+    sectionCopyPanel.classList.remove('active');
+    sectionCopyList.innerHTML='';
+    sectionCopyProgress.textContent='Progress: 0/0 section tersalin';
+
+    editor.setValue(converted);
+    preview.innerHTML=converted;
+    renderQuickCopy();
+    updateStatistics(converted);
+    runQualityCheck(converted);
+
+    copyBtn.disabled=false;
+    copySectionsBtn.disabled=false;
+    downloadMenuBtn.disabled=false;
+
+    setStatus('Konversi selesai. Silakan cek hasil dan preview.','success');
+    showToast('HTML berhasil dikonversi.','success');
+  }catch(error){
+    console.error(error);
+    const message=error?.message||'Terjadi kesalahan saat konversi.';
+    setStatus('Konversi gagal: '+message,'error');
+    showToast('Konversi gagal: '+message,'error');
+  }finally{
+    hideConversionOverlay();
+    convertSelectedBtn.disabled=false;
+    convertSelectedBtn.classList.remove('loading');
+  }
+}
+
+function splitHtmlBySection(html){
+  const matches=[...html.matchAll(/<!-- Section \d+(?: [^>]+)? -->/g)];
+  if(!matches.length)return [{title:'Section 1',html:html.trim()}];
+
+  return matches.map((match,index)=>{
+    const start=match.index;
+    const end=index+1<matches.length?matches[index+1].index:html.length;
+    const sectionHtml=html
+      .slice(start,end)
+      .replace(/^<!-- Section \d+(?: [^>]+)? -->\s*/,'')
+      .trim();
+
+    return {
+      title:match[0].replace('<!--','').replace('-->','').trim(),
+      html:sectionHtml
+    };
+  });
+}
+
+async function copySectionText(value){
+  try{
+    await navigator.clipboard.writeText(value);
+  }catch(error){
+    const temp=document.createElement('textarea');
+    temp.value=value;
+    temp.style.position='fixed';
+    temp.style.opacity='0';
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    temp.remove();
+  }
+}
+
+const copiedSections=new Set();
+
+function updateSectionCopyProgress(){
+  const total=sectionCopyList.querySelectorAll('.section-copy-item').length;
+  sectionCopyProgress.textContent='Progress: '+copiedSections.size+'/'+total+' section tersalin';
+}
+
+
+function updateQuickCopyProgress(){
+  const eligibleItems=[...quickCopyList.querySelectorAll('.quick-copy-item')]
+    .filter(item=>!item.closest('.quick-copy-group-autovm'));
+
+  const eligibleTitles=eligibleItems
+    .map(item=>item.querySelector('.quick-copy-label')?.textContent?.trim())
+    .filter(Boolean);
+
+  const copiedEligible=eligibleTitles
+    .filter(title=>copiedSections.has(title))
+    .length;
+
+  const total=eligibleTitles.length;
+  quickCopyProgress.textContent='Progress Judul & Konten: '+copiedEligible+'/'+total+' section tersalin';
+
+  const pct=total?Math.round((copiedEligible/total)*100):0;
+  progressRing.style.setProperty('--progress',pct);
+  progressPercent.textContent=pct+'%';
+}
+
+function createQuickCopyItem(section){
+  const item=document.createElement('div');
+  item.className='quick-copy-item';
+
+  const label=document.createElement('span');
+  label.className='quick-copy-label';
+  label.textContent=section.title;
+
+  const actions=document.createElement('div');
+  actions.style.display='flex';
+  actions.style.alignItems='center';
+  actions.style.gap='8px';
+  actions.style.flexShrink='0';
+
+  const button=document.createElement('button');
+  button.type='button';
+  button.className='quick-copy-btn';
+  button.textContent='Copy';
+
+  const badge=document.createElement('span');
+  badge.className='quick-copy-badge';
+  badge.textContent='✓';
+
+  if(copiedSections.has(section.title)){
+    badge.classList.add('active');
+  }
+
+  button.addEventListener('click',async()=>{
+    await copySectionText(section.html);
+    copiedSections.add(section.title);
+    badge.classList.add('active');
+    updateQuickCopyProgress();
+    updateSectionCopyProgress();
+
+    sectionCopyList.querySelectorAll('.section-copy-item').forEach(sectionItem=>{
+      const title=sectionItem.querySelector('.section-copy-title strong');
+      const detailBadge=sectionItem.querySelector('.copy-status-badge');
+      if(title&&title.textContent.includes(section.title)&&detailBadge){
+        detailBadge.classList.add('active');
+      }
+    });
+
+    setStatus(section.title+' berhasil disalin.','success');
+  });
+
+  actions.append(button,badge);
+  item.append(label,actions);
+  return item;
+}
+
+function createQuickCopyGroup(title,className=''){
+  const group=document.createElement('div');
+  group.className='quick-copy-group '+className;
+
+  const heading=document.createElement('div');
+  heading.className='quick-copy-group-title';
+  heading.textContent=title;
+
+  const content=document.createElement('div');
+  content.className='quick-copy-group-content';
+
+  group.append(heading,content);
+  return {group,content};
+}
+
+function renderQuickCopy(){
+  const sections=splitHtmlBySection(editor.getValue());
+  quickCopyList.innerHTML='';
+
+  const titleGroup=createQuickCopyGroup('Judul','quick-copy-group-title-column');
+  const contentGroup=createQuickCopyGroup('Konten');
+  const autoVmGroup=createQuickCopyGroup('Auto VM','quick-copy-group-autovm');
+
+  sections.forEach(section=>{
+    const isTitle=/^Section 1(?:\s|$)/i.test(section.title);
+    const isAutoVm=/Auto vm/i.test(section.title);
+    const item=createQuickCopyItem(section);
+
+    if(isTitle){
+      titleGroup.content.appendChild(item);
+    }else if(isAutoVm){
+      autoVmGroup.content.appendChild(item);
+    }else{
+      contentGroup.content.appendChild(item);
+    }
+  });
+
+  if(!titleGroup.content.children.length){
+    titleGroup.content.innerHTML='<span class="quick-copy-empty">Tidak ada section judul</span>';
+  }
+
+  if(!contentGroup.content.children.length){
+    contentGroup.content.innerHTML='<span class="quick-copy-empty">Tidak ada section konten</span>';
+  }
+
+  if(!autoVmGroup.content.children.length){
+    autoVmGroup.content.innerHTML='<span class="quick-copy-empty">Tidak ada Auto VM</span>';
+  }
+
+  quickCopyList.append(
+    titleGroup.group,
+    contentGroup.group,
+    autoVmGroup.group
+  );
+
+  updateQuickCopyProgress();
+  quickCopyPanel.classList.add('active');
+}
+
+function renderSectionCopies(){
+  const sections=splitHtmlBySection(editor.getValue());
+  sectionCopyList.innerHTML='';
+
+  sections.forEach(section=>{
+    const item=document.createElement('div');
+    item.className='section-copy-item';
+
+    const header=document.createElement('div');
+    header.className='section-copy-title';
+
+    const title=document.createElement('strong');
+    title.textContent='<!-- '+section.title+' -->';
+
+    const buttonWrap=document.createElement('div');
+    buttonWrap.className='section-copy-button-wrap';
+
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='btn-copy-section';
+    button.textContent='Copy Section';
+
+    const badge=document.createElement('span');
+    badge.className='copy-status-badge';
+    badge.textContent='✓ Tersalin';
+
+    if(copiedSections.has(section.title)){
+      badge.classList.add('active');
+    }
+
+    button.addEventListener('click',async()=>{
+      await copySectionText(section.html);
+      copiedSections.add(section.title);
+      badge.classList.add('active');
+      updateSectionCopyProgress();
+      setStatus(section.title+' berhasil disalin.','success');
+    });
+
+    buttonWrap.append(button,badge);
+
+    const code=document.createElement('pre');
+    code.className='section-copy-code';
+    code.textContent=section.html;
+
+    header.append(title,buttonWrap);
+    item.append(header,code);
+    sectionCopyList.appendChild(item);
+  });
+
+  updateSectionCopyProgress();
+  sectionCopyPanel.classList.add('active');
+  sectionCopyPanel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+copySectionsBtn.addEventListener('click',()=>{renderQuickCopy();renderSectionCopies();});
+
+
+resetQuickCopyBtn.addEventListener('click',()=>{
+  copiedSections.clear();
+  quickCopyList.querySelectorAll('.quick-copy-badge').forEach(badge=>badge.classList.remove('active'));
+  sectionCopyList.querySelectorAll('.copy-status-badge').forEach(badge=>badge.classList.remove('active'));
+  updateQuickCopyProgress();
+  updateSectionCopyProgress();
+  setStatus('Status copy per section berhasil di-reset.','success');
+});
+
+resetSectionStatusBtn.addEventListener('click',()=>{
+  copiedSections.clear();
+  sectionCopyList.querySelectorAll('.copy-status-badge').forEach(badge=>{
+    badge.classList.remove('active');
+  });
+  updateSectionCopyProgress();
+  setStatus('Status copy per section berhasil di-reset.','success');
+});
+
+closeSectionPanelBtn.addEventListener('click',()=>sectionCopyPanel.classList.remove('active'));
+
+
+function applyTheme(theme){
+  const isDark=theme==='dark';
+  document.body.classList.toggle('dark-mode',isDark);
+  themeToggleBtn.setAttribute('aria-label',isDark?'Aktifkan light mode':'Aktifkan dark mode');
+  themeToggleBtn.setAttribute('aria-pressed',String(isDark));
+  localStorage.setItem('docxConverterTheme',theme);
+}
+
+themeToggleBtn.addEventListener('click',()=>{
+  const nextTheme=document.body.classList.contains('dark-mode')?'light':'dark';
+  applyTheme(nextTheme);
+});
+
+applyTheme(localStorage.getItem('docxConverterTheme')||'light');
+
+
+function setSelectedMode(mode){
+  selectedMode=mode;
+  mobileSegment.classList.toggle('active',mode==='mobile');
+  desktopSegment.classList.toggle('active',mode==='desktop');
+}
+mobileSegment.addEventListener('click',()=>setSelectedMode('mobile'));
+desktopSegment.addEventListener('click',()=>setSelectedMode('desktop'));
+convertSelectedBtn.addEventListener('click',()=>convert(selectedMode));
+
+function showToast(message,type='success'){
+  if(!toastStack)return;
+  const toast=document.createElement('div');
+  toast.className='toast '+type;
+  toast.textContent=message;
+  toastStack.appendChild(toast);
+  setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateY(-8px)';},2600);
+  setTimeout(()=>toast.remove(),2900);
+}
+
+function showConversionOverlay(){
+  if(!conversionOverlay||!conversionProgressBar)return;
+  conversionOverlay.classList.add('active');
+  conversionOverlay.setAttribute('aria-hidden','false');
+  conversionProgressBar.style.width='12%';
+  setTimeout(()=>conversionProgressBar.style.width='58%',120);
+  setTimeout(()=>conversionProgressBar.style.width='86%',420);
+}
+function hideConversionOverlay(){
+  if(!conversionOverlay||!conversionProgressBar)return;
+  conversionProgressBar.style.width='100%';
+  setTimeout(()=>{
+    conversionOverlay.classList.remove('active');
+    conversionOverlay.setAttribute('aria-hidden','true');
+    conversionProgressBar.style.width='0';
+  },260);
+}
+
+function updateStatistics(html){
+  const holder=document.createElement('div');
+  holder.innerHTML=html;
+  statSections.textContent=(html.match(/<!-- Section \d+(?: [^>]+)? -->/g)||[]).length;
+  statImages.textContent=holder.querySelectorAll('img').length;
+  statHeadings.textContent=holder.querySelectorAll('h1,h2,h3').length;
+  statParagraphs.textContent=holder.querySelectorAll('p').length;
+  statAnchors.textContent=holder.querySelectorAll('a').length;
+  statAutoVm.textContent=(html.match(/<!-- Section \d+ Auto vm -->/gi)||[]).length;
+}
+
+function runQualityCheck(html){
+  const holder=document.createElement('div');
+  holder.innerHTML=html;
+  const checks=[
+    {label:'Exactly one H1',pass:holder.querySelectorAll('h1').length===1},
+    {label:'All anchors have href',pass:[...holder.querySelectorAll('a')].every(a=>a.getAttribute('href'))},
+    {label:'All images have alt',pass:[...holder.querySelectorAll('img')].every(img=>img.getAttribute('alt'))},
+    {label:'Section markers valid',pass:(html.match(/<!-- Section \d+(?: [^>]+)? -->/g)||[]).length>0},
+    {label:'No spacer at section start/end',pass:!/(?:<!-- Section \d+(?: [^>]+)? -->\s*<p><span[^>]*><br>|<p><span[^>]*><br><\/span><\/p>\s*(?:<!-- Section|$))/i.test(html)},
+    {label:'Heading sizes consistent',pass:[...holder.querySelectorAll('h1 span,h2 span')].every(s=>s.style.fontSize===headingSize.value+'px')},
+    {label:'Body sizes consistent',pass:[...holder.querySelectorAll('h3 span,p span')].filter(s=>s.querySelector('br')===null).every(s=>!s.style.fontSize||s.style.fontSize===bodySize.value+'px')},
+    {label:'Auto VM sections labeled',pass:!/autovm/i.test(html)||/<!-- Section \d+ Auto vm -->/i.test(html)}
+  ];
+  const passed=checks.filter(c=>c.pass).length;
+  const score=Math.round((passed/checks.length)*100);
+  qualityScore.textContent=score+'%';
+  qualityScore.style.setProperty('--quality',score+'%');
+  qualityList.innerHTML='';
+  checks.forEach(check=>{
+    const item=document.createElement('div');
+    item.className='quality-item '+(check.pass?'pass':'fail');
+    item.innerHTML='<span class="label"><span class="quality-dot"></span>'+check.label+'</span><span class="state">'+(check.pass?'Passed':'Check')+'</span>';
+    qualityList.appendChild(item);
+  });
+}
+
+insightsToggle.addEventListener('click',()=>{const open=insightsToggle.getAttribute('aria-expanded')==='true';insightsToggle.setAttribute('aria-expanded',String(!open));insightsContent.classList.toggle('open',!open);});
+
+document.querySelectorAll('.preview-mode').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.preview-mode').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    previewShell.classList.toggle('mobile',btn.dataset.preview==='mobile');
+    previewShell.classList.toggle('desktop',btn.dataset.preview==='desktop');
+  });
+});
+
+downloadMenuBtn.addEventListener('click',()=>{
+  const open=downloadMenu.classList.toggle('open');
+  downloadMenuBtn.setAttribute('aria-expanded',String(open));
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.download-menu-wrap')){
+    downloadMenu.classList.remove('open');
+    downloadMenuBtn.setAttribute('aria-expanded','false');
+  }
+});
+document.querySelectorAll('[data-download]').forEach(btn=>{
+  btn.addEventListener('click',async()=>{
+    const type=btn.dataset.download;
+    if(type==='current')downloadHtml(lastConvertedHtml||editor.getValue(),outputName.value||'hasil-convert.html');
+    if(type==='mobile'){
+      if(!lastMobileHtml&&selectedFile)await convert('mobile');
+      if(lastMobileHtml)downloadHtml(lastMobileHtml,(selectedFile?.name||'document').replace(/\.docx$/i,'')+'_Mobile_Sectioned.html');
+    }
+    if(type==='desktop'){
+      if(!lastDesktopHtml&&selectedFile)await convert('desktop');
+      if(lastDesktopHtml)downloadHtml(lastDesktopHtml,(selectedFile?.name||'document').replace(/\.docx$/i,'')+'_Desktop_Sectioned.html');
+    }
+    downloadMenu.classList.remove('open');
+  });
+});
+function downloadHtml(content,name){
+  const blob=new Blob([content],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=name.endsWith('.html')?name:name+'.html';
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  showToast('HTML berhasil diunduh.','success');
+}
+
+copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.getValue())}catch{navigator.clipboard.writeText(editor.getValue())}setStatus('HTML berhasil disalin ke clipboard.','success');showToast('HTML copied.','success')});resetBtn.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileLabel.textContent='Klik atau tarik file DOCX ke sini';editor.setValue('');preview.innerHTML='<p style="color:#6b7280">Preview artikel akan tampil di sini.</p>';convertSelectedBtn.disabled=true;copyBtn.disabled=true;copySectionsBtn.disabled=true;downloadMenuBtn.disabled=true;headingSize.value=18;bodySize.value=16;outputName.value='hasil-convert.html';copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyTitle.textContent='Quick Copy per Section';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyPanelTitle.textContent='Copy HTML per Section';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';setStatus('')});
+</script>
+</body>
+</html>
