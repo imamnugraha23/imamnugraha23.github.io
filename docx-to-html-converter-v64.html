@@ -1,14 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DOCX ke HTML Converter</title>
-  <script src="https://unpkg.com/mammoth@1.12.0/mammoth.browser.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DOCX ke HTML Converter</title>
+<script src="https://unpkg.com/mammoth@1.12.0/mammoth.browser.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<style>
 
     :root{
       --bg:#f5f5f7;
@@ -292,8 +293,8 @@
     .preview h3{font-weight:700}
 
     .quick-copy-panel{
-      position:sticky;
-      top:12px;
+      position:relative;
+      
       z-index:20;
       display:none;
       border-radius:24px;
@@ -624,7 +625,7 @@
 
 
     .top-nav{
-      position:sticky;
+      position:relative;
       top:0;
       z-index:100;
       background:rgba(251,251,253,.78);
@@ -671,10 +672,10 @@
     body.dark-mode .brand-mark{background:#f5f5f7;color:#1d1d1f}
     body.dark-mode .version-pill,body.dark-mode .icon-button{background:#2c2c2e;color:#f5f5f7}
 
-    .hero{padding:88px 4px 72px}
+    .hero{padding:42px 4px 30px}
     .hero-copy{max-width:900px;margin:auto;text-align:center}
     .eyebrow{display:inline-block;margin-bottom:12px;color:var(--primary);font-size:12px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
-    .hero h1{font-size:clamp(56px,8vw,108px);line-height:.88;letter-spacing:-5px}
+    .hero h1{font-size:clamp(38px,5vw,68px);line-height:.94;letter-spacing:-3px}
     .hero-tagline{margin:24px 0 10px!important;color:var(--text)!important;font-size:clamp(26px,3vw,42px)!important;font-weight:700;letter-spacing:-1.2px}
     .hero-description{margin:auto!important;max-width:680px!important}
 
@@ -787,8 +788,8 @@
     }
     @media(max-width:640px){
       .top-nav-inner{width:min(100% - 20px,1260px)}
-      .hero{padding:58px 4px 44px}
-      .hero h1{letter-spacing:-3px}
+      .hero{padding:30px 4px 22px}
+      .hero h1{font-size:42px;letter-spacing:-2px}
       .convert-controls{align-items:stretch}
       .segmented-control{width:100%}
       .segment{flex:1}
@@ -798,173 +799,419 @@
       .toast{min-width:0;max-width:none}
     }
 
+
+    .app-footer{
+      margin-top:24px;
+      border-top:1px solid var(--border);
+      background:rgba(245,245,247,.82);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    .footer-inner{
+      width:min(1260px,calc(100% - 40px));
+      margin:auto;
+      padding:22px 0 28px;
+    }
+
+    .footer-inner p{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.65;
+    }
+
+    body.dark-mode .app-footer{
+      background:rgba(17,17,19,.9);
+      border-color:var(--border);
+    }
+
+    .quick-copy-panel{
+      margin-top:0;
+      
+    }
+
+    @media(max-width:640px){
+      .footer-inner{
+        width:min(100% - 20px,1260px);
+      }
+    }
+
+
+    .insights-accordion{padding:0;overflow:hidden}
+    .accordion-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 24px;border-radius:0;background:transparent;color:var(--text);text-align:left}
+    .accordion-toggle:hover{background:rgba(0,113,227,.04);transform:none}
+    .accordion-toggle h2{margin:0;font-size:22px;letter-spacing:-.45px}
+    .accordion-icon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#e8e8ed;transition:transform .22s ease,background .22s ease;flex-shrink:0}
+    .accordion-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;transition:transform .22s ease}
+    .accordion-toggle[aria-expanded="true"] .accordion-icon svg{transform:rotate(180deg)}
+    .accordion-content{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;max-height:0;overflow:hidden;padding:0 24px;opacity:0;transition:max-height .32s ease,opacity .22s ease,padding .32s ease}
+    .accordion-content.open{max-height:1200px;opacity:1;padding:0 24px 24px}
+    body.dark-mode .accordion-icon{background:#2c2c2e;color:#f5f5f7}
+    body.dark-mode .accordion-toggle:hover{background:rgba(41,151,255,.06)}
+    @media(max-width:900px){.accordion-content{grid-template-columns:1fr}}
+
+
+    .convert-panel{
+      margin-bottom:14px;
+    }
+
+    .quick-copy-panel{
+      margin-top:0;
+      margin-bottom:14px;
+      padding-top:20px;
+      padding-bottom:20px;
+    }
+
+    .insights-accordion{
+      margin-top:0;
+      margin-bottom:14px;
+    }
+
+    .hero{
+      padding-bottom:20px;
+    }
+
+    .container{
+      margin-bottom:40px;
+    }
+
+    @media(max-width:640px){
+      .convert-panel,
+      .quick-copy-panel,
+      .insights-accordion{
+        margin-bottom:12px;
+      }
+    }
+
+
+    .quick-copy-panel{
+      margin-top:-8px;
+      margin-bottom:12px;
+      
+    }
+
+    .hero{
+      padding-bottom:12px;
+    }
+
+    .convert-panel{
+      margin-top:0;
+    }
+
+    @media(max-width:640px){
+      .quick-copy-panel{
+        margin-top:-4px;
+      }
+    }
+
+
+    .quick-copy-panel{
+      margin-bottom:10px;
+    }
+
+    .insights-accordion{
+      margin-top:0;
+      margin-bottom:12px;
+    }
+
+
+    .quick-copy-panel{
+      margin-
+      margin-bottom:10px;
+      
+    }
+
+    .insights-accordion{
+      margin-top:0;
+      margin-bottom:10px;
+    }
+
+    .hero{
+      padding-top:28px;
+      padding-bottom:18px;
+    }
+
+    @media(max-width:640px){
+      .quick-copy-panel{
+        margin-top:8px;
+        top:58px;
+      }
+
+      .hero{
+        padding-top:22px;
+      }
+    }
+
+
+    .insights-accordion{
+      margin-top:18px;
+      margin-bottom:12px;
+    }
+
+    .app-footer{
+      margin-top:0;
+    }
+
+
+    .quick-copy-panel{
+      position:relative !important;
+      top:auto !important;
+      z-index:auto !important;
+    }
+
+
+    .insights-accordion{
+      margin-top:20px;
+      margin-bottom:12px;
+    }
+
+    .app-footer{
+      margin-top:0;
+    }
+
+
+    .insights-accordion{
+      margin-top:20px !important;
+      margin-bottom:12px !important;
+    }
+    .app-footer{
+      margin-top:0 !important;
+    }
+    
+    .top-nav-inner{
+      height:44px !important;
+    }
+
+    .hero{
+      padding-top:12px !important;
+      padding-bottom:8px !important;
+      margin-bottom:6px !important;
+    }
+
+    .hero h1{
+      margin-bottom:0 !important;
+      font-size:clamp(34px,4.2vw,58px) !important;
+      line-height:.92 !important;
+    }
+
+    .hero .eyebrow{
+      margin-bottom:6px !important;
+    }
+
+    .container{
+      margin-top:8px !important;
+    }
+
+    .convert-panel{
+      margin-top:0 !important;
+      margin-bottom:10px !important;
+      padding-top:16px !important;
+      padding-bottom:16px !important;
+    }
+
+    .drop-zone{
+      min-height:120px !important;
+      padding:22px 18px !important;
+    }
+
+    .settings{
+      margin-top:12px !important;
+    }
+
+    .convert-controls{
+      margin-top:12px !important;
+    }
+
+    @media(max-width:640px){
+      .top-nav-inner{
+        height:42px !important;
+      }
+
+      .hero{
+        padding-top:10px !important;
+        padding-bottom:6px !important;
+      }
+
+      .hero h1{
+        font-size:36px !important;
+      }
+
+      .drop-zone{
+        min-height:105px !important;
+        padding:18px 14px !important;
+      }
+    }
+
 </style>
 </head>
 <body>
 <main class="container">
-  
 <header class="top-nav">
-  <div class="top-nav-inner">
-    <a class="brand" href="#top" aria-label="DOCX to HTML">
-      <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v6h5"/></svg>
-      </span>
-      <span>DOCX to HTML</span>
-    </a>
-    <nav class="top-nav-links" aria-label="Navigasi utama">
-      <a href="#convertPanel">Convert</a>
-      <a href="#quickCopyPanel">Quick Copy</a>
-      <a href="#qualityPanel">Quality Check</a>
-      <a href="#workspace">Preview</a>
-    </nav>
-    <div class="top-nav-actions">
-      <span class="version-pill">v50</span>
-      <button class="icon-button" id="themeToggleBtn" type="button" aria-pressed="false" aria-label="Ubah tema">
-        <svg class="theme-icon moon-icon" viewBox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"/></svg>
-        <svg class="theme-icon sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-      </button>
-    </div>
-  </div>
+<div class="top-nav-inner">
+<a aria-label="DOCX to HTML" class="brand" href="#top">
+<span aria-hidden="true" class="brand-mark">
+<svg viewbox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"></path><path d="M14 3v6h5"></path></svg>
+</span>
+<span>DOCX to HTML</span>
+</a>
+<nav aria-label="Navigasi utama" class="top-nav-links">
+<a href="#convertPanel">Convert</a>
+<a href="#quickCopyPanel">Quick Copy</a>
+<a href="#qualityPanel">Quality Check</a>
+<a href="#workspace">Preview</a>
+</nav>
+<div class="top-nav-actions">
+<span class="version-pill">v64</span>
+<button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
+<svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
+<svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+</button>
+</div>
+</div>
 </header>
-
 <section class="hero" id="top">
-  <div class="hero-copy">
-    <span class="eyebrow">Content Operations Tool</span>
-    <h1>DOCX to HTML<br>Converter</h1>
-    <p class="hero-tagline">Beautiful HTML. Ready for CMS.</p>
-    <p class="hero-description">Ubah dokumen Word menjadi HTML yang bersih, konsisten, dan siap dipakai untuk kebutuhan CMS.</p>
-  </div>
+<div class="hero-copy">
+<span class="eyebrow">Content Operations Tool</span>
+<h1>DOCX to HTML<br/>Converter</h1>
+</div>
 </section>
-
 <section class="panel convert-panel" id="convertPanel">
-    <label class="drop-zone" id="dropZone" for="fileInput"><strong id="fileLabel">Klik atau tarik file DOCX ke sini</strong><span>Format yang didukung: .docx</span></label>
-    <input id="fileInput" type="file" accept=".docx">
-    <div class="settings">
-      <div class="field"><label for="headingSize">Ukuran heading (H1 &amp; H2)</label><input id="headingSize" type="number" min="12" max="40" value="18"></div>
-      <div class="field"><label for="bodySize">Ukuran body (H3 &amp; body)</label><input id="bodySize" type="number" min="10" max="32" value="16"></div>
-      <div class="field"><label for="outputName">Nama file output</label><input id="outputName" type="text" value="hasil-convert.html"></div>
-    </div>
-    
+<label class="drop-zone" for="fileInput" id="dropZone"><strong id="fileLabel">Klik atau tarik file DOCX ke sini</strong><span>Format yang didukung: .docx</span></label>
+<input accept=".docx" id="fileInput" type="file"/>
+<div class="settings">
+<div class="field"><label for="headingSize">Ukuran heading (H1 &amp; H2)</label><input id="headingSize" max="40" min="12" type="number" value="18"/></div>
+<div class="field"><label for="bodySize">Ukuran body (H3 &amp; body)</label><input id="bodySize" max="32" min="10" type="number" value="16"/></div>
+<div class="field"><label for="outputName">Nama file output</label><input id="outputName" type="text" value="hasil-convert.html"/></div>
+</div>
 <div class="convert-controls">
-  <div class="segmented-control" role="group" aria-label="Pilih mode konversi">
-    <button class="segment active" id="mobileSegment" type="button" data-mode="mobile">Mobile</button>
-    <button class="segment" id="desktopSegment" type="button" data-mode="desktop">Desktop</button>
-  </div>
-  <button class="btn-primary convert-main-btn" id="convertSelectedBtn" disabled>
-    <svg viewBox="0 0 24 24"><path d="M13 2 3 14h8l-1 8 10-12h-8z"/></svg>
-    <span>Convert</span>
-  </button>
-  <button class="btn-secondary" id="copyBtn" disabled>
-    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+<div aria-label="Pilih mode konversi" class="segmented-control" role="group">
+<button class="segment active" data-mode="mobile" id="mobileSegment" type="button">Mobile</button>
+<button class="segment" data-mode="desktop" id="desktopSegment" type="button">Desktop</button>
+</div>
+<button class="btn-primary convert-main-btn" disabled="" id="convertSelectedBtn">
+<svg viewbox="0 0 24 24"><path d="M13 2 3 14h8l-1 8 10-12h-8z"></path></svg>
+<span>Convert</span>
+</button>
+<button class="btn-secondary" disabled="" id="copyBtn">
+<svg viewbox="0 0 24 24"><rect height="11" rx="2" width="11" x="9" y="9"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
     Copy HTML
   </button>
-  <button class="btn-secondary" id="copySectionsBtn" disabled>
-    <svg viewBox="0 0 24 24"><path d="M4 4h16v4H4zM4 10h16v4H4zM4 16h16v4H4z"/></svg>
+<button class="btn-secondary" disabled="" id="copySectionsBtn">
+<svg viewbox="0 0 24 24"><path d="M4 4h16v4H4zM4 10h16v4H4zM4 16h16v4H4z"></path></svg>
     Copy per Section
   </button>
-  <div class="download-menu-wrap">
-    <button class="btn-secondary" id="downloadMenuBtn" disabled aria-expanded="false">
-      <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+<div class="download-menu-wrap">
+<button aria-expanded="false" class="btn-secondary" disabled="" id="downloadMenuBtn">
+<svg viewbox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"></path><path d="M5 21h14"></path></svg>
       Download
-      <svg class="chevron" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></svg>
-    </button>
-    <div class="download-menu" id="downloadMenu">
-      <button type="button" data-download="current">Download Current HTML</button>
-      <button type="button" data-download="mobile">Download Mobile HTML</button>
-      <button type="button" data-download="desktop">Download Desktop HTML</button>
-    </div>
-  </div>
-  <button class="btn-secondary" id="resetBtn">
-    <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      <svg class="chevron" viewbox="0 0 24 24"><path d="m8 10 4 4 4-4"></path></svg>
+</button>
+<div class="download-menu" id="downloadMenu">
+<button data-download="current" type="button">Download Current HTML</button>
+<button data-download="mobile" type="button">Download Mobile HTML</button>
+<button data-download="desktop" type="button">Download Desktop HTML</button>
+</div>
+</div>
+<button class="btn-secondary" id="resetBtn">
+<svg viewbox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
     Reset
   </button>
 </div>
 <div class="status" id="status"></div>
-    <div class="note">Link autovm dan SKU dibuat sebagai section tersendiri dengan label Auto vm. Numbering angka dipertahankan tanpa spacer. Bullet point diubah menjadi tanda minus (-) dan diberi spacer antaritem. Anchor text, href, bold, italic, dan underline dari dokumen akan dipertahankan. Anchor ditampilkan sebagai teks klik berwarna biru dan bold, tanpa menampilkan kode link. Baris “Link image:” akan dikonversi menjadi tag <code>&lt;img&gt;</code>, lalu baris berikutnya menjadi judul produk dengan <code>href="#"</code>. Spacer <code>&lt;p&gt;&lt;span style="font-size: 16px"&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;</code> otomatis ditambahkan di antara paragraf, tetapi tidak di awal atau akhir section.</div>
-  </section>
-  
-
-
-<section class="insight-grid" id="insights">
-  <section class="panel stats-panel" id="statsPanel">
-    <div class="panel-heading-row">
-      <div>
-        <span class="eyebrow">Live Summary</span>
-        <h2>Conversion Statistics</h2>
-      </div>
-    </div>
-    <div class="stats-grid" id="statsGrid">
-      <div class="stat-card"><span>Sections</span><strong id="statSections">0</strong></div>
-      <div class="stat-card"><span>Images</span><strong id="statImages">0</strong></div>
-      <div class="stat-card"><span>Headings</span><strong id="statHeadings">0</strong></div>
-      <div class="stat-card"><span>Paragraphs</span><strong id="statParagraphs">0</strong></div>
-      <div class="stat-card"><span>Anchors</span><strong id="statAnchors">0</strong></div>
-      <div class="stat-card"><span>Auto VM</span><strong id="statAutoVm">0</strong></div>
-    </div>
-  </section>
-
-  <section class="panel quality-panel" id="qualityPanel">
-    <div class="panel-heading-row">
-      <div>
-        <span class="eyebrow">Validation</span>
-        <h2>Quality Check</h2>
-      </div>
-      <div class="quality-score" id="qualityScore">—</div>
-    </div>
-    <div class="quality-list" id="qualityList">
-      <div class="quality-empty">Convert dokumen untuk menjalankan quality check.</div>
-    </div>
-  </section>
 </section>
+
 <section class="panel quick-copy-panel" id="quickCopyPanel">
-  <div class="quick-copy-header">
-    <div>
-      <h2 id="quickCopyTitle">Quick Copy per Section</h2>
-      <div class="quick-progress-wrap">
-      <div class="progress-ring" id="progressRing" style="--progress:0">
-        <span id="progressPercent">0%</span>
-      </div>
-      <div class="quick-copy-progress" id="quickCopyProgress">Progress: 0/0 section tersalin</div>
-    </div>
-    </div>
-    <button class="btn-secondary" id="resetQuickCopyBtn">Reset Status Copy</button>
-  </div>
-  <div class="quick-copy-list" id="quickCopyList"></div>
+<div class="quick-copy-header">
+<div>
+<h2 id="quickCopyTitle">Quick Copy per Section</h2>
+<div class="quick-progress-wrap">
+<div class="progress-ring" id="progressRing" style="--progress:0">
+<span id="progressPercent">0%</span>
+</div>
+<div class="quick-copy-progress" id="quickCopyProgress">Progress: 0/0 section tersalin</div>
+</div>
+</div>
+<button class="btn-secondary" id="resetQuickCopyBtn">Reset Status Copy</button>
+</div>
+<div class="quick-copy-list" id="quickCopyList"></div>
 </section>
 <section class="panel section-copy-panel" id="sectionCopyPanel">
-  <div class="section-copy-header">
-    <div>
-      <h2 id="sectionCopyPanelTitle">Copy HTML per Section</h2>
-      <div class="section-copy-progress" id="sectionCopyProgress">Progress: 0/0 section tersalin</div>
-    </div>
-    <div class="section-copy-actions">
-      <button class="btn-secondary" id="resetSectionStatusBtn">Reset Status Copy</button>
-      <button class="btn-secondary" id="closeSectionPanelBtn">Tutup</button>
-    </div>
-  </div>
-  <div class="section-copy-list" id="sectionCopyList"></div>
+<div class="section-copy-header">
+<div>
+<h2 id="sectionCopyPanelTitle">Copy HTML per Section</h2>
+<div class="section-copy-progress" id="sectionCopyProgress">Progress: 0/0 section tersalin</div>
+</div>
+<div class="section-copy-actions">
+<button class="btn-secondary" id="resetSectionStatusBtn">Reset Status Copy</button>
+<button class="btn-secondary" id="closeSectionPanelBtn">Tutup</button>
+</div>
+</div>
+<div class="section-copy-list" id="sectionCopyList"></div>
 </section>
 <section class="workspace" id="workspace">
-    <div class="panel"><h2>HTML Hasil Convert</h2><textarea id="output" spellcheck="false"></textarea></div>
-    <div class="panel preview-panel">
-      <div class="preview-header">
-        <h2>Preview</h2>
-        <div class="preview-toggle" role="group" aria-label="Preview mode">
-          <button class="preview-mode active" data-preview="desktop">Desktop</button>
-          <button class="preview-mode" data-preview="mobile">Mobile</button>
-        </div>
-      </div>
-      <div class="preview-shell desktop" id="previewShell">
-        <div class="preview" id="preview"><p style="color:#6b7280">Preview artikel akan tampil di sini.</p></div></div></div>
-  </section>
+<div class="panel"><h2>HTML Hasil Convert</h2><textarea id="output" spellcheck="false"></textarea></div>
+<div class="panel preview-panel">
+<div class="preview-header">
+<h2>Preview</h2>
+<div aria-label="Preview mode" class="preview-toggle" role="group">
+<button class="preview-mode active" data-preview="desktop">Desktop</button>
+<button class="preview-mode" data-preview="mobile">Mobile</button>
+</div>
+</div>
+<div class="preview-shell desktop" id="previewShell">
+<div class="preview" id="preview"><p style="color:#6b7280">Preview artikel akan tampil di sini.</p></div></div></div>
+</section>
 </main>
+<section class="panel insights-accordion" id="insights">
+<button aria-controls="insightsContent" aria-expanded="false" class="accordion-toggle" id="insightsToggle" type="button">
+<div>
+<span class="eyebrow">Insights</span>
+<h2>Live Summary &amp; Validation</h2>
+</div>
+<span aria-hidden="true" class="accordion-icon">
+<svg viewbox="0 0 24 24"><path d="m8 10 4 4 4-4"></path></svg>
+</span>
+</button>
+<div class="accordion-content" id="insightsContent">
+<section class="stats-panel" id="statsPanel">
+<div class="panel-heading-row"><div><span class="eyebrow">Live Summary</span><h2>Conversion Statistics</h2></div></div>
+<div class="stats-grid" id="statsGrid">
+<div class="stat-card"><span>Sections</span><strong id="statSections">0</strong></div>
+<div class="stat-card"><span>Images</span><strong id="statImages">0</strong></div>
+<div class="stat-card"><span>Headings</span><strong id="statHeadings">0</strong></div>
+<div class="stat-card"><span>Paragraphs</span><strong id="statParagraphs">0</strong></div>
+<div class="stat-card"><span>Anchors</span><strong id="statAnchors">0</strong></div>
+<div class="stat-card"><span>Auto VM</span><strong id="statAutoVm">0</strong></div>
+</div>
+</section>
+<section class="quality-panel" id="qualityPanel">
+<div class="panel-heading-row"><div><span class="eyebrow">Validation</span><h2>Quality Check</h2></div><div class="quality-score" id="qualityScore">—</div></div>
+<div class="quality-list" id="qualityList"><div class="quality-empty">Convert dokumen untuk menjalankan quality check.</div></div>
+</section>
+</div>
+</section><footer class="app-footer">
+<div class="footer-inner">
+<p>Link autovm dan SKU dibuat sebagai section tersendiri dengan label Auto vm. Numbering angka dipertahankan tanpa spacer. Bullet point diubah menjadi tanda minus (-) dan diberi spacer antaritem. Anchor text, href, bold, italic, dan underline dari dokumen akan dipertahankan. Anchor ditampilkan sebagai teks klik berwarna biru dan bold, tanpa menampilkan kode link. Baris “Link image:” akan dikonversi menjadi tag <code>&lt;img&gt;</code>, lalu baris berikutnya menjadi judul produk dengan <code>href="#"</code>. Spacer <code>&lt;p&gt;&lt;span style="font-size: 16px"&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;</code> otomatis ditambahkan di antara paragraf, tetapi tidak di awal atau akhir section.</p>
+</div>
+</footer>
+<div class="toast-stack" id="toastStack"></div>
+<div aria-hidden="true" class="conversion-overlay" id="conversionOverlay">
+<div class="conversion-card">
+<div class="conversion-spinner"></div>
+<h3>Converting your document</h3>
+<p>Preparing clean HTML for your CMS.</p>
+<div class="conversion-progress"><span id="conversionProgressBar"></span></div>
+</div>
+</div>
 <script>
-const $=id=>document.getElementById(id);const fileInput=$('fileInput'),dropZone=$('dropZone'),fileLabel=$('fileLabel'),convertMobileBtn=$('convertMobileBtn'),convertDesktopBtn=$('convertDesktopBtn'),copyBtn=$('copyBtn'),copySectionsBtn=$('copySectionsBtn'),themeToggleBtn=$('themeToggleBtn'),resetBtn=$('resetBtn'),output=$('output'),preview=$('preview'),status=$('status'),headingSize=$('headingSize'),bodySize=$('bodySize'),outputName=$('outputName'),quickCopyPanel=$('quickCopyPanel'),quickCopyTitle=$('quickCopyTitle'),quickCopyProgress=$('quickCopyProgress'),quickCopyList=$('quickCopyList'),resetQuickCopyBtn=$('resetQuickCopyBtn'),sectionCopyPanel=$('sectionCopyPanel'),sectionCopyList=$('sectionCopyList'),sectionCopyPanelTitle=$('sectionCopyPanelTitle'),sectionCopyProgress=$('sectionCopyProgress'),resetSectionStatusBtn=$('resetSectionStatusBtn'),closeSectionPanelBtn=$('closeSectionPanelBtn');let selectedMode='mobile',lastConvertedHtml='',lastMobileHtml='',lastDesktopHtml='';
+const $=id=>document.getElementById(id);const fileInput=$('fileInput'),dropZone=$('dropZone'),fileLabel=$('fileLabel'),copyBtn=$('copyBtn'),copySectionsBtn=$('copySectionsBtn'),themeToggleBtn=$('themeToggleBtn'),resetBtn=$('resetBtn'),output=$('output'),preview=$('preview'),status=$('status'),headingSize=$('headingSize'),bodySize=$('bodySize'),outputName=$('outputName'),quickCopyPanel=$('quickCopyPanel'),quickCopyTitle=$('quickCopyTitle'),quickCopyProgress=$('quickCopyProgress'),quickCopyList=$('quickCopyList'),resetQuickCopyBtn=$('resetQuickCopyBtn'),sectionCopyPanel=$('sectionCopyPanel'),sectionCopyList=$('sectionCopyList'),sectionCopyPanelTitle=$('sectionCopyPanelTitle'),sectionCopyProgress=$('sectionCopyProgress'),resetSectionStatusBtn=$('resetSectionStatusBtn'),closeSectionPanelBtn=$('closeSectionPanelBtn');let selectedMode='mobile',lastConvertedHtml='',lastMobileHtml='',lastDesktopHtml='';
 const mobileSegment=$('mobileSegment'),desktopSegment=$('desktopSegment'),convertSelectedBtn=$('convertSelectedBtn'),
 downloadMenuBtn=$('downloadMenuBtn'),downloadMenu=$('downloadMenu'),toastStack=$('toastStack'),
 conversionOverlay=$('conversionOverlay'),conversionProgressBar=$('conversionProgressBar'),
 previewShell=$('previewShell'),progressRing=$('progressRing'),progressPercent=$('progressPercent'),
 qualityScore=$('qualityScore'),qualityList=$('qualityList');
+const insightsToggle=$('insightsToggle'),insightsContent=$('insightsContent');
 const statSections=$('statSections'),statImages=$('statImages'),statHeadings=$('statHeadings'),
 statParagraphs=$('statParagraphs'),statAnchors=$('statAnchors'),statAutoVm=$('statAutoVm');
 let selectedFile=null;const editor=CodeMirror.fromTextArea(output,{mode:'text/html',lineNumbers:true,lineWrapping:true});editor.on('change',()=>preview.innerHTML=editor.getValue());
@@ -1350,36 +1597,133 @@ function sanitizeInlineHtml(html){
   return holder.innerHTML.trim();
 }
 
-async function convert(mode){if(!selectedFile)return;convertSelectedBtn.disabled=true;convertSelectedBtn.classList.add('loading');if(mode==='desktop'){headingSize.value=24;bodySize.value=18;sectionCopyPanelTitle.textContent='Copy HTML Desktop per Section';quickCopyTitle.textContent='Quick Copy Desktop per Section';}else{headingSize.value=18;bodySize.value=16;setSelectedMode('mobile');lastConvertedHtml='';lastMobileHtml='';lastDesktopHtml='';updateStatistics('');qualityScore.textContent='—';qualityScore.style.setProperty('--quality','0%');qualityList.innerHTML='<div class="quality-empty">Convert dokumen untuk menjalankan quality check.</div>';sectionCopyPanelTitle.textContent='Copy HTML Mobile per Section';quickCopyTitle.textContent='Quick Copy Mobile per Section';}const base=selectedFile.name.replace(/\.docx$/i,'').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'_');outputName.value=base+'_'+(mode==='desktop'?'Desktop':'Mobile')+'_Sectioned.html';setStatus('Sedang membaca dan mengonversi dokumen...');showConversionOverlay();try{const arrayBuffer=await selectedFile.arrayBuffer();const result=await mammoth.convertToHtml({arrayBuffer});const temp=document.createElement('div');temp.innerHTML=result.value;const pars=[];temp.querySelectorAll('p,h1,h2,h3,li').forEach(node=>{
-  const tag=node.tagName.toLowerCase();
-  let value=tag==='p'||tag==='li'
-    ? sanitizeInlineHtml(node.innerHTML)
-    : sanitizeInlineHtml(node.innerHTML||node.textContent||'');
+async function convert(mode){
+  if(!selectedFile)return;
 
-  if(!value)return;
-
-  if(tag==='h2'){
-    value='[[H2]]'+value;
-  }else if(tag==='h3'){
-    value='[[H3]]'+value;
-  }else if(tag==='li'){
-    const parent=node.parentElement;
-    const isOrdered=parent&&parent.tagName.toLowerCase()==='ol';
-
-    if(isOrdered){
-      const siblings=[...parent.children].filter(child=>child.tagName.toLowerCase()==='li');
-      const number=siblings.indexOf(node)+1;
-      value='[[NUMBERED_LIST]]'+number+'. '+value.replace(/^\d+\.\s*/,'');
-    }else{
-      value='[[BULLET_LIST]]- '+value.replace(/^[•●▪◦‣⁃\-–—]\s*/,'');
-    }
+  if(typeof mammoth==='undefined'){
+    setStatus('Konversi gagal: library DOCX belum termuat. Periksa koneksi internet lalu refresh halaman.','error');
+    showToast('Library DOCX belum termuat.','error');
+    return;
   }
 
-  pars.push(value);
-});if(typeof window.buildConvertedHtml!=='function'){
-  throw new Error('Fungsi converter belum termuat. Silakan refresh halaman dengan Ctrl+F5.');
+  convertSelectedBtn.disabled=true;
+  convertSelectedBtn.classList.add('loading');
+
+  if(mode==='desktop'){
+    headingSize.value=24;
+    bodySize.value=18;
+    sectionCopyPanelTitle.textContent='Copy HTML Desktop per Section';
+    quickCopyTitle.textContent='Quick Copy Desktop per Section';
+  }else{
+    headingSize.value=18;
+    bodySize.value=16;
+    sectionCopyPanelTitle.textContent='Copy HTML Mobile per Section';
+    quickCopyTitle.textContent='Quick Copy Mobile per Section';
+  }
+
+  const base=selectedFile.name
+    .replace(/\.docx$/i,'')
+    .replace(/[^\w\s-]/g,'')
+    .trim()
+    .replace(/\s+/g,'_');
+
+  outputName.value=base+'_'+(mode==='desktop'?'Desktop':'Mobile')+'_Sectioned.html';
+  setStatus('Sedang membaca dan mengonversi dokumen...');
+  showConversionOverlay();
+
+  try{
+    const arrayBuffer=await selectedFile.arrayBuffer();
+
+    const mammothResult=await Promise.race([
+      mammoth.convertToHtml({arrayBuffer}),
+      new Promise((_,reject)=>{
+        setTimeout(
+          ()=>reject(new Error('Proses membaca DOCX terlalu lama. Pastikan koneksi internet aktif lalu coba kembali.')),
+          20000
+        );
+      })
+    ]);
+
+    const temp=document.createElement('div');
+    temp.innerHTML=mammothResult.value||'';
+
+    const pars=[];
+    temp.querySelectorAll('p,h1,h2,h3,li').forEach(node=>{
+      const tag=node.tagName.toLowerCase();
+      let value=tag==='p'||tag==='li'
+        ? sanitizeInlineHtml(node.innerHTML)
+        : sanitizeInlineHtml(node.innerHTML||node.textContent||'');
+
+      if(!value)return;
+
+      if(tag==='h2'){
+        value='[[H2]]'+value;
+      }else if(tag==='h3'){
+        value='[[H3]]'+value;
+      }else if(tag==='li'){
+        const parent=node.parentElement;
+        const isOrdered=parent&&parent.tagName.toLowerCase()==='ol';
+
+        if(isOrdered){
+          const siblings=[...parent.children].filter(child=>child.tagName.toLowerCase()==='li');
+          const number=siblings.indexOf(node)+1;
+          value='[[NUMBERED_LIST]]'+number+'. '+value.replace(/^\d+\.\s*/,'');
+        }else{
+          value='[[BULLET_LIST]]- '+value.replace(/^[•●▪◦‣⁃\-–—]\s*/,'');
+        }
+      }
+
+      pars.push(value);
+    });
+
+    if(!pars.length){
+      throw new Error('Isi dokumen tidak berhasil dibaca.');
+    }
+
+    if(typeof window.buildConvertedHtml!=='function'){
+      throw new Error('Fungsi converter belum termuat. Silakan refresh halaman dengan Ctrl+F5.');
+    }
+
+    const converted=window.buildConvertedHtml(pars);
+
+    lastConvertedHtml=converted;
+    if(mode==='mobile'){
+      lastMobileHtml=converted;
+    }else{
+      lastDesktopHtml=converted;
+    }
+
+    copiedSections.clear();
+    quickCopyPanel.classList.remove('active');
+    quickCopyList.innerHTML='';
+    quickCopyProgress.textContent='Progress: 0/0 section tersalin';
+    sectionCopyPanel.classList.remove('active');
+    sectionCopyList.innerHTML='';
+    sectionCopyProgress.textContent='Progress: 0/0 section tersalin';
+
+    editor.setValue(converted);
+    preview.innerHTML=converted;
+    renderQuickCopy();
+    updateStatistics(converted);
+    runQualityCheck(converted);
+
+    copyBtn.disabled=false;
+    copySectionsBtn.disabled=false;
+    downloadMenuBtn.disabled=false;
+
+    setStatus('Konversi selesai. Silakan cek hasil dan preview.','success');
+    showToast('HTML berhasil dikonversi.','success');
+  }catch(error){
+    console.error(error);
+    const message=error?.message||'Terjadi kesalahan saat konversi.';
+    setStatus('Konversi gagal: '+message,'error');
+    showToast('Konversi gagal: '+message,'error');
+  }finally{
+    hideConversionOverlay();
+    convertSelectedBtn.disabled=false;
+    convertSelectedBtn.classList.remove('loading');
+  }
 }
-const converted=window.buildConvertedHtml(pars);lastConvertedHtml=converted;if(mode==='mobile')lastMobileHtml=converted;else lastDesktopHtml=converted;copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';editor.setValue(converted);preview.innerHTML=converted;renderQuickCopy();updateStatistics(converted);runQualityCheck(converted);copyBtn.disabled=false;downloadMenuBtn.disabled=false;copySectionsBtn.disabled=false;downloadMenuBtn.disabled=false;setStatus('Konversi selesai. Silakan cek hasil dan preview.','success');showToast('HTML berhasil dikonversi.','success')}catch(e){console.error(e);setStatus('Konversi gagal: '+e.message,'error');showToast('Konversi gagal: '+e.message,'error')}finally{hideConversionOverlay();convertSelectedBtn.disabled=false;convertSelectedBtn.classList.remove('loading');}}
 
 function splitHtmlBySection(html){
   const matches=[...html.matchAll(/<!-- Section \d+(?: [^>]+)? -->/g)];
@@ -1644,6 +1988,7 @@ desktopSegment.addEventListener('click',()=>setSelectedMode('desktop'));
 convertSelectedBtn.addEventListener('click',()=>convert(selectedMode));
 
 function showToast(message,type='success'){
+  if(!toastStack)return;
   const toast=document.createElement('div');
   toast.className='toast '+type;
   toast.textContent=message;
@@ -1653,6 +1998,7 @@ function showToast(message,type='success'){
 }
 
 function showConversionOverlay(){
+  if(!conversionOverlay||!conversionProgressBar)return;
   conversionOverlay.classList.add('active');
   conversionOverlay.setAttribute('aria-hidden','false');
   conversionProgressBar.style.width='12%';
@@ -1660,6 +2006,7 @@ function showConversionOverlay(){
   setTimeout(()=>conversionProgressBar.style.width='86%',420);
 }
 function hideConversionOverlay(){
+  if(!conversionOverlay||!conversionProgressBar)return;
   conversionProgressBar.style.width='100%';
   setTimeout(()=>{
     conversionOverlay.classList.remove('active');
@@ -1705,6 +2052,8 @@ function runQualityCheck(html){
   });
 }
 
+insightsToggle.addEventListener('click',()=>{const open=insightsToggle.getAttribute('aria-expanded')==='true';insightsToggle.setAttribute('aria-expanded',String(!open));insightsContent.classList.toggle('open',!open);});
+
 document.querySelectorAll('.preview-mode').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.preview-mode').forEach(b=>b.classList.remove('active'));
@@ -1749,14 +2098,5 @@ function downloadHtml(content,name){
 
 copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.getValue())}catch{navigator.clipboard.writeText(editor.getValue())}setStatus('HTML berhasil disalin ke clipboard.','success');showToast('HTML copied.','success')});resetBtn.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileLabel.textContent='Klik atau tarik file DOCX ke sini';editor.setValue('');preview.innerHTML='<p style="color:#6b7280">Preview artikel akan tampil di sini.</p>';convertSelectedBtn.disabled=true;copyBtn.disabled=true;copySectionsBtn.disabled=true;downloadMenuBtn.disabled=true;headingSize.value=18;bodySize.value=16;outputName.value='hasil-convert.html';copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyTitle.textContent='Quick Copy per Section';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyPanelTitle.textContent='Copy HTML per Section';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';setStatus('')});
 </script>
-<div class="toast-stack" id="toastStack"></div>
-<div class="conversion-overlay" id="conversionOverlay" aria-hidden="true">
-  <div class="conversion-card">
-    <div class="conversion-spinner"></div>
-    <h3>Converting your document</h3>
-    <p>Preparing clean HTML for your CMS.</p>
-    <div class="conversion-progress"><span id="conversionProgressBar"></span></div>
-  </div>
-</div>
 </body>
 </html>
