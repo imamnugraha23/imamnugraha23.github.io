@@ -2173,6 +2173,70 @@ body.dark-mode .quick-preview-btn:hover{
   height:9px!important;
 }
 
+
+.html-editor-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:12px;
+}
+.html-editor-header h2{margin:0}
+.html-editor-header .eyebrow{margin-bottom:4px}
+.html-resize-tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.html-resize-btn{
+  min-width:126px;
+  padding:8px 12px;
+  border:1.4px solid var(--primary);
+  border-radius:999px;
+  background:transparent;
+  color:var(--primary);
+  display:grid;
+  grid-template-columns:16px 1fr;
+  grid-template-rows:auto auto;
+  column-gap:7px;
+  align-items:center;
+  text-align:left;
+  box-shadow:none;
+}
+.html-resize-btn svg{
+  grid-row:1 / 3;
+  width:15px;
+  height:15px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  margin:0;
+}
+.html-resize-btn span{font-size:11px;font-weight:800;line-height:1.05}
+.html-resize-btn small{margin-top:2px;font-size:9px;font-weight:700;opacity:.78}
+.html-resize-btn:hover:not(:disabled){
+  background:rgba(0,113,227,.08);
+  color:var(--primary-hover);
+  border-color:var(--primary-hover);
+}
+.html-resize-btn.active{
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
+}
+body.dark-mode .html-resize-btn{color:#0a84ff;border-color:#0a84ff}
+body.dark-mode .html-resize-btn:hover:not(:disabled){
+  background:rgba(10,132,255,.12);
+  color:#0a84ff;
+  border-color:#0a84ff;
+}
+body.dark-mode .html-resize-btn.active{
+  background:#0a84ff;
+  color:#fff;
+  border-color:#0a84ff;
+}
+@media(max-width:760px){
+  .html-editor-header{flex-direction:column}
+  .html-resize-tools{width:100%;justify-content:flex-start}
+  .html-resize-btn{flex:1;min-width:0}
+}
+
 </style>
 </head>
 <body>
@@ -2194,7 +2258,7 @@ body.dark-mode .quick-preview-btn:hover{
 <div class="top-nav-actions">
 <button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
 <button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
-<span class="version-pill">v104</span>
+<span class="version-pill">v105</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -2326,7 +2390,27 @@ body.dark-mode .quick-preview-btn:hover{
 <div class="section-copy-list" id="sectionCopyList"></div>
 </section>
 <section class="workspace" id="workspace">
-<div class="panel"><h2>HTML Hasil Convert</h2><textarea id="output" spellcheck="false"></textarea></div>
+<div class="panel">
+  <div class="html-editor-header">
+    <div>
+      <span class="eyebrow">HTML Tools</span>
+      <h2>HTML Hasil Convert</h2>
+    </div>
+    <div class="html-resize-tools" role="group" aria-label="Konversi ukuran HTML">
+      <button class="html-resize-btn" id="htmlToMobileBtn" type="button" title="Ubah HTML Desktop menjadi Mobile">
+        <svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path></svg>
+        <span>To Mobile</span>
+        <small>18px / 16px</small>
+      </button>
+      <button class="html-resize-btn" id="htmlToDesktopBtn" type="button" title="Ubah HTML Mobile menjadi Desktop">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
+        <span>To Desktop</span>
+        <small>24px / 18px</small>
+      </button>
+    </div>
+  </div>
+  <textarea id="output" spellcheck="false"></textarea>
+</div>
 <div class="panel preview-panel">
 <div class="preview-header">
 <h2>Preview</h2>
@@ -2419,6 +2503,7 @@ const sectionPreviewModal=$('sectionPreviewModal'),sectionPreviewTitle=$('sectio
 const floatingToggleBtn=$('floatingToggleBtn');
 const compactModeBtn=$('compactModeBtn'),focusModeBtn=$('focusModeBtn'),
 miniProgressBar=$('miniProgressBar'),miniProgressLabel=$('miniProgressLabel'),miniProgressFill=$('miniProgressFill'),miniLinearProgressFill=$('miniLinearProgressFill');
+const htmlToMobileBtn=$('htmlToMobileBtn'),htmlToDesktopBtn=$('htmlToDesktopBtn');
 const insightsToggle=$('insightsToggle'),insightsContent=$('insightsContent');
 const insightSectionCount=$('insightSectionCount'),insightQualityScore=$('insightQualityScore');
 const statSections=$('statSections'),statImages=$('statImages'),statHeadings=$('statHeadings'),
@@ -2844,6 +2929,93 @@ window.buildConvertedHtml=function(pars){
 
   return formattedBlocks.join('\n\n');
 }
+
+function convertExistingHtmlSize(html,targetMode){
+  if(!html||!html.trim())return html;
+
+  const holder=document.createElement('div');
+  holder.innerHTML=html;
+
+  const headingSizeTarget=targetMode==='desktop'?'24px':'18px';
+  const bodySizeTarget=targetMode==='desktop'?'18px':'16px';
+
+  holder.querySelectorAll('h1,h2').forEach(heading=>{
+    const spans=heading.querySelectorAll('span[style]');
+    if(spans.length){
+      spans.forEach(span=>{
+        if(span.style.fontSize)span.style.fontSize=headingSizeTarget;
+      });
+    }else if(heading.style.fontSize){
+      heading.style.fontSize=headingSizeTarget;
+    }
+  });
+
+  holder.querySelectorAll('h3').forEach(heading=>{
+    const spans=heading.querySelectorAll('span[style]');
+    if(spans.length){
+      spans.forEach(span=>{
+        if(span.style.fontSize)span.style.fontSize=bodySizeTarget;
+      });
+    }else if(heading.style.fontSize){
+      heading.style.fontSize=bodySizeTarget;
+    }
+  });
+
+  holder.querySelectorAll('p span[style], p a[style], a[style]').forEach(el=>{
+    if(el.style.fontSize)el.style.fontSize=bodySizeTarget;
+  });
+
+  return holder.innerHTML.trim();
+}
+
+function applyHtmlResize(targetMode){
+  const currentHtml=editor.getValue();
+
+  if(!currentHtml.trim()){
+    setStatus('Masukkan atau paste HTML terlebih dahulu.','error');
+    showToast('HTML masih kosong.','error');
+    return;
+  }
+
+  const converted=convertExistingHtmlSize(currentHtml,targetMode);
+
+  editor.setValue(converted);
+  preview.innerHTML=converted;
+  lastConvertedHtml=converted;
+
+  if(targetMode==='mobile'){
+    lastMobileHtml=converted;
+    headingSize.value=18;
+    bodySize.value=16;
+    quickCopyTitle.textContent='Quick Copy Mobile per Section';
+    sectionCopyPanelTitle.textContent='Copy HTML Mobile per Section';
+    htmlToMobileBtn.classList.add('active');
+    htmlToDesktopBtn.classList.remove('active');
+    setStatus('HTML berhasil diubah ke versi Mobile (18px / 16px).','success');
+    showToast('HTML diubah ke Mobile.','success');
+  }else{
+    lastDesktopHtml=converted;
+    headingSize.value=24;
+    bodySize.value=18;
+    quickCopyTitle.textContent='Quick Copy Desktop per Section';
+    sectionCopyPanelTitle.textContent='Copy HTML Desktop per Section';
+    htmlToDesktopBtn.classList.add('active');
+    htmlToMobileBtn.classList.remove('active');
+    setStatus('HTML berhasil diubah ke versi Desktop (24px / 18px).','success');
+    showToast('HTML diubah ke Desktop.','success');
+  }
+
+  if(/<!--\s*Section\s+\d+/i.test(converted)){
+    copiedSections.clear();
+    renderQuickCopy();
+    updateStatistics(converted);
+    runQualityCheck(converted);
+  }
+}
+
+htmlToMobileBtn.addEventListener('click',()=>applyHtmlResize('mobile'));
+htmlToDesktopBtn.addEventListener('click',()=>applyHtmlResize('desktop'));
+
 function sanitizeInlineHtml(html){
   const holder=document.createElement('div');
   holder.innerHTML=normalizeAnchorMarkup(html);
@@ -3553,7 +3725,7 @@ function downloadHtml(content,name){
   showToast('HTML berhasil diunduh.','success');
 }
 
-copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.getValue())}catch{navigator.clipboard.writeText(editor.getValue())}setStatus('HTML berhasil disalin ke clipboard.','success');showToast('HTML copied.','success')});resetBtn.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileLabel.textContent='Klik atau tarik file DOCX ke sini';editor.setValue('');preview.innerHTML='<p style="color:#6b7280">Preview artikel akan tampil di sini.</p>';setConvertButtonsDisabled(true);convertButtons.forEach(button=>button.classList.remove('selected','loading','success'));copyBtn.disabled=true;copySectionsBtn.disabled=true;downloadMenuBtn.disabled=true;headingSize.value=18;bodySize.value=16;outputName.value='hasil-convert.html';copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyTitle.textContent='Quick Copy per Section';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyPanelTitle.textContent='Copy HTML per Section';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';setStatus('')});
+copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.getValue())}catch{navigator.clipboard.writeText(editor.getValue())}setStatus('HTML berhasil disalin ke clipboard.','success');showToast('HTML copied.','success')});resetBtn.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileLabel.textContent='Klik atau tarik file DOCX ke sini';editor.setValue('');preview.innerHTML='<p style="color:#6b7280">Preview artikel akan tampil di sini.</p>';setConvertButtonsDisabled(true);convertButtons.forEach(button=>button.classList.remove('selected','loading','success'));htmlToMobileBtn.classList.remove('active');htmlToDesktopBtn.classList.remove('active');copyBtn.disabled=true;copySectionsBtn.disabled=true;downloadMenuBtn.disabled=true;headingSize.value=18;bodySize.value=16;outputName.value='hasil-convert.html';copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyTitle.textContent='Quick Copy per Section';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyPanelTitle.textContent='Copy HTML per Section';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';setStatus('')});
 </script>
 </body>
 </html>
