@@ -2237,6 +2237,237 @@ body.dark-mode .html-resize-btn.active{
   .html-resize-btn{flex:1;min-width:0}
 }
 
+
+.html-copy-result-btn{border-color:#34c759;color:#248a3d}
+.html-copy-result-btn:not(:disabled):hover{background:rgba(52,199,89,.08);color:#1f7a36;border-color:#34c759}
+.html-copy-result-btn.ready{border-color:#34c759;color:#248a3d}
+.html-copy-result-btn.copied{background:#34c759;color:#fff;border-color:#34c759}
+body.dark-mode .html-copy-result-btn{color:#30d158;border-color:#30d158}
+body.dark-mode .html-copy-result-btn:not(:disabled):hover{background:rgba(48,209,88,.10);color:#30d158;border-color:#30d158}
+body.dark-mode .html-copy-result-btn.copied{background:#30d158;color:#061a0b;border-color:#30d158}
+
+
+.quick-copy-item.autovm-detail-item{
+  display:block;
+  padding:10px;
+}
+
+.autovm-item-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.autovm-copy-list{
+  display:grid;
+  gap:7px;
+  margin-top:9px;
+  padding-top:9px;
+  border-top:1px solid var(--border);
+}
+
+.autovm-copy-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  min-width:0;
+  padding:7px 8px;
+  border-radius:10px;
+  background:#f5f5f7;
+}
+
+.autovm-copy-value{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--text);
+  font-size:11px;
+  font-weight:650;
+}
+
+.autovm-copy-type{
+  flex-shrink:0;
+  padding:3px 6px;
+  border-radius:999px;
+  background:#e8e8ed;
+  color:#6e6e73;
+  font-size:8px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.35px;
+}
+
+.autovm-copy-row-main{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+  flex:1;
+}
+
+.autovm-mini-copy{
+  flex-shrink:0;
+  padding:6px 9px;
+  border-radius:999px;
+  background:transparent;
+  color:var(--primary);
+  border:1px solid var(--primary);
+  font-size:10px;
+  font-weight:800;
+}
+
+.autovm-mini-copy:hover:not(:disabled){
+  background:rgba(0,113,227,.08);
+}
+
+.autovm-mini-copy.copied{
+  background:#34c759;
+  border-color:#34c759;
+  color:#fff;
+}
+
+body.dark-mode .autovm-copy-row{
+  background:#1c1c1e;
+}
+
+body.dark-mode .autovm-copy-type{
+  background:#2c2c2e;
+  color:#a1a1a6;
+}
+
+body.dark-mode .autovm-mini-copy{
+  color:#0a84ff;
+  border-color:#0a84ff;
+}
+
+body.dark-mode .autovm-mini-copy:hover:not(:disabled){
+  background:rgba(10,132,255,.12);
+}
+
+body.dark-mode .autovm-mini-copy.copied{
+  background:#30d158;
+  border-color:#30d158;
+  color:#061a0b;
+}
+
+
+/* v108 - Quick Copy layout: Judul + Konten di atas, Auto VM di bawah */
+.quick-copy-list{
+  grid-template-columns:minmax(180px,1fr) minmax(0,3fr)!important;
+  align-items:start;
+}
+
+.quick-copy-group-title-column{
+  grid-column:1;
+}
+
+.quick-copy-group:not(.quick-copy-group-title-column):not(.quick-copy-group-autovm){
+  grid-column:2;
+}
+
+.quick-copy-group-autovm{
+  grid-column:1 / -1!important;
+  width:100%;
+}
+
+.quick-copy-group-autovm .quick-copy-group-content{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr))!important;
+  gap:10px!important;
+  align-items:start;
+}
+
+.quick-copy-group-autovm .autovm-detail-item{
+  width:100%;
+  min-width:0;
+}
+
+.quick-copy-group-autovm .autovm-copy-list{
+  grid-template-columns:1fr;
+}
+
+/* Jika Auto VM banyak, otomatis turun ke row berikutnya */
+@media(min-width:1100px){
+  .quick-copy-group-autovm .quick-copy-group-content{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+
+@media(min-width:760px) and (max-width:1099px){
+  .quick-copy-group-autovm .quick-copy-group-content{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
+@media(max-width:759px){
+  .quick-copy-list{
+    grid-template-columns:1fr!important;
+  }
+
+  .quick-copy-group-title-column,
+  .quick-copy-group:not(.quick-copy-group-title-column):not(.quick-copy-group-autovm),
+  .quick-copy-group-autovm{
+    grid-column:1!important;
+  }
+
+  .quick-copy-group-autovm .quick-copy-group-content{
+    grid-template-columns:1fr!important;
+  }
+}
+
+
+/* v109 - Fix collapse Auto VM */
+.quick-copy-group-autovm.collapsed .quick-copy-group-content{
+  display:none!important;
+}
+
+/* Keep the same fix explicit for all Quick Copy groups */
+.quick-copy-group.collapsed .quick-copy-group-content{
+  display:none!important;
+}
+
+
+.autovm-copy-actions{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-shrink:0;
+}
+
+.autovm-mini-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  min-width:28px;
+  height:28px;
+  border-radius:50%;
+  background:transparent;
+  color:transparent;
+  border:1px solid transparent;
+  font-size:12px;
+  font-weight:800;
+  visibility:hidden;
+  opacity:0;
+}
+
+.autovm-mini-badge.active{
+  visibility:visible;
+  opacity:1;
+  background:#e9f9ee;
+  color:#218838;
+  border-color:#9de2ae;
+}
+
+body.dark-mode .autovm-mini-badge.active{
+  background:#12351d;
+  color:#7ee787;
+  border-color:#2ea043;
+}
+
 </style>
 </head>
 <body>
@@ -2258,7 +2489,7 @@ body.dark-mode .html-resize-btn.active{
 <div class="top-nav-actions">
 <button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
 <button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
-<span class="version-pill">v105</span>
+<span class="version-pill">v110</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -2308,7 +2539,7 @@ body.dark-mode .html-resize-btn.active{
 <div class="settings">
 <div class="field"><label for="headingSize">Ukuran heading (H1 &amp; H2)</label><input id="headingSize" max="40" min="12" type="number" value="18"/></div>
 <div class="field"><label for="bodySize">Ukuran body (H3 &amp; body)</label><input id="bodySize" max="32" min="10" type="number" value="16"/></div>
-<div class="field"><label for="outputName">Nama file output</label><input id="outputName" type="text" value=""/></div>
+<div class="field"><label for="outputName">Nama file output</label><input id="outputName" type="text" value="hasil-convert.html"/></div>
 </div>
 <div class="convert-controls">
 <div class="direct-convert-group" role="group" aria-label="Pilihan konversi">
@@ -2407,6 +2638,11 @@ body.dark-mode .html-resize-btn.active{
         <span>To Desktop</span>
         <small>24px / 18px</small>
       </button>
+      <button class="html-resize-btn html-copy-result-btn" id="htmlCopyResultBtn" type="button" disabled title="Copy hasil HTML terbaru">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <span>Copy Result</span>
+        <small id="htmlCopyResultMeta">Belum ada hasil</small>
+      </button>
     </div>
   </div>
   <textarea id="output" spellcheck="false"></textarea>
@@ -2503,7 +2739,7 @@ const sectionPreviewModal=$('sectionPreviewModal'),sectionPreviewTitle=$('sectio
 const floatingToggleBtn=$('floatingToggleBtn');
 const compactModeBtn=$('compactModeBtn'),focusModeBtn=$('focusModeBtn'),
 miniProgressBar=$('miniProgressBar'),miniProgressLabel=$('miniProgressLabel'),miniProgressFill=$('miniProgressFill'),miniLinearProgressFill=$('miniLinearProgressFill');
-const htmlToMobileBtn=$('htmlToMobileBtn'),htmlToDesktopBtn=$('htmlToDesktopBtn');
+const htmlToMobileBtn=$('htmlToMobileBtn'),htmlToDesktopBtn=$('htmlToDesktopBtn'),htmlCopyResultBtn=$('htmlCopyResultBtn'),htmlCopyResultMeta=$('htmlCopyResultMeta');
 const insightsToggle=$('insightsToggle'),insightsContent=$('insightsContent');
 const insightSectionCount=$('insightSectionCount'),insightQualityScore=$('insightQualityScore');
 const statSections=$('statSections'),statImages=$('statImages'),statHeadings=$('statHeadings'),
@@ -2991,6 +3227,10 @@ function applyHtmlResize(targetMode){
     sectionCopyPanelTitle.textContent='Copy HTML Mobile per Section';
     htmlToMobileBtn.classList.add('active');
     htmlToDesktopBtn.classList.remove('active');
+    htmlCopyResultBtn.disabled=false;
+    htmlCopyResultBtn.classList.add('ready');
+    htmlCopyResultBtn.classList.remove('copied');
+    htmlCopyResultMeta.textContent='Mobile 18px / 16px';
     setStatus('HTML berhasil diubah ke versi Mobile (18px / 16px).','success');
     showToast('HTML diubah ke Mobile.','success');
   }else{
@@ -3001,6 +3241,10 @@ function applyHtmlResize(targetMode){
     sectionCopyPanelTitle.textContent='Copy HTML Desktop per Section';
     htmlToDesktopBtn.classList.add('active');
     htmlToMobileBtn.classList.remove('active');
+    htmlCopyResultBtn.disabled=false;
+    htmlCopyResultBtn.classList.add('ready');
+    htmlCopyResultBtn.classList.remove('copied');
+    htmlCopyResultMeta.textContent='Desktop 24px / 18px';
     setStatus('HTML berhasil diubah ke versi Desktop (24px / 18px).','success');
     showToast('HTML diubah ke Desktop.','success');
   }
@@ -3015,6 +3259,26 @@ function applyHtmlResize(targetMode){
 
 htmlToMobileBtn.addEventListener('click',()=>applyHtmlResize('mobile'));
 htmlToDesktopBtn.addEventListener('click',()=>applyHtmlResize('desktop'));
+
+htmlCopyResultBtn.addEventListener('click',async()=>{
+  const value=editor.getValue();
+  if(!value.trim()){
+    setStatus('Tidak ada HTML yang bisa disalin.','error');
+    showToast('HTML masih kosong.','error');
+    return;
+  }
+  await copySectionText(value);
+  htmlCopyResultBtn.classList.remove('ready');
+  htmlCopyResultBtn.classList.add('copied');
+  htmlCopyResultBtn.querySelector('span').textContent='✓ Copied';
+  setStatus('Hasil HTML berhasil disalin ke clipboard.','success');
+  showToast('Hasil HTML berhasil disalin.','success');
+  setTimeout(()=>{
+    htmlCopyResultBtn.classList.remove('copied');
+    htmlCopyResultBtn.classList.add('ready');
+    htmlCopyResultBtn.querySelector('span').textContent='Copy Result';
+  },1600);
+});
 
 function sanitizeInlineHtml(html){
   const holder=document.createElement('div');
@@ -3354,6 +3618,142 @@ if(next){
 
 }
 
+
+function extractAutoVmCopyData(sectionHtml){
+  const holder=document.createElement('div');
+  holder.innerHTML=sectionHtml||'';
+
+  let autoVmPath='';
+
+  // Prioritaskan href anchor yang mengandung /c/.
+  const anchor=[...holder.querySelectorAll('a[href]')]
+    .find(a=>(a.getAttribute('href')||'').includes('/c/'));
+
+  const getPathAfterCategory=(value)=>{
+    if(!value)return '';
+    let source=value.trim();
+
+    // Jika href masih berbentuk markdown-like [URL](URL), ambil URL aktual.
+    const markdownMatch=source.match(/\((https?:\/\/[^)]+)\)/i);
+    if(markdownMatch)source=markdownMatch[1];
+
+    const marker='/c/';
+    const markerIndex=source.indexOf(marker);
+    if(markerIndex===-1)return '';
+
+    let result=source.slice(markerIndex+marker.length);
+    result=result.split(/[?#]/)[0];
+    return result.replace(/^\/+/,'').trim();
+  };
+
+  if(anchor){
+    autoVmPath=getPathAfterCategory(anchor.getAttribute('href'));
+  }
+
+  // Fallback: cari URL /c/ langsung dari HTML/text.
+  if(!autoVmPath){
+    const urls=(sectionHtml||'').match(/https?:\/\/[^\s"'<>]+/gi)||[];
+    const categoryUrl=urls.find(url=>url.includes('/c/'));
+    if(categoryUrl)autoVmPath=getPathAfterCategory(categoryUrl);
+  }
+
+  // Ambil setiap SKU secara individual dan hilangkan duplikat.
+  const plainText=holder.textContent||'';
+  const skus=[];
+  const skuRegex=/\bSKU\s*[:#-]?\s*(\d{5,})\b/gi;
+  let match;
+  while((match=skuRegex.exec(plainText))!==null){
+    if(!skus.includes(match[1]))skus.push(match[1]);
+  }
+
+  return {autoVmPath,skus};
+}
+
+function createAutoVmMiniCopyRow(type,value){
+  const row=document.createElement('div');
+  row.className='autovm-copy-row';
+
+  const main=document.createElement('div');
+  main.className='autovm-copy-row-main';
+
+  const badge=document.createElement('span');
+  badge.className='autovm-copy-type';
+  badge.textContent=type;
+
+  const textValue=document.createElement('span');
+  textValue.className='autovm-copy-value';
+  textValue.textContent=value;
+  textValue.title=value;
+
+  const actions=document.createElement('div');
+  actions.className='autovm-copy-actions';
+
+  const copyButton=document.createElement('button');
+  copyButton.type='button';
+  copyButton.className='autovm-mini-copy';
+  copyButton.textContent='Copy';
+
+  const copiedBadge=document.createElement('span');
+  copiedBadge.className='autovm-mini-badge';
+  copiedBadge.textContent='✓';
+  copiedBadge.setAttribute('aria-hidden','true');
+
+  copyButton.addEventListener('click',async()=>{
+    await copySectionText(value);
+
+    copyButton.classList.add('copied');
+    copiedBadge.classList.add('active');
+
+    setStatus((type==='Auto VM'?'Auto VM':'SKU')+' berhasil disalin: '+value,'success');
+
+    // Tombol kembali bertuliskan Copy, tetapi checklist tetap tampil
+    // sampai item lain/reset mengubah statusnya.
+    setTimeout(()=>{
+      copyButton.classList.remove('copied');
+      copyButton.textContent='Copy';
+    },500);
+  });
+
+  main.append(badge,textValue);
+  actions.append(copyButton,copiedBadge);
+  row.append(main,actions);
+  return row;
+}
+
+function createAutoVmQuickCopyItem(section){
+  const item=createQuickCopyItem(section);
+  item.classList.add('autovm-detail-item');
+
+  // Bungkus header bawaan supaya detail Auto VM bisa tampil di bawahnya.
+  const existingChildren=[...item.childNodes];
+  const head=document.createElement('div');
+  head.className='autovm-item-head';
+  existingChildren.forEach(child=>head.appendChild(child));
+  item.appendChild(head);
+
+  const {autoVmPath,skus}=extractAutoVmCopyData(section.html);
+
+  if(autoVmPath||skus.length){
+    const list=document.createElement('div');
+    list.className='autovm-copy-list';
+
+    // Yang dicopy hanya path setelah /c/, contoh:
+    // lampu-dan-bohlam/lampu-outdoor.html
+    if(autoVmPath){
+      list.appendChild(createAutoVmMiniCopyRow('Auto VM',autoVmPath));
+    }
+
+    // Setiap SKU menjadi tombol copy tersendiri.
+    skus.forEach(sku=>{
+      list.appendChild(createAutoVmMiniCopyRow('SKU',sku));
+    });
+
+    item.appendChild(list);
+  }
+
+  return item;
+}
+
 function createQuickCopyItem(section){
   const item=document.createElement('div');
   item.className='quick-copy-item';
@@ -3437,7 +3837,9 @@ function renderQuickCopy(){
   sections.forEach(section=>{
     const isTitle=/^Section 1(?:\s|$)/i.test(section.title);
     const isAutoVm=/Auto vm/i.test(section.title);
-    const item=createQuickCopyItem(section);
+    const item=isAutoVm
+      ? createAutoVmQuickCopyItem(section)
+      : createQuickCopyItem(section);
 
     if(isTitle){
       titleGroup.content.appendChild(item);
@@ -3530,6 +3932,7 @@ copySectionsBtn.addEventListener('click',()=>{renderQuickCopy();renderSectionCop
 resetQuickCopyBtn.addEventListener('click',()=>{
   copiedSections.clear();
   quickCopyList.querySelectorAll('.quick-copy-badge').forEach(badge=>badge.classList.remove('active'));
+  quickCopyList.querySelectorAll('.autovm-mini-badge').forEach(badge=>badge.classList.remove('active'));
   sectionCopyList.querySelectorAll('.copy-status-badge').forEach(badge=>badge.classList.remove('active'));
   updateQuickCopyProgress();
   updateSectionCopyProgress();
@@ -3725,7 +4128,7 @@ function downloadHtml(content,name){
   showToast('HTML berhasil diunduh.','success');
 }
 
-copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.getValue())}catch{navigator.clipboard.writeText(editor.getValue())}setStatus('HTML berhasil disalin ke clipboard.','success');showToast('HTML copied.','success')});resetBtn.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileLabel.textContent='Klik atau tarik file DOCX ke sini';editor.setValue('');preview.innerHTML='<p style="color:#6b7280">Preview artikel akan tampil di sini.</p>';setConvertButtonsDisabled(true);convertButtons.forEach(button=>button.classList.remove('selected','loading','success'));htmlToMobileBtn.classList.remove('active');htmlToDesktopBtn.classList.remove('active');copyBtn.disabled=true;copySectionsBtn.disabled=true;downloadMenuBtn.disabled=true;headingSize.value=18;bodySize.value=16;outputName.value='hasil-convert.html';copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyTitle.textContent='Quick Copy per Section';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyPanelTitle.textContent='Copy HTML per Section';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';setStatus('')});
+copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(editor.getValue())}catch{navigator.clipboard.writeText(editor.getValue())}setStatus('HTML berhasil disalin ke clipboard.','success');showToast('HTML copied.','success')});resetBtn.addEventListener('click',()=>{selectedFile=null;fileInput.value='';fileLabel.textContent='Klik atau tarik file DOCX ke sini';editor.setValue('');preview.innerHTML='<p style="color:#6b7280">Preview artikel akan tampil di sini.</p>';setConvertButtonsDisabled(true);convertButtons.forEach(button=>button.classList.remove('selected','loading','success'));htmlToMobileBtn.classList.remove('active');htmlToDesktopBtn.classList.remove('active');htmlCopyResultBtn.disabled=true;htmlCopyResultBtn.classList.remove('ready','copied');htmlCopyResultBtn.querySelector('span').textContent='Copy Result';htmlCopyResultMeta.textContent='Belum ada hasil';copyBtn.disabled=true;copySectionsBtn.disabled=true;downloadMenuBtn.disabled=true;headingSize.value=18;bodySize.value=16;outputName.value='hasil-convert.html';copiedSections.clear();quickCopyPanel.classList.remove('active');quickCopyList.innerHTML='';quickCopyTitle.textContent='Quick Copy per Section';quickCopyProgress.textContent='Progress: 0/0 section tersalin';sectionCopyPanel.classList.remove('active');sectionCopyList.innerHTML='';sectionCopyPanelTitle.textContent='Copy HTML per Section';sectionCopyProgress.textContent='Progress: 0/0 section tersalin';setStatus('')});
 </script>
 </body>
 </html>
