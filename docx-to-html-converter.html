@@ -2489,7 +2489,7 @@ body.dark-mode .autovm-mini-badge.active{
 <div class="top-nav-actions">
 <button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
 <button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
-<span class="version-pill">v110</span>
+<span class="version-pill">v111</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -2551,12 +2551,12 @@ body.dark-mode .autovm-mini-badge.active{
   <button class="convert-action convert-mobile" disabled="" id="convertMobileBtn" type="button">
     <svg viewbox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path></svg>
     <span>Mobile Convert</span>
-    <small>18px / 16px</small>
+    <small>18px / 16px · img 300px</small>
   </button>
   <button class="convert-action convert-desktop" disabled="" id="convertDesktopBtn" type="button">
     <svg viewbox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg>
     <span>Desktop Convert</span>
-    <small>24px / 18px</small>
+    <small>24px / 18px · img 380px</small>
   </button>
 </div>
 <button class="btn-secondary" disabled="" id="copyBtn">
@@ -2890,6 +2890,7 @@ function inlineFormat(text){
 
 window.buildConvertedHtml=function(pars){
   const hs=Number(headingSize.value)||18,bs=Number(bodySize.value)||16;
+  const imageSize=bs>=18?380:300;
   const spacer='<p><span style="font-size: '+bs+'px"><br></span></p>';
   const lines=[];
   let sec=1,i=0,pending=null,mainStarted=false,lastType='',startNewSectionAfterMetadata=false,inFaqSection=false;
@@ -2997,7 +2998,7 @@ window.buildConvertedHtml=function(pars){
       const productTitle=productLink.text||rawPlain;
       const productHref=productLink.href||'#';
 
-      addBlock('<p>\n  <img src="'+esc(pending)+'"\n       alt="'+esc(productTitle)+'"\n       style="display: block; margin-left: auto; margin-right: auto">\n  <br>\n</p>\n\n<p style="text-align: center;"><a href="'+esc(productHref)+'" style="font-size: '+bs+'px;"><strong style="color: rgb(0, 167, 245);">'+esc(productTitle)+'</strong></a></p>\n<p style="text-align: center;"><br></p>','image');
+      addBlock('<p>\n  <img src="'+esc(pending)+'"\n       alt="'+esc(productTitle)+'"\n       width="'+imageSize+'px"\n       style="width: '+imageSize+'px; max-width: 100%; height: auto; display: block; margin-left: auto; margin-right: auto">\n  <br>\n</p>\n\n<p style="text-align: center;"><a href="'+esc(productHref)+'" style="font-size: '+bs+'px;"><strong style="color: rgb(0, 167, 245);">'+esc(productTitle)+'</strong></a></p>\n<p style="text-align: center;"><br></p>','image');
       pending=null;
       continue;
     }
@@ -3174,6 +3175,7 @@ function convertExistingHtmlSize(html,targetMode){
 
   const headingSizeTarget=targetMode==='desktop'?'24px':'18px';
   const bodySizeTarget=targetMode==='desktop'?'18px':'16px';
+  const imageSizeTarget=targetMode==='desktop'?'380px':'300px';
 
   holder.querySelectorAll('h1,h2').forEach(heading=>{
     const spans=heading.querySelectorAll('span[style]');
@@ -3199,6 +3201,13 @@ function convertExistingHtmlSize(html,targetMode){
 
   holder.querySelectorAll('p span[style], p a[style], a[style]').forEach(el=>{
     if(el.style.fontSize)el.style.fontSize=bodySizeTarget;
+  });
+
+  holder.querySelectorAll('img').forEach(img=>{
+    img.setAttribute('width',imageSizeTarget);
+    img.style.width=imageSizeTarget;
+    img.style.maxWidth='100%';
+    img.style.height='auto';
   });
 
   return holder.innerHTML.trim();
