@@ -2489,7 +2489,7 @@ body.dark-mode .autovm-mini-badge.active{
 <div class="top-nav-actions">
 <button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
 <button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
-<span class="version-pill">v111</span>
+<span class="version-pill">v113</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -2711,7 +2711,7 @@ body.dark-mode .autovm-mini-badge.active{
 </div>
 <footer class="app-footer">
 <div class="footer-inner">
-<p>Link autovm dan SKU dibuat sebagai section tersendiri dengan label Auto vm. Numbering angka dipertahankan tanpa spacer. Bullet point diubah menjadi tanda minus (-). Bullet tanpa bold tidak diberi spacer, sedangkan bullet dengan bold tetap diberi spacer antaritem. Anchor text, href, bold, italic, dan underline dari dokumen akan dipertahankan. Anchor ditampilkan sebagai teks klik berwarna biru dan bold, tanpa menampilkan kode link. Baris “Link image:” akan dikonversi menjadi tag <code>&lt;img&gt;</code>, lalu baris berikutnya menjadi judul produk dengan <code>href="#"</code>. Spacer <code>&lt;p&gt;&lt;span style="font-size: 16px"&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;</code> otomatis ditambahkan di antara paragraf, tetapi tidak di awal atau akhir section.</p>
+<p>Link autovm dan SKU dibuat sebagai section tersendiri dengan label Auto vm. Numbering angka dipertahankan tanpa spacer. Bullet point diubah menjadi tanda minus (-). Bullet tanpa bold tidak diberi spacer, sedangkan bullet dengan bold tetap diberi spacer antaritem. Anchor text, href, bold, italic, dan underline dari dokumen akan dipertahankan. Anchor ditampilkan sebagai teks klik berwarna biru dan bold, tanpa menampilkan kode link. Baris “Link image:” akan dikonversi menjadi tag <code>&lt;img&gt;</code>, lalu baris berikutnya menjadi judul produk dengan <code>href="#"</code>. Table dari DOCX otomatis dikonversi menjadi format CMS-safe tanpa tag table/tr/td/th. Setiap baris data diubah menjadi blok label–value agar tetap terbaca di mobile maupun desktop. Spacer <code>&lt;p&gt;&lt;span style="font-size: 16px"&gt;&lt;br&gt;&lt;/span&gt;&lt;/p&gt;</code> otomatis ditambahkan di antara paragraf, tetapi tidak di awal atau akhir section.</p>
 </div>
 </footer>
 <div class="section-preview-modal" id="sectionPreviewModal" aria-hidden="true">
@@ -2888,6 +2888,57 @@ function inlineFormat(text){
   return holder.innerHTML.trim();
 }
 
+
+function normalizeDocxTableHtml(table){
+  if(!table)return '';
+
+  const rows=[...table.querySelectorAll(':scope > thead > tr, :scope > tbody > tr, :scope > tfoot > tr, :scope > tr')];
+  if(!rows.length)return '';
+
+  const parsedRows=rows.map(row=>
+    [...row.children]
+      .filter(cell=>/^(TD|TH)$/i.test(cell.tagName))
+      .map(cell=>sanitizeInlineHtml(cell.innerHTML||cell.textContent||''))
+  ).filter(row=>row.length);
+
+  if(parsedRows.length<2)return '';
+
+  const headers=parsedRows[0];
+  const bodyRows=parsedRows.slice(1);
+
+  const blocks=[];
+
+  bodyRows.forEach((row,rowIndex)=>{
+    const rowLines=[];
+
+    row.forEach((value,colIndex)=>{
+      const label=(headers[colIndex]||('Kolom '+(colIndex+1))).replace(/<[^>]+>/g,'').trim();
+      const safeValue=value||'-';
+
+      rowLines.push(
+        '<p><span style="font-size: 16px"><strong>'+
+        esc(label)+
+        ':</strong> '+
+        safeValue+
+        '</span></p>'
+      );
+    });
+
+    blocks.push('<div data-cms-table-row="true">'+rowLines.join('\n')+'</div>');
+  });
+
+  return blocks.join('\n\n<p><span style="font-size: 16px"><br></span></p>\n\n');
+}
+
+function resizeExistingTableHtml(holder,targetMode){
+  const bodySizeTarget=targetMode==='desktop'?'18px':'16px';
+
+  holder.querySelectorAll('[data-cms-table-row] span[style]').forEach(span=>{
+    if(span.style.fontSize)span.style.fontSize=bodySizeTarget;
+  });
+}
+
+
 window.buildConvertedHtml=function(pars){
   const hs=Number(headingSize.value)||18,bs=Number(bodySize.value)||16;
   const imageSize=bs>=18?380:300;
@@ -2919,6 +2970,7 @@ window.buildConvertedHtml=function(pars){
     const isNumberedListItem=raw.startsWith('[[NUMBERED_LIST]]');
     const isBulletListBold=raw.startsWith('[[BULLET_LIST_BOLD]]');
     const isBulletListPlain=raw.startsWith('[[BULLET_LIST_PLAIN]]');
+    const isTableBlock=raw.startsWith('[[TABLE]]');
     const isBulletListItem=isBulletListBold||isBulletListPlain;
     const isListItem=isNumberedListItem||isBulletListItem;
 
@@ -2932,6 +2984,8 @@ window.buildConvertedHtml=function(pars){
       raw=raw.replace(/^\[\[BULLET_LIST_BOLD\]\]/,'');
     }else if(isBulletListPlain){
       raw=raw.replace(/^\[\[BULLET_LIST_PLAIN\]\]/,'');
+    }else if(isTableBlock){
+      raw=raw.replace(/^\[\[TABLE\]\]/,'');
     }
 
     const rawPlain=raw.replace(/<[^>]+>/g,'').trim();
@@ -3023,6 +3077,9 @@ window.buildConvertedHtml=function(pars){
       addBlock('<p data-list-type="bullet-bold"><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','paragraph');
     }else if(isBulletListPlain){
       addBlock('<p data-list-type="bullet-plain"><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','paragraph');
+    }else if(isTableBlock){
+      // Table DOCX diubah menjadi block CMS-safe tanpa tag table/tr/td/th.
+      addBlock(raw,'table');
     }else if(inFaqSection&&looksLikeQuestion){
       addBlock('<h3><strong><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></strong></h3>','heading');
     }else if(/^\d+\.\s+/.test(rawPlain)){
@@ -3209,6 +3266,8 @@ function convertExistingHtmlSize(html,targetMode){
     img.style.maxWidth='100%';
     img.style.height='auto';
   });
+
+  resizeExistingTableHtml(holder,targetMode);
 
   return holder.innerHTML.trim();
 }
@@ -3405,8 +3464,40 @@ async function convert(mode){
     temp.innerHTML=mammothResult.value||'';
 
     const pars=[];
-    temp.querySelectorAll('p,h1,h2,h3,li').forEach(node=>{
+
+    // Traverse top-level blocks so table position is preserved.
+    [...temp.children].forEach(node=>{
       const tag=node.tagName.toLowerCase();
+
+      if(tag==='table'){
+        const tableHtml=normalizeDocxTableHtml(node);
+        if(tableHtml)pars.push('[[TABLE]]'+tableHtml);
+        return;
+      }
+
+      if(tag==='ol'||tag==='ul'){
+        [...node.children]
+          .filter(child=>child.tagName&&child.tagName.toLowerCase()==='li')
+          .forEach(li=>{
+            let value=sanitizeInlineHtml(li.innerHTML);
+            if(!value)return;
+
+            if(tag==='ol'){
+              const siblings=[...node.children].filter(child=>child.tagName.toLowerCase()==='li');
+              const number=siblings.indexOf(li)+1;
+              value='[[NUMBERED_LIST]]'+number+'. '+value.replace(/^\d+\.\s*/,'');
+            }else{
+              const hasStrong=/<strong\b/i.test(value);
+              value=(hasStrong?'[[BULLET_LIST_BOLD]]':'[[BULLET_LIST_PLAIN]]')+
+                '- '+value.replace(/^[•●▪◦‣⁃\-–—]\s*/,'');
+            }
+            pars.push(value);
+          });
+        return;
+      }
+
+      if(!['p','h1','h2','h3','li'].includes(tag))return;
+
       let value=tag==='p'||tag==='li'
         ? sanitizeInlineHtml(node.innerHTML)
         : sanitizeInlineHtml(node.innerHTML||node.textContent||'');
@@ -4057,7 +4148,8 @@ function runQualityCheck(html){
     {label:'No spacer at section start/end',pass:!/(?:<!-- Section \d+(?: [^>]+)? -->\s*<p><span[^>]*><br>|<p><span[^>]*><br><\/span><\/p>\s*(?:<!-- Section|$))/i.test(html)},
     {label:'Heading sizes consistent',pass:[...holder.querySelectorAll('h1 span,h2 span')].every(s=>s.style.fontSize===headingSize.value+'px')},
     {label:'Body sizes consistent',pass:[...holder.querySelectorAll('h3 span,p span')].filter(s=>s.querySelector('br')===null).every(s=>!s.style.fontSize||s.style.fontSize===bodySize.value+'px')},
-    {label:'Auto VM sections labeled',pass:!/autovm/i.test(html)||/<!-- Section \d+ Auto vm -->/i.test(html)}
+    {label:'Auto VM sections labeled',pass:!/autovm/i.test(html)||/<!-- Section \d+ Auto vm -->/i.test(html)},
+    {label:'CMS-safe table format',pass:holder.querySelectorAll('table,tr,td,th').length===0}
   ];
   const passed=checks.filter(c=>c.pass).length;
   const score=Math.round((passed/checks.length)*100);
