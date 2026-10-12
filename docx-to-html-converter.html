@@ -2489,7 +2489,7 @@ body.dark-mode .autovm-mini-badge.active{
 <div class="top-nav-actions">
 <button class="mini-control" id="compactModeBtn" type="button" aria-pressed="false">Compact</button>
 <button class="mini-control" id="focusModeBtn" type="button" aria-pressed="false">Focus</button>
-<span class="version-pill">v113</span>
+<span class="version-pill">v114</span>
 <button aria-label="Ubah tema" aria-pressed="false" class="icon-button" id="themeToggleBtn" type="button">
 <svg class="theme-icon moon-icon" viewbox="0 0 24 24"><path d="M20 15.5A8.5 8.5 0 1 1 8.5 4 7 7 0 0 0 20 15.5z"></path></svg>
 <svg class="theme-icon sun-icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -3043,18 +3043,35 @@ window.buildConvertedHtml=function(pars){
     }
 
     if(/^Link image\s*:/i.test(raw)){
-      pending=raw.split(':').slice(1).join(':').trim();
+      // DOCX hyperlinks may wrap the image filename. Use the anchor href as the
+      // actual image URL instead of putting escaped <a> markup into img[src].
+      const imageLabel=raw.split(':').slice(1).join(':').trim();
+      const imageData=extractAnchorData(imageLabel);
+      pending={src:imageData.href&&imageData.href!=='#'?imageData.href:imageLabel,
+               alt:imageData.text||imageLabel.replace(/<[^>]+>/g,'').trim()};
       continue;
     }
 
     if(pending){
-      const productLink=extractAnchorData(raw);
-      const productTitle=productLink.text||rawPlain;
-      const productHref=productLink.href||'#';
-
-      addBlock('<p>\n  <img src="'+esc(pending)+'"\n       alt="'+esc(productTitle)+'"\n       width="'+imageSize+'px"\n       style="width: '+imageSize+'px; max-width: 100%; height: auto; display: block; margin-left: auto; margin-right: auto">\n  <br>\n</p>\n\n<p style="text-align: center;"><a href="'+esc(productHref)+'" style="font-size: '+bs+'px;"><strong style="color: rgb(0, 167, 245);">'+esc(productTitle)+'</strong></a></p>\n<p style="text-align: center;"><br></p>','image');
+      // Only consume the next paragraph as a product caption when it contains
+      // a real hyperlink (the product-name pattern). Intro/body paragraphs must
+      // remain normal paragraphs and must not be duplicated as blue captions.
+      const holder=document.createElement('div');
+      holder.innerHTML=normalizeAnchorMarkup(raw);
+      const titleAnchor=holder.querySelector('a[href]');
+      const isProductCaption=!!titleAnchor && (titleAnchor.getAttribute('href')||'')!=='#';
+      const imageHtml='<p>\n  <img src="'+esc(pending.src)+'"\n       alt="'+esc(pending.alt||'Dekorasi dinding')+'"\n       width="'+imageSize+'px"\n       style="width: '+imageSize+'px; max-width: 100%; height: auto; display: block; margin-left: auto; margin-right: auto">\n</p>';
+      if(isProductCaption){
+        const productLink=extractAnchorData(raw);
+        const productTitle=productLink.text||rawPlain;
+        const productHref=productLink.href||'#';
+        addBlock(imageHtml+'\n<p style="text-align: center;"><a href="'+esc(productHref)+'" style="font-size: '+bs+'px;"><strong style="color: rgb(0, 167, 245);">'+esc(productTitle)+'</strong></a></p>','image');
+        pending=null;
+        continue;
+      }
+      addBlock(imageHtml,'image');
       pending=null;
-      continue;
+      // Continue processing this paragraph normally below.
     }
 
     if(!mainStarted&&isHeading(rawPlain)){addSection();mainStarted=true}
@@ -3094,6 +3111,10 @@ window.buildConvertedHtml=function(pars){
     }else{
       addBlock('<p><span style="font-size: '+bs+'px">'+inlineFormat(raw)+'</span></p>','paragraph');
     }
+  }
+  if(pending){
+    addBlock('<p><img src="'+esc(pending.src)+'" alt="'+esc(pending.alt||'Dekorasi dinding')+'" width="'+imageSize+'px" style="width: '+imageSize+'px; max-width: 100%; height: auto; display: block; margin-left: auto; margin-right: auto"></p>','image');
+    pending=null;
   }
   if(lines[lines.length-1]===spacer)lines.pop();
 
